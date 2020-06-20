@@ -30,3 +30,7 @@ String getStepSignature(String stepLine) {
   final methodParameters = p.map((p) => 'dynamic param$p').join(', ');
   return 'Future<void> $name(WidgetTester tester, $methodParameters) async';
 }
+
+String getStepImplementation(String stepLine) {
+  return '''  throw 'not implemented';''';
+}

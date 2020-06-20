@@ -15,7 +15,7 @@ class StepFile {
 import 'package:flutter_test/flutter_test.dart';
 
 ${getStepSignature(line)} {
-  throw 'not implemented';
+${getStepImplementation(line)}
 }
 ''';
   }
