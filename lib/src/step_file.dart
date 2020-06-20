@@ -10,13 +10,5 @@ class StepFile {
   final String import;
   final String line;
 
-  String get dartContent {
-    return '''
-import 'package:flutter_test/flutter_test.dart';
-
-${getStepSignature(line)} {
-${getStepImplementation(line)}
-}
-''';
-  }
+  String get dartContent => generateStepDart(line);
 }
