@@ -32,15 +32,25 @@ Future<void> TheAppIsRunning(WidgetTester tester) async {
       '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> ISeeTextAndIcon(WidgetTester tester, dynamic param1, dynamic param2) async {
-  throw 'not implemented';
+Future<void> ISeeText(WidgetTester tester, dynamic param1) async {
+  expect(find.text(param1), findsOneWidget);
+}
+''',
+      '''
+import 'package:flutter_test/flutter_test.dart';
+
+Future<void> ISeeIcon(WidgetTester tester, dynamic param1) async {
+  expect(find.byIcon(param1), findsOneWidget);
 }
 ''',
     ];
 
     final feature = FeatureFile(path: '$path.feature', input: featureFile);
-    expect(feature.getStepFiles().length, 2);
-    expect(feature.getStepFiles().first.dartContent, expectedSteps.first);
-    expect(feature.getStepFiles().last.dartContent, expectedSteps.last);
+
+    expect(feature.getStepFiles().length, expectedSteps.length);
+
+    for (var i = 0; i < expectedSteps.length; i++) {
+      expect(feature.getStepFiles()[i].dartContent, expectedSteps[i]);
+    }
   });
 }
