@@ -14,7 +14,6 @@ import 'package:flutter_test/flutter_test.dart';
 ''';
 
   test('Empty feature file', () {
-    const path = 'test';
     const expectedFeatureDart = expectedHeader +
         '''
 
@@ -22,12 +21,11 @@ void main() {
 }
 ''';
 
-    final feature = FeatureFile(path: '$path.feature', input: '');
+    final feature = FeatureFile(path: 'test.feature', input: '');
     expect(feature.dartContent, expectedFeatureDart);
   });
 
   test('simplest feature file parses', () {
-    const path = 'test';
     const expectedFeatureDart = expectedHeader +
         '''
 import './step/the_app_is_running.dart';
@@ -42,12 +40,11 @@ void main() {
 ''';
 
     final feature =
-        FeatureFile(path: '$path.feature', input: minimalFeatureFile);
+        FeatureFile(path: 'test.feature', input: minimalFeatureFile);
     expect(feature.dartContent, expectedFeatureDart);
   });
 
   test('Step with parameters', () {
-    const path = 'test';
     const expectedFeatureDart = expectedHeader +
         '''
 import './step/the_app_is_running.dart';
@@ -65,7 +62,7 @@ void main() {
 }
 ''';
 
-    final feature = FeatureFile(path: '$path.feature', input: featureFile);
+    final feature = FeatureFile(path: 'test.feature', input: featureFile);
     expect(feature.dartContent, expectedFeatureDart);
   });
 }

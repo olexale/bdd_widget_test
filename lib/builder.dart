@@ -10,7 +10,8 @@ class FeatureBuilder implements Builder {
   Future build(BuildStep buildStep) async {
     final inputId = buildStep.inputId;
     final contents = await buildStep.readAsString(inputId);
-    final feature = FeatureFile(path: inputId.path, input: contents);
+    final feature = FeatureFile(
+        path: inputId.path, package: inputId.package, input: contents);
 
     var featureDart = inputId.changeExtension('_test.dart');
     await buildStep.writeAsString(featureDart, feature.dartContent);

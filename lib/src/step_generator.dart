@@ -1,7 +1,11 @@
+import 'package:bdd_widget_test/src/step/bdd_step.dart';
+import 'package:bdd_widget_test/src/step/generic_step.dart';
+import 'package:bdd_widget_test/src/step/i_see_icon.dart';
+import 'package:bdd_widget_test/src/step/i_see_text.dart';
+import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:strings/strings.dart';
 
 final parametersRegExp = RegExp(r'\{\S+\}', caseSensitive: false);
-final parametersValueRegExp = RegExp(r'(?<=\{)\S+(?=\})', caseSensitive: false);
 
 String getStepFilename(String stepText) {
   final step = getStepMethodName(stepText);
@@ -13,34 +17,20 @@ String getStepMethodName(String stepText) {
   return camelize(text);
 }
 
-String generateStepDart(String line) {
-  final name = getStepMethodName(line);
-
-  return '''
-import 'package:flutter_test/flutter_test.dart';
-
-${getStepSignature(line, name)} {
-${getStepImplementation(name)}
-}
-''';
+String generateStepDart(String package, String line) {
+  final methodName = getStepMethodName(line);
+  final bddStep = _getStep(methodName, package, line);
+  return bddStep.content;
 }
 
-String getStepSignature(String stepLine, String name) {
-  final params = parametersValueRegExp.allMatches(stepLine);
-  if (params.isEmpty) {
-    return 'Future<void> $name(WidgetTester tester) async';
-  }
-
-  final p = List.generate(params.length, (index) => index + 1);
-
-  final methodParameters = p.map((p) => 'dynamic param$p').join(', ');
-  return 'Future<void> $name(WidgetTester tester, $methodParameters) async';
+BddStep _getStep(String methodName, String package, String line) {
+  final factory =
+      predefinedSteps[methodName] ?? (_, __) => GenericStep(methodName, line);
+  return factory(package, line);
 }
 
-String getStepImplementation(String methodName) => predefinedSteps[methodName] ?? '''  throw 'not implemented';''';
-
-final predefinedSteps = <String, String>{
-  'TheAppIsRunning': '''  await tester.pumpWidget(MyApp());''',
-  'ISeeText': '''  expect(find.text(param1), findsOneWidget);''',
-  'ISeeIcon': '''  expect(find.byIcon(param1), findsOneWidget);''',
+final predefinedSteps = <String, BddStep Function(String, String)>{
+  'TheAppIsRunning': (package, _) => TheAppInRunningStep(package),
+  'ISeeText': (_, __) => ISeeText(),
+  'ISeeIcon': (_, __) => ISeeIcon(),
 };

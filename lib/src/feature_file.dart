@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 class FeatureFile {
   FeatureFile({
     this.path,
+    this.package,
     String input,
   }) : _lines = input
             .split('\n')
@@ -15,6 +16,7 @@ class FeatureFile {
             .toList();
 
   final String path;
+  final String package;
   final List<BddLine> _lines;
 
   String get dartContent => generateFeatureDart(_lines, getStepFiles());
@@ -22,7 +24,7 @@ class FeatureFile {
   List<StepFile> getStepFiles() {
     return _lines
         .where((line) => line.type == LineType.step)
-        .map((e) => StepFile(p.dirname(path), e.value))
+        .map((e) => StepFile(p.dirname(path), package, e.value))
         .toList();
   }
 }
