@@ -1,5 +1,7 @@
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
 import 'package:bdd_widget_test/src/step/generic_step.dart';
+import 'package:bdd_widget_test/src/step/i_dont_see_icon.dart';
+import 'package:bdd_widget_test/src/step/i_dont_see_text.dart';
 import 'package:bdd_widget_test/src/step/i_see_icon.dart';
 import 'package:bdd_widget_test/src/step/i_see_text.dart';
 import 'package:bdd_widget_test/src/step/i_tap_icon.dart';
@@ -46,4 +48,6 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
   'ISeeIcon': (_, __) => ISeeIcon(),
   'ITapText': (_, __) => ITapText(),
   'ITapIcon': (_, __) => ITapIcon(),
+  'IDontSeeIcon': (_, __) => IDontSeeIcon(),
+  'IDontSeeText': (_, __) => IDontSeeText(),
 };
