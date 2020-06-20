@@ -28,5 +28,9 @@ String getStepSignature(String stepLine) {
 }
 
 String getStepImplementation(String stepLine) {
+  if (stepLine.toLowerCase() == 'The app is running'.toLowerCase()) {
+    return '''  await tester.pumpWidget(MyApp());''';
+  }
+
   return '''  throw 'not implemented';''';
 }
