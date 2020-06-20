@@ -14,8 +14,7 @@ Future<void> TheAppIsRunning(WidgetTester tester) async {
 }
 ''';
 
-    final feature =
-        FeatureFile(path: '$path.feature', input: minimalFeatureFile);
+    final feature = FeatureFile(path: '$path.feature', input: minimalFeatureFile);
     expect(feature.getStepFiles().length, 1);
     expect(feature.getStepFiles().first.dartContent, expectedStep);
   });
@@ -33,7 +32,7 @@ Future<void> TheAppIsRunning(WidgetTester tester) async {
       '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> ISeeAnd(WidgetTester tester, dynamic param1, dynamic param2) async {
+Future<void> ISeeTextAndIcon(WidgetTester tester, dynamic param1, dynamic param2) async {
   throw 'not implemented';
 }
 ''',
