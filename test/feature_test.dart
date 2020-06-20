@@ -51,13 +51,15 @@ void main() {
     const expectedFeatureDart = expectedHeader +
         '''
 import './step/the_app_is_running.dart';
-import './step/i_see_and.dart';
+import './step/i_see_text.dart';
+import './step/i_see_icon.dart';
 
 void main() {
   group('Testing feature', () {
     testWidgets('Testing scenario', (WidgetTester tester) async {
       await TheAppIsRunning(tester);
-      await ISeeAnd(tester, 0, 1);
+      await ISeeText(tester, 0);
+      await ISeeIcon(tester, Icons.add);
     });
   });
 }
