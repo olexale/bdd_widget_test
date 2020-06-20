@@ -12,8 +12,15 @@ The aim of this library is in combining two effective and easy-to-use techniques
 
 ### Add the dependency
 
-Add the dependcy to `dev_dependencies` section of the `pubspec.yaml` file.
-Follow the [installation instructions](https://pub.dartlang.org/packages/bdd_widget_test#-installing-tab-) from Pub site.
+Add `build_runner` and `bdd_widget_test` dependcies to `dev_dependencies` section of the `pubspec.yaml` file.
+```yaml
+dev_dependencies:
+  build_runner:
+  bdd_widget_test: <put the latest version here>
+  ...
+```
+
+You may get the actual version from [installation instructions](https://pub.dartlang.org/packages/bdd_widget_test#-installing-tab-) on Pub site.
 
 ### Write features
 
