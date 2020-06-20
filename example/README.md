@@ -1,14 +1,19 @@
-// Create a *.feature file in you lib folder. The minimal file might be:
-// Feature: Counter app
-//     Scenario: Initial counter value is 0
-//         Given the app is running
-//         Then I see {0} text
+Create a *.feature file in you lib folder. The minimal file might be:
+```
+Feature: Counter app
+    Scenario: Initial counter value is 0
+        Given the app is running
+        Then I see {0} text
+```
 
-// Run
-// flutter packages pub run build_runner watch --delete-conflicting-outputs
+Run
+```
+flutter packages pub run build_runner watch --delete-conflicting-outputs
+```
 
-// The output Dart file would be:
+The output Dart file would be:
 
+```dart
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import
 
@@ -26,5 +31,6 @@ void main() {
     });
   });
 }
+```
 
-// Refer to step folder to get familiar with steps implementation.
+Refer to step folder to get familiar with steps implementation.
