@@ -30,7 +30,7 @@ LineType _lineTypeFromString(String line) {
 
 const featureMarkers = ['Feature:'];
 const scenarioMarkers = ['Scenario:'];
-const stepMarkers = ['Given', 'When', 'Then', 'And', 'Or'];
+const stepMarkers = ['Given', 'When', 'Then', 'And'];
 
 String _removeLinePrefix(String rawLine) {
   final lines = rawLine.split(' ');
