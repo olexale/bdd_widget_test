@@ -1,0 +1,7 @@
+builders:
+  featureBuilder:
+    import: "package:bdd_widget_test/builder.dart"
+    builder_factories: ["featureBuilder"]
+    build_extensions: {".feature": [".dart"]}
+    build_to: source
+    auto_apply: root_package
