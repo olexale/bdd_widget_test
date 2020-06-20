@@ -2,6 +2,8 @@ import 'package:bdd_widget_test/src/step/bdd_step.dart';
 import 'package:bdd_widget_test/src/step/generic_step.dart';
 import 'package:bdd_widget_test/src/step/i_see_icon.dart';
 import 'package:bdd_widget_test/src/step/i_see_text.dart';
+import 'package:bdd_widget_test/src/step/i_tap_icon.dart';
+import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:strings/strings.dart';
 
@@ -33,4 +35,6 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
   'TheAppIsRunning': (package, _) => TheAppInRunningStep(package),
   'ISeeText': (_, __) => ISeeText(),
   'ISeeIcon': (_, __) => ISeeIcon(),
+  'ITapText': (_, __) => ITapText(),
+  'ITapIcon': (_, __) => ITapIcon(),
 };
