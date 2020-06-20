@@ -1,26 +1,22 @@
 import 'package:strings/strings.dart';
 
+final parametersRegExp = RegExp(r'\{\S+\}', caseSensitive: false);
+final parametersValueRegExp = RegExp(r'(?<=\{)\S+(?=\})', caseSensitive: false);
+
 String getStepFilename(String stepText) {
   final step = getStepMethodName(stepText);
   return underscore(step);
 }
 
 String getStepMethodName(String stepText) {
-  final lines = stepText.split(' ');
-  final step = lines.map((part) {
-    if (part.startsWith('{') && part.endsWith('}')) {
-      return '';
-    }
-    return part[0].toUpperCase() + part.substring(1).toLowerCase();
-  }).join();
-  return step;
+  final text = stepText.replaceAll(parametersRegExp, '').replaceAll(' ', '_');
+  return camelize(text);
 }
 
 String getStepSignature(String stepLine) {
   final name = getStepMethodName(stepLine);
 
-  final regExp = RegExp(r'(?<=\{)\S+(?=\})', caseSensitive: false);
-  final params = regExp.allMatches(stepLine);
+  final params = parametersValueRegExp.allMatches(stepLine);
   if (params.isEmpty) {
     return 'Future<void> $name(WidgetTester tester) async';
   }
