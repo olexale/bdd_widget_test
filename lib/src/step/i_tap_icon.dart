@@ -6,7 +6,7 @@ class ITapIcon implements BddStep {
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> ITapIcon(WidgetTester tester, IconData icon) async {
+Future<void> iTapIcon(WidgetTester tester, IconData icon) async {
   await tester.tap(find.byIcon(icon));
   await tester.pumpAndSettle();
 }

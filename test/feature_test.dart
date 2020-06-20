@@ -33,7 +33,7 @@ import './step/the_app_is_running.dart';
 void main() {
   group('Testing feature', () {
     testWidgets('Testing scenario', (WidgetTester tester) async {
-      await TheAppIsRunning(tester);
+      await theAppIsRunning(tester);
     });
   });
 }
@@ -54,9 +54,9 @@ import './step/i_see_icon.dart';
 void main() {
   group('Testing feature', () {
     testWidgets('Testing scenario', (WidgetTester tester) async {
-      await TheAppIsRunning(tester);
-      await ISeeText(tester, 0);
-      await ISeeIcon(tester, Icons.add);
+      await theAppIsRunning(tester);
+      await iSeeText(tester, 0);
+      await iSeeIcon(tester, Icons.add);
     });
   });
 }

@@ -5,7 +5,7 @@ class ISeeIcon implements BddStep {
   String get content => '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> ISeeIcon(WidgetTester tester, IconData icon) async {
+Future<void> iSeeIcon(WidgetTester tester, IconData icon) async {
   expect(find.byIcon(icon), findsOneWidget);
 }
 ''';

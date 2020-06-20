@@ -26,7 +26,7 @@ String getStepMethodName(String stepText) {
       .replaceAll(repeatingSpacesRegExp, ' ')
       .trim()
       .replaceAll(' ', '_');
-  var c = camelize(text);
+  var c = camelize(text, true);
   return c;
 }
 
@@ -43,11 +43,11 @@ BddStep _getStep(String methodName, String package, String line) {
 }
 
 final predefinedSteps = <String, BddStep Function(String, String)>{
-  'TheAppIsRunning': (package, _) => TheAppInRunningStep(package),
-  'ISeeText': (_, __) => ISeeText(),
-  'ISeeIcon': (_, __) => ISeeIcon(),
-  'ITapText': (_, __) => ITapText(),
-  'ITapIcon': (_, __) => ITapIcon(),
-  'IDontSeeIcon': (_, __) => IDontSeeIcon(),
-  'IDontSeeText': (_, __) => IDontSeeText(),
+  'theAppIsRunning': (package, _) => TheAppInRunningStep(package),
+  'iSeeText': (_, __) => ISeeText(),
+  'iSeeIcon': (_, __) => ISeeIcon(),
+  'iTapText': (_, __) => ITapText(),
+  'iTapIcon': (_, __) => ITapIcon(),
+  'iDontSeeIcon': (_, __) => IDontSeeIcon(),
+  'iDontSeeText': (_, __) => IDontSeeText(),
 };

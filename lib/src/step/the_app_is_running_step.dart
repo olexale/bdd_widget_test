@@ -9,7 +9,7 @@ class TheAppInRunningStep implements BddStep {
 import 'package:flutter_test/flutter_test.dart';
 import 'package:$package/main.dart';
 
-Future<void> TheAppIsRunning(WidgetTester tester) async {
+Future<void> theAppIsRunning(WidgetTester tester) async {
   await tester.pumpWidget(MyApp());
 }
 ''';

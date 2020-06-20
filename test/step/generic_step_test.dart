@@ -13,7 +13,7 @@ Feature: Testing feature
     const expectedSteps = '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> IInvokeTest(WidgetTester tester) async {
+Future<void> iInvokeTest(WidgetTester tester) async {
   throw UnimplementedError();
 }
 ''';
@@ -35,7 +35,7 @@ Feature: Testing feature
     const expectedSteps = '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> IInvokeTestWithParameter(WidgetTester tester, dynamic param1, dynamic param2) async {
+Future<void> iInvokeTestWithParameter(WidgetTester tester, dynamic param1, dynamic param2) async {
   throw UnimplementedError();
 }
 ''';
@@ -57,7 +57,7 @@ Feature: Testing feature
     const expectedSteps = '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> IInvokeTest(WidgetTester tester) async {
+Future<void> iInvokeTest(WidgetTester tester) async {
   throw UnimplementedError();
 }
 ''';

@@ -13,7 +13,7 @@ Feature: Testing feature
     const expectedSteps = '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> IDontSeeIcon(WidgetTester tester, IconData icon) async {
+Future<void> iDontSeeIcon(WidgetTester tester, IconData icon) async {
   expect(find.byIcon(icon), findsNothing);
 }
 ''';
