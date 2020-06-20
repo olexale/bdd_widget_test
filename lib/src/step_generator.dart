@@ -1,4 +1,5 @@
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
+import 'package:bdd_widget_test/src/step/dismiss_the_page.dart';
 import 'package:bdd_widget_test/src/step/generic_step.dart';
 import 'package:bdd_widget_test/src/step/i_dont_see_icon.dart';
 import 'package:bdd_widget_test/src/step/i_dont_see_text.dart';
@@ -50,4 +51,5 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
   'iTapIcon': (_, __) => ITapIcon(),
   'iDontSeeIcon': (_, __) => IDontSeeIcon(),
   'iDontSeeText': (_, __) => IDontSeeText(),
+  'dismissThePage': (_, __) => DismissThePage(),
 };
