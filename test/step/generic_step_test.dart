@@ -45,4 +45,26 @@ Future<void> IInvokeTestWithParameter(WidgetTester tester, dynamic param1, dynam
 
     expect(feature.getStepFiles().single.dartContent, expectedSteps);
   });
+
+  test('Special characters ignored', () {
+    const path = 'test';
+    const featureFile = '''
+Feature: Testing feature
+    Scenario: Testing scenario
+        When !  I@ #invoke\$%   ^'`~  &*+=) test ?   &&/| \\ ;:
+    ''';
+
+    const expectedSteps = '''
+import 'package:flutter_test/flutter_test.dart';
+
+Future<void> IInvokeTest(WidgetTester tester) async {
+  throw UnimplementedError();
+}
+''';
+
+    final feature =
+        FeatureFile(path: '$path.feature', package: path, input: featureFile);
+
+    expect(feature.getStepFiles().single.dartContent, expectedSteps);
+  });
 }

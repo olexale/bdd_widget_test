@@ -8,15 +8,24 @@ import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:strings/strings.dart';
 
 final parametersRegExp = RegExp(r'\{\S+\}', caseSensitive: false);
+final charactersAndNumbersRegExp = RegExp(r'[^\w\s\d]+');
+final repeatingSpacesRegExp = RegExp(r'\s+');
 
 String getStepFilename(String stepText) {
   final step = getStepMethodName(stepText);
-  return underscore(step);
+  var u = underscore(step);
+  return u;
 }
 
 String getStepMethodName(String stepText) {
-  final text = stepText.replaceAll(parametersRegExp, '').replaceAll(' ', '_');
-  return camelize(text);
+  final text = stepText
+      .replaceAll(parametersRegExp, '')
+      .replaceAll(charactersAndNumbersRegExp, '')
+      .replaceAll(repeatingSpacesRegExp, ' ')
+      .trim()
+      .replaceAll(' ', '_');
+  var c = camelize(text);
+  return c;
 }
 
 String generateStepDart(String package, String line) {
