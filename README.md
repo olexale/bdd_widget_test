@@ -36,9 +36,9 @@ Now ask `built_value` to generate Dart files for you. You may do this with the c
 ```
 flutter packages pub run build_runner watch --delete-conflicting-outputs
 ```
-After that, the corresponding `dart` file will be generated for each of your `feature` files. Do not change the code inside these `dart` files as they will be recreated each time you change something in feature files.
+After that, the corresponding `dart` file will be generated for each of your `feature` files. Do not change the code inside these `dart` files as **they will be recreated** each time you change something in feature files.
 
-During feature-to-dart generation additional `step` folder will be created. It will contain all steps required to run the scenario. These files will not be updated hence feel free to adapt the content according to your needs.
+During feature-to-dart generation additional `step` folder will be created. It will contain all steps required to run the scenario. **These files will not be updated** hence feel free to adapt the content according to your needs.
 
 ### Run tests
 
@@ -70,6 +70,20 @@ Each feature file must have one or more `Feature:`s. Features become test groups
 Each feature group must have one or more `Scenario:`s. Scenario become widget tests.
 
 Each scenario must have one or more lines. Each of them must start with `Given`, `When`, `Then`, or `And` keywords. Conventionally `Given` steps are used for test arrangements, `When` — for interaction, `Then` — for asserts.
+
+## Predefined steps
+
+This library comes with a list of predefined steps. They will be auto-generated for you, but you may want to adjust their implementation according to your needs.
+
+List of predefined steps:
+* Dismiss the page
+* I don't see {..} icon
+* I don't see {..} text
+* I see {..} icon
+* I see {..} text
+* I tap {..} icon
+* I tap {..} text
+* The app is running
 
 ## FAQ
 
