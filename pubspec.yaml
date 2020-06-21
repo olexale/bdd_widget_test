@@ -1,8 +1,8 @@
 name: bdd_widget_test
-description: A BDD-style widget testing library
-version: 0.1.0
+description: A BDD-style widget testing library. Generates Flutter widget tests from *.feature files.
+version: 0.1.0+1
 author: Oleksandr Leuschenko <olexa.le@gmail.com>
-repository: https://github.com/olexale/bdd_widget_test
+homepage: https://github.com/olexale/bdd_widget_test
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
