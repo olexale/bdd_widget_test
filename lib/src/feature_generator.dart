@@ -11,6 +11,11 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
   sb.writeln('import \'package:flutter_test/flutter_test.dart\';');
   sb.writeln('');
 
+  for (final line
+      in lines.takeWhile((value) => value.type != LineType.feature)) {
+    sb.writeln(line.rawLine);
+  }
+
   for (final step in steps.map((e) => e.import).toSet()) {
     sb.writeln('import \'$step\';');
   }
@@ -18,7 +23,9 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
   sb.writeln('');
   sb.writeln('void main() {');
 
-  final features = splitWhen(lines, (e) => e.type == LineType.feature);
+  final features = splitWhen(
+      lines.skipWhile((value) => value.type != LineType.feature), // skip header
+      (e) => e.type == LineType.feature);
 
   for (final feature in features) {
     sb.writeln('  group(\'${feature.first.value}\', () {');

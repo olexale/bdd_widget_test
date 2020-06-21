@@ -53,6 +53,38 @@ You're good to go! `bdd_widget_test` generated plain old Dart tests, so feel fre
 flutter test
 ```
 
+## FAQ
+
+### How to pass a parameter?
+
+You may use curly brackets to pass the parameter into a `step`. The syntax is following:
+```
+  Give I see {42} number
+  And I see {Icons.add} icon
+```
+Notice, that the value inside brackets is copied to the Dart test file without changes hence it must be a valid Dart code. In the example above first step will have an `int` value. In order to pass a valid Dart string use '42' or "42".
+
+You may call methods in step parameters, but most probably it's not what you want.
+
+### How to add additional imports to test files?
+
+Most of the time you shouldn't do that, as the BDD tests simulate user's behavior and it's just not possible for users to know the implementation details. Nevertheless, sometimes it might be in hand, i.e. when you have custom domain models or components. For example, if you need to check Cupertino icons in the test, you may have:
+```
+import 'package:flutter/cupertino.dart';
+
+Feature: ...
+  Then I see {CupertinoIcons.back} cupertino icon
+```
+
+### How to adjust linter for auto-generated tests?
+
+Use the same trick as above, just write linter rules you wish to ignore at the beginning of the feature file:
+```
+// ignore_for_file: avoid_as, prefer_is_not_empty
+
+Feature: ...
+```
+
 ## Contributing
 
 If you find a bug or would like to request a new feature, just [open an issue](https://github.com/olexale/bdd_widget_test/issues/new). Your contributions are always welcome!

@@ -17,6 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
     const expectedFeatureDart = expectedHeader +
         '''
 
+
 void main() {
 }
 ''';
