@@ -66,4 +66,32 @@ void main() {
     final feature = FeatureFile(path: 'test.feature', input: featureFile);
     expect(feature.dartContent, expectedFeatureDart);
   });
+
+  test('Several features in one file', () {
+    const expectedFeatureDart = expectedHeader +
+        '''
+// some comment
+
+import './step/the_app_is_running.dart';
+
+void main() {
+  group('First testing feature', () {
+    testWidgets('First testing scenario', (WidgetTester tester) async {
+      await theAppIsRunning(tester);
+    });
+  });
+  group('Second testing feature', () {
+    testWidgets('First testing scenario', (WidgetTester tester) async {
+      await theAppIsRunning(tester);
+    });
+    testWidgets('Second testing scenario', (WidgetTester tester) async {
+      await theAppIsRunning(tester);
+    });
+  });
+}
+''';
+
+    final feature = FeatureFile(path: 'test.feature', input: bigFeatureFile);
+    expect(feature.dartContent, expectedFeatureDart);
+  });
 }
