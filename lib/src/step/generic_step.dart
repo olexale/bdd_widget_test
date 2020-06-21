@@ -1,7 +1,5 @@
+import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
-
-final _parametersValueRegExp =
-    RegExp(r'(?<=\{)\S+(?=\})', caseSensitive: false);
 
 class GenericStep implements BddStep {
   GenericStep(this.methodName, this.rawLine);
@@ -19,7 +17,7 @@ ${getStepSignature(rawLine)} {
 ''';
 
   String getStepSignature(String stepLine) {
-    final params = _parametersValueRegExp.allMatches(stepLine);
+    final params = parametersValueRegExp.allMatches(stepLine);
     if (params.isEmpty) {
       return 'Future<void> $methodName(WidgetTester tester) async';
     }

@@ -1,3 +1,4 @@
+import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
 import 'package:bdd_widget_test/src/step/dismiss_the_page.dart';
 import 'package:bdd_widget_test/src/step/generic_step.dart';
@@ -9,10 +10,6 @@ import 'package:bdd_widget_test/src/step/i_tap_icon.dart';
 import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:strings/strings.dart';
-
-final parametersRegExp = RegExp(r'\{\S+\}', caseSensitive: false);
-final charactersAndNumbersRegExp = RegExp(r'[^\w\s\d]+');
-final repeatingSpacesRegExp = RegExp(r'\s+');
 
 String getStepFilename(String stepText) {
   final step = getStepMethodName(stepText);
@@ -29,6 +26,19 @@ String getStepMethodName(String stepText) {
       .replaceAll(' ', '_');
   var c = camelize(text, true);
   return c;
+}
+
+String getStepMethodCall(String stepLine) {
+  final name = getStepMethodName(stepLine);
+
+  // final regExp = RegExp(r'(?<=\{)\S+(?=\})', caseSensitive: false);
+  final params = parametersValueRegExp.allMatches(stepLine);
+  if (params.isEmpty) {
+    return '$name(tester)';
+  }
+
+  final methodParameters = params.map((p) => p.group(0)).join(', ');
+  return '$name(tester, $methodParameters)';
 }
 
 String generateStepDart(String package, String line) {

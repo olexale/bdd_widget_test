@@ -61,7 +61,7 @@ Feature: Counter
 
   Scenario: Plus button increases the counter
     Given the app is running
-    When I tap on {Icons.add} icon
+    When I tap {Icons.add} icon
     Then I see {1} text
 ```
 

@@ -7,7 +7,7 @@ void main() {
     const featureFile = '''
 Feature: Testing feature
     Scenario: Testing scenario
-        When I see {0} text
+        When I see {'some text 42'} text
     ''';
 
     const expectedSteps = '''

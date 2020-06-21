@@ -37,7 +37,7 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
           '    testWidgets(\'${scenario.first.value}\', (WidgetTester tester) async {');
 
       for (final step in scenario.skip(1)) {
-        sb.writeln('      await ${_generateStepCall(step.value)};');
+        sb.writeln('      await ${getStepMethodCall(step.value)};');
       }
 
       sb.writeln('    });');
@@ -46,19 +46,6 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
   }
   sb.writeln('}');
   return sb.toString();
-}
-
-String _generateStepCall(String stepLine) {
-  final name = getStepMethodName(stepLine);
-
-  final regExp = RegExp(r'(?<=\{)\S+(?=\})', caseSensitive: false);
-  final params = regExp.allMatches(stepLine);
-  if (params.isEmpty) {
-    return '$name(tester)';
-  }
-
-  final methodParameters = params.map((p) => p.group(0)).join(', ');
-  return '$name(tester, $methodParameters)';
 }
 
 List<List<T>> splitWhen<T>(Iterable<T> original, bool Function(T) predicate) =>

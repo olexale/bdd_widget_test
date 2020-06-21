@@ -56,7 +56,7 @@ void main() {
   group('Testing feature', () {
     testWidgets('Testing scenario', (WidgetTester tester) async {
       await theAppIsRunning(tester);
-      await iSeeText(tester, 0);
+      await iSeeText(tester, 'nice param');
       await iSeeIcon(tester, Icons.add);
     });
   });
