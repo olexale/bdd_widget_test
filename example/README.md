@@ -1,6 +1,6 @@
-Create a *.feature file in you lib folder. The minimal file might be:
+Create a `*.feature` file in you lib folder. The minimal file might be:
 ```
-Feature: Counter app
+Feature: Counter
     Scenario: Initial counter value is 0
         Given the app is running
         Then I see {0} text
@@ -26,11 +26,11 @@ import './step/i_see_text.dart';
 void main() {
   group('Counter app', () {
     testWidgets('Initial counter value is 0', (WidgetTester tester) async {
-      await TheAppIsRunning(tester);
-      await ISeeText(tester, 0);
+      await theAppIsRunning(tester);
+      await iSeeText(tester, 0);
     });
   });
 }
 ```
 
-Refer to step folder to get familiar with steps implementation.
+Refer to `step` folder to get familiar with steps implementation.
