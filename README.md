@@ -91,10 +91,10 @@ List of predefined steps:
 
 You may use curly brackets to pass the parameter into a `step`. The syntax is following:
 ```
-  Give I see {42} number
+  When I see {42} number
   And I see {Icons.add} icon
 ```
-Notice, that the value inside brackets is copied to the Dart test file without changes hence it must be a valid Dart code. In the example above first step will have an `int` value. In order to pass a valid Dart string use '42' or "42".
+Notice, that the value inside brackets is copied to the Dart test file without changes hence it must be a valid Dart code. In the example above first step will have an `int` value. In order to pass a valid Dart string use `'42'` or `"42"`.
 
 You may call methods in step parameters, but most probably it's not what you want.
 
