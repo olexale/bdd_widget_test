@@ -26,16 +26,10 @@ You may get the actual version from [installation instructions](https://pub.dart
 
 Create `*.feature` file inside `test` folder. Let's say you're testing the default Flutter counter app, the content might be:
 ```
-Feature: Counter app
-    
+Feature: Counter
     Scenario: Initial counter value is 0
         Given the app is running
         Then I see {0} text
-
-    Scenario: Plus button increases the counter
-        Given the app is running
-        When I tap on {Icons.add} icon
-        Then I see {1} text
 ```
 
 Now ask `built_value` to generate Dart files for you. You may do this with the command:
@@ -52,6 +46,30 @@ You're good to go! `bdd_widget_test` generated plain old Dart tests, so feel fre
 ```
 flutter test
 ```
+
+## Feature file syntax
+
+Feature file sample:
+```
+// comment here
+
+Feature: Counter
+
+  Scenario: Initial counter value is 0
+    Given the app is running
+    Then I see {0} text
+
+  Scenario: Plus button increases the counter
+    Given the app is running
+    When I tap on {Icons.add} icon
+    Then I see {1} text
+```
+
+Each feature file must have one or more `Feature:`s. Features become test groups in Flutter tests.
+
+Each feature group must have one or more `Scenario:`s. Scenario become widget tests.
+
+Each scenario must have one or more lines. Each of them must start with `Given`, `When`, `Then`, or `And` keywords. Conventionally `Given` steps are used for test arrangements, `When` — for interaction, `Then` — for asserts.
 
 ## FAQ
 
