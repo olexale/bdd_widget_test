@@ -1,3 +1,7 @@
+## [0.1.2] - More Gherkin keywords
+
+* Add `Example` and `But` keywords
+
 ## [0.1.1] - Hotfix
 
 * Fix regular expressions for parameters parsing

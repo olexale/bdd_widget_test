@@ -29,8 +29,8 @@ LineType _lineTypeFromString(String line) {
 }
 
 const featureMarkers = ['Feature:'];
-const scenarioMarkers = ['Scenario:'];
-const stepMarkers = ['Given', 'When', 'Then', 'And'];
+const scenarioMarkers = ['Scenario:', 'Example:'];
+const stepMarkers = ['Given', 'When', 'Then', 'And', 'But'];
 
 String _removeLinePrefix(String rawLine) {
   final lines = rawLine.split(' ');

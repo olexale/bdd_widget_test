@@ -67,9 +67,10 @@ Feature: Counter
 
 Each feature file must have one or more `Feature:`s. Features become test groups in Flutter tests.
 
-Each feature group must have one or more `Scenario:`s. Scenario become widget tests.
+Each feature group must have one or more `Scenario:`s (or `Example:`s). Scenario become widget tests.
 
-Each scenario must have one or more lines. Each of them must start with `Given`, `When`, `Then`, or `And` keywords. Conventionally `Given` steps are used for test arrangements, `When` — for interaction, `Then` — for asserts.
+Each scenario must have one or more lines with steps. Each of them must start with `Given`, `When`, `Then`, `And`, or `But` keywords. Conventionally `Given` steps are used for test arrangements, `When` — for interaction, `Then` — for asserts. Keywords are not taken into account when looking for a step definition.
+You can have as many steps as you like, but it's recommended you keep the number at 3-5 per scenario. Having too many steps will cause it to lose it’s expressive power as specification and documentation. 
 
 ## Predefined steps
 

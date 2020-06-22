@@ -10,7 +10,7 @@ Feature: Testing feature
         Given the app is running
         Then I see {'nice param'} text
 
-        And I see {Icons.add} icon
+        But I see {Icons.add} icon
 ''';
 
 const bigFeatureFile = '''
@@ -22,7 +22,7 @@ Feature: First testing feature
 
 Feature: Second testing feature
     
-    Scenario: First testing scenario
+    Example: First testing scenario
         Given the app is running
     
 
