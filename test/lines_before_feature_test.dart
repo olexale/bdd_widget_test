@@ -7,7 +7,7 @@ void main() {
   test('lines before feature are copied to dart test', () {
     const expectedHeader = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import
+// ignore_for_file: unused_import, directives_ordering
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,3 +1,7 @@
+## [0.1.3] - More Gherkin keywords
+
+* Add `directives_ordering` linter exception
+
 ## [0.1.2] - More Gherkin keywords
 
 * Add `Example` and `But` keywords

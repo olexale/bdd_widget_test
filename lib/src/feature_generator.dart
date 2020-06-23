@@ -5,7 +5,7 @@ import 'package:bdd_widget_test/src/step_generator.dart';
 String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
   final sb = StringBuffer();
   sb.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
-  sb.writeln('// ignore_for_file: unused_import');
+  sb.writeln('// ignore_for_file: unused_import, directives_ordering');
   sb.writeln('');
   sb.writeln('import \'package:flutter/material.dart\';');
   sb.writeln('import \'package:flutter_test/flutter_test.dart\';');
