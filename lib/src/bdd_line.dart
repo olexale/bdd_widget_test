@@ -10,6 +10,7 @@ class BddLine {
 
 enum LineType {
   feature,
+  background,
   scenario,
   step,
   unknown,
@@ -18,6 +19,9 @@ enum LineType {
 LineType _lineTypeFromString(String line) {
   if (featureMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.feature;
+  }
+  if (backgroundMarkers.any((marker) => line.startsWith(marker))) {
+    return LineType.background;
   }
   if (scenarioMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.scenario;
@@ -29,6 +33,7 @@ LineType _lineTypeFromString(String line) {
 }
 
 const featureMarkers = ['Feature:'];
+const backgroundMarkers = ['Background:'];
 const scenarioMarkers = ['Scenario:', 'Example:'];
 const stepMarkers = ['Given', 'When', 'Then', 'And', 'But'];
 

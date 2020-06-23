@@ -22,30 +22,59 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
 
   sb.writeln('');
   sb.writeln('void main() {');
+  _parseBackground(sb, lines);
 
   final features = splitWhen(
       lines.skipWhile((value) => value.type != LineType.feature), // skip header
       (e) => e.type == LineType.feature);
 
   for (final feature in features) {
-    sb.writeln('  group(\'${feature.first.value}\', () {');
-
-    final scenarios =
-        splitWhen(feature.skip(1), (e) => e.type == LineType.scenario).toList();
-    for (final scenario in scenarios) {
-      sb.writeln(
-          '    testWidgets(\'${scenario.first.value}\', (WidgetTester tester) async {');
-
-      for (final step in scenario.skip(1)) {
-        sb.writeln('      await ${getStepMethodCall(step.value)};');
-      }
-
-      sb.writeln('    });');
-    }
-    sb.writeln('  });');
+    _parseFeature(sb, feature);
   }
   sb.writeln('}');
   return sb.toString();
+}
+
+var backgroundOffset = -1;
+void _parseBackground(StringBuffer sb, List<BddLine> feature) {
+  backgroundOffset =
+      feature.indexWhere((element) => element.type == LineType.background);
+  if (backgroundOffset == -1) {
+    return;
+  }
+  sb.writeln('  setUp(() async {');
+  backgroundOffset++;
+  while (feature[backgroundOffset].type == LineType.step) {
+    sb.writeln(
+        '    await ${getStepMethodCall(feature[backgroundOffset].value)};');
+    backgroundOffset++;
+  }
+  sb.writeln('  });');
+}
+
+void _parseFeature(StringBuffer sb, List<BddLine> feature) {
+  sb.writeln('  group(\'${feature.first.value}\', () {');
+
+  final scenarios = splitWhen(
+      feature.skip(backgroundOffset == -1
+          ? 1 // Skip 'Feature:'
+          : backgroundOffset), // or 'Backround:'
+      (e) => e.type == LineType.scenario).toList();
+  for (final scenario in scenarios) {
+    _parseScenario(sb, scenario);
+  }
+  sb.writeln('  });');
+}
+
+void _parseScenario(StringBuffer sb, List<BddLine> scenario) {
+  sb.writeln(
+      '    testWidgets(\'${scenario.first.value}\', (WidgetTester tester) async {');
+
+  for (final step in scenario.skip(1)) {
+    sb.writeln('      await ${getStepMethodCall(step.value)};');
+  }
+
+  sb.writeln('    });');
 }
 
 List<List<T>> splitWhen<T>(Iterable<T> original, bool Function(T) predicate) =>
