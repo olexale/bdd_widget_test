@@ -27,7 +27,7 @@ void main() {
   group('Counter app', () {
     testWidgets('Initial counter value is 0', (WidgetTester tester) async {
       await theAppIsRunning(tester);
-      await iSeeText(tester, 0);
+      await iSeeText(tester, '0');
     });
   });
 }
