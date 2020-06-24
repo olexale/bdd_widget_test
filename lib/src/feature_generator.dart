@@ -22,37 +22,37 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
 
   sb.writeln('');
   sb.writeln('void main() {');
-  _parseBackground(sb, lines);
 
   final features = splitWhen(
       lines.skipWhile((value) => value.type != LineType.feature), // skip header
       (e) => e.type == LineType.feature);
 
   for (final feature in features) {
-    _parseFeature(sb, feature);
+    final backgroundOffset = _parseBackground(sb, feature);
+    _parseFeature(sb, feature, backgroundOffset);
   }
   sb.writeln('}');
   return sb.toString();
 }
 
-var backgroundOffset = -1;
-void _parseBackground(StringBuffer sb, List<BddLine> feature) {
-  backgroundOffset =
-      feature.indexWhere((element) => element.type == LineType.background);
-  if (backgroundOffset == -1) {
-    return;
-  }
-  sb.writeln('  setUp(() async {');
-  backgroundOffset++;
-  while (feature[backgroundOffset].type == LineType.step) {
-    sb.writeln(
-        '    await ${getStepMethodCall(feature[backgroundOffset].value)};');
+int _parseBackground(StringBuffer sb, List<BddLine> lines) {
+  var backgroundOffset =
+      lines.indexWhere((element) => element.type == LineType.background);
+  if (backgroundOffset != -1) {
+    sb.writeln('  setUp(() async {');
     backgroundOffset++;
+    while (lines[backgroundOffset].type == LineType.step) {
+      sb.writeln(
+          '    await ${getStepMethodName(lines[backgroundOffset].value)}();');
+      backgroundOffset++;
+    }
+    sb.writeln('  });');
   }
-  sb.writeln('  });');
+  return backgroundOffset;
 }
 
-void _parseFeature(StringBuffer sb, List<BddLine> feature) {
+void _parseFeature(
+    StringBuffer sb, List<BddLine> feature, int backgroundOffset) {
   sb.writeln('  group(\'${feature.first.value}\', () {');
 
   final scenarios = splitWhen(

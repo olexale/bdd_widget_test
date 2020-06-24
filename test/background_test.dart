@@ -25,7 +25,7 @@ import './step/the_app_is_running.dart';
 
 void main() {
   setUp(() async {
-    await theServerAlwaysReturnErrors(tester);
+    await theServerAlwaysReturnErrors();
   });
   group('Testing feature', () {
     testWidgets('Testing scenario', (WidgetTester tester) async {
