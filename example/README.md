@@ -3,7 +3,7 @@ Create a `*.feature` file in you lib folder. The minimal file might be:
 Feature: Counter
     Scenario: Initial counter value is 0
         Given the app is running
-        Then I see {0} text
+        Then I see {'0'} text
 ```
 
 Run
