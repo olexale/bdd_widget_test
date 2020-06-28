@@ -2,20 +2,21 @@ import 'package:bdd_widget_test/src/feature_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('I Tap Text pre-built step generated', () {
+  test('I Tap Icon And Wait pre-built step generated', () {
     const path = 'test';
     const featureFile = '''
 Feature: Testing feature
     Scenario: Testing scenario
-        When I tap {foo} text
+        When I tap {Icons.add} icon and wait
     ''';
 
     const expectedSteps = '''
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> iTapText(WidgetTester tester, String text) async {
-  await tester.tap(find.text(text));
-  await tester.pump();
+Future<void> iTapIconAndWait(WidgetTester tester, IconData icon) async {
+  await tester.tap(find.byIcon(icon));
+  await tester.pumpAndSettle();
 }
 ''';
 
