@@ -1,3 +1,9 @@
+## [0.1.4] - More Gherkin keywords
+
+* Minor bug fixes
+* Add more Tap events
+* Add 'I Wait' step
+
 ## [0.1.3] - More Gherkin keywords
 
 * Add `Background` keyword
