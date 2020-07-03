@@ -29,7 +29,7 @@ Create `*.feature` file inside `test` folder. Let's say you're testing the defau
 Feature: Counter
     Scenario: Initial counter value is 0
         Given the app is running
-        Then I see {0} text
+        Then I see {'0'} text
 ```
 
 Now ask `built_value` to generate Dart files for you. You may do this with the command:
@@ -60,12 +60,12 @@ Feature: Counter
 
   Scenario: Initial counter value is 0
     Given the app is running
-    Then I see {0} text
+    Then I see {'0'} text
 
   Scenario: Plus button increases the counter
     Given the app is running
     When I tap {Icons.add} icon
-    Then I see {1} text
+    Then I see {'1'} text
 ```
 
 `Backround` keyword is optional. A Background allows you to add some context to the scenarios that follow it. It can contain one or more Given steps, which are run before each scenario.
