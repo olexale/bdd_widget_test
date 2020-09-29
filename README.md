@@ -123,6 +123,10 @@ Use the same trick as above, just write linter rules you wish to ignore at the b
 Feature: ...
 ```
 
+### Any video tutorials on this?
+
+Sure, you may find a [BDD in Flutter playlist](https://www.youtube.com/playlist?list=PLjaSBcAZ8TqFx51f30aRi_A2szelttOpq) on youtube with the basic showcase.
+
 ## Contributing
 
 If you find a bug or would like to request a new feature, just [open an issue](https://github.com/olexale/bdd_widget_test/issues/new). Your contributions are always welcome!
