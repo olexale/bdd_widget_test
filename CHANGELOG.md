@@ -1,3 +1,7 @@
+## [0.1.5] - Windows-friendly build
+
+* Fix code generation on Windows (by @kentcb)
+
 ## [0.1.4] - More Gherkin keywords
 
 * Minor bug fixes
