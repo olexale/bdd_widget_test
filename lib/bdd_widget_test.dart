@@ -13,7 +13,7 @@ class FeatureBuilder implements Builder {
     final feature = FeatureFile(
         path: inputId.path, package: inputId.package, input: contents);
 
-    var featureDart = inputId.changeExtension('_test.dart');
+    var featureDart = inputId.changeExtension('.feature.g.dart');
     await buildStep.writeAsString(featureDart, feature.dartContent);
 
     for (final step in feature.getStepFiles()) {
@@ -31,6 +31,6 @@ class FeatureBuilder implements Builder {
 
   @override
   final buildExtensions = const {
-    '.feature': ['_test.dart']
+    '.feature': ['.feature.g.dart']
   };
 }
