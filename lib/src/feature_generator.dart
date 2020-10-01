@@ -67,8 +67,7 @@ void _parseFeature(
 }
 
 void _parseScenario(StringBuffer sb, List<BddLine> scenario) {
-  sb.writeln(
-      '    testWidgets(\'${scenario.first.value}\', (WidgetTester tester) async {');
+  sb.writeln('    testWidgets(\'${scenario.first.value}\', (tester) async {');
 
   for (final step in scenario.skip(1)) {
     sb.writeln('      await ${getStepMethodCall(step.value)};');
