@@ -13,6 +13,7 @@ enum LineType {
   background,
   scenario,
   step,
+  after,
   unknown,
 }
 
@@ -22,6 +23,9 @@ LineType _lineTypeFromString(String line) {
   }
   if (backgroundMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.background;
+  }
+  if (afterMarkers.any((marker) => line.startsWith(marker))) {
+    return LineType.after;
   }
   if (scenarioMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.scenario;
@@ -34,6 +38,7 @@ LineType _lineTypeFromString(String line) {
 
 const featureMarkers = ['Feature:'];
 const backgroundMarkers = ['Background:'];
+const afterMarkers = ['After:'];
 const scenarioMarkers = ['Scenario:', 'Example:'];
 const stepMarkers = ['Given', 'When', 'Then', 'And', 'But'];
 

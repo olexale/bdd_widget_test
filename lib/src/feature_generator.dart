@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
@@ -29,36 +31,49 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
 
   for (final feature in features) {
     final backgroundOffset = _parseBackground(sb, feature);
-    _parseFeature(sb, feature, backgroundOffset);
+    final afterOffset = _parseAfter(sb, feature);
+    final offset = _calculateOffset(backgroundOffset, afterOffset);
+    _parseFeature(sb, feature, offset);
   }
   sb.writeln('}');
   return sb.toString();
 }
 
-int _parseBackground(StringBuffer sb, List<BddLine> lines) {
-  var backgroundOffset =
-      lines.indexWhere((element) => element.type == LineType.background);
-  if (backgroundOffset != -1) {
-    sb.writeln('  setUp(() async {');
-    backgroundOffset++;
-    while (lines[backgroundOffset].type == LineType.step) {
-      sb.writeln(
-          '    await ${getStepMethodName(lines[backgroundOffset].value)}();');
-      backgroundOffset++;
+int _parseBackground(StringBuffer sb, List<BddLine> lines) =>
+    _parseSetup(sb, lines, LineType.background, 'setUp');
+
+int _parseAfter(StringBuffer sb, List<BddLine> lines) =>
+    _parseSetup(sb, lines, LineType.after, 'tearDown');
+
+int _calculateOffset(int backgroundOffset, int afterOffset) {
+  if (backgroundOffset == -1 && afterOffset == -1) {
+    return -1;
+  }
+  return max(backgroundOffset, afterOffset);
+}
+
+int _parseSetup(
+    StringBuffer sb, List<BddLine> lines, LineType elementType, String title) {
+  var offset = lines.indexWhere((element) => element.type == elementType);
+  if (offset != -1) {
+    sb.writeln('  $title(() async {');
+    offset++;
+    while (lines[offset].type == LineType.step) {
+      sb.writeln('    await ${getStepMethodName(lines[offset].value)}();');
+      offset++;
     }
     sb.writeln('  });');
   }
-  return backgroundOffset;
+  return offset;
 }
 
-void _parseFeature(
-    StringBuffer sb, List<BddLine> feature, int backgroundOffset) {
+void _parseFeature(StringBuffer sb, List<BddLine> feature, int offset) {
   sb.writeln('  group(\'${feature.first.value}\', () {');
 
   final scenarios = splitWhen(
-      feature.skip(backgroundOffset == -1
+      feature.skip(offset == -1
           ? 1 // Skip 'Feature:'
-          : backgroundOffset), // or 'Backround:'
+          : offset), // or 'Backround:' / 'After:'
       (e) => e.type == LineType.scenario).toList();
   for (final scenario in scenarios) {
     _parseScenario(sb, scenario);
