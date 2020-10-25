@@ -1,3 +1,8 @@
+## [0.1.6] - 'After' keyword
+
+* Add `After` keyword
+* avoid avoid_types_on_closure_parameters (by @kentcb)
+
 ## [0.1.5] - Windows-friendly build
 
 * Fix code generation on Windows (by @kentcb)
