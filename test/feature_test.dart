@@ -33,7 +33,7 @@ import './step/the_app_is_running.dart';
 
 void main() {
   group('Testing feature', () {
-    testWidgets('Testing scenario', (WidgetTester tester) async {
+    testWidgets('Testing scenario', (tester) async {
       await theAppIsRunning(tester);
     });
   });
@@ -54,7 +54,7 @@ import './step/i_see_icon.dart';
 
 void main() {
   group('Testing feature', () {
-    testWidgets('Testing scenario', (WidgetTester tester) async {
+    testWidgets('Testing scenario', (tester) async {
       await theAppIsRunning(tester);
       await iSeeText(tester, 'nice param');
       await iSeeIcon(tester, Icons.add);
@@ -76,15 +76,15 @@ import './step/the_app_is_running.dart';
 
 void main() {
   group('First testing feature', () {
-    testWidgets('First testing scenario', (WidgetTester tester) async {
+    testWidgets('First testing scenario', (tester) async {
       await theAppIsRunning(tester);
     });
   });
   group('Second testing feature', () {
-    testWidgets('First testing scenario', (WidgetTester tester) async {
+    testWidgets('First testing scenario', (tester) async {
       await theAppIsRunning(tester);
     });
-    testWidgets('Second testing scenario', (WidgetTester tester) async {
+    testWidgets('Second testing scenario', (tester) async {
       await theAppIsRunning(tester);
     });
   });

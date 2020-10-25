@@ -26,7 +26,7 @@ void main() {
     await theServerAlwaysReturnErrors();
   });
   group('Testing feature', () {
-    testWidgets('Testing scenario', (WidgetTester tester) async {
+    testWidgets('Testing scenario', (tester) async {
       await theAppIsRunning(tester);
     });
   });
