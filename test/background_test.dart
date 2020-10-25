@@ -1,8 +1,6 @@
 import 'package:bdd_widget_test/src/feature_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'testing_data.dart';
-
 void main() {
   test('Background steps appear before groups ', () {
     const featureFile = '''
