@@ -7,13 +7,13 @@ Builder featureBuilder(BuilderOptions options) => FeatureBuilder();
 
 class FeatureBuilder implements Builder {
   @override
-  Future build(BuildStep buildStep) async {
+  Future<void> build(BuildStep buildStep) async {
     final inputId = buildStep.inputId;
     final contents = await buildStep.readAsString(inputId);
     final feature = FeatureFile(
         path: inputId.path, package: inputId.package, input: contents);
 
-    var featureDart = inputId.changeExtension('_test.dart');
+    final featureDart = inputId.changeExtension('_test.dart');
     await buildStep.writeAsString(featureDart, feature.dartContent);
 
     for (final step in feature.getStepFiles()) {

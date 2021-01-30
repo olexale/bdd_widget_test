@@ -25,7 +25,7 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
   sb.writeln('');
   sb.writeln('void main() {');
 
-  final features = splitWhen(
+  final features = splitWhen<BddLine>(
       lines.skipWhile((value) => value.type != LineType.feature), // skip header
       (e) => e.type == LineType.feature);
 
@@ -70,7 +70,7 @@ int _parseSetup(
 void _parseFeature(StringBuffer sb, List<BddLine> feature, int offset) {
   sb.writeln('  group(\'${feature.first.value}\', () {');
 
-  final scenarios = splitWhen(
+  final scenarios = splitWhen<BddLine>(
       feature.skip(offset == -1
           ? 1 // Skip 'Feature:'
           : offset), // or 'Backround:' / 'After:'

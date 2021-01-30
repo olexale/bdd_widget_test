@@ -16,8 +16,7 @@ import 'package:strings/strings.dart';
 
 String getStepFilename(String stepText) {
   final step = getStepMethodName(stepText);
-  var u = underscore(step);
-  return u;
+  return underscore(step);
 }
 
 String getStepMethodName(String stepText) {
@@ -27,14 +26,12 @@ String getStepMethodName(String stepText) {
       .replaceAll(repeatingSpacesRegExp, ' ')
       .trim()
       .replaceAll(' ', '_');
-  var c = camelize(text, true);
-  return c;
+  return camelize(text, true);
 }
 
 String getStepMethodCall(String stepLine) {
   final name = getStepMethodName(stepLine);
 
-  // final regExp = RegExp(r'(?<=\{)\S+(?=\})', caseSensitive: false);
   final params = parametersValueRegExp.allMatches(stepLine);
   if (params.isEmpty) {
     return '$name(tester)';

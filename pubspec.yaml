@@ -1,6 +1,6 @@
 name: bdd_widget_test
 description: A BDD-style widget testing library. Generates Flutter widget tests from *.feature files.
-version: 0.1.6
+version: 0.1.7
 author: Oleksandr Leuschenko <olexa.le@gmail.com>
 homepage: https://github.com/olexale/bdd_widget_test
 
@@ -8,16 +8,16 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  build: ^1.6.1
+  build_config: ^0.4.5
   flutter:
     sdk: flutter
-  build: ^1.5.0
-  build_config: ^0.4.2
-  strings: ^0.1.2
   path: ^1.7.0
+  strings: ^0.1.4
 
 dev_dependencies:
+  build_runner: ^1.11.0
+  build_web_compilers: ^2.16.1
+  extra_pedantic: ^1.2.0
   flutter_test:
     sdk: flutter
-  pedantic: ^1.9.2
-  build_runner: ^1.10.3
-  build_web_compilers: ^2.11.0

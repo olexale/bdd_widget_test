@@ -19,12 +19,10 @@ class FeatureFile {
 
   String get dartContent => generateFeatureDart(_lines, getStepFiles());
 
-  List<StepFile> getStepFiles() {
-    return _lines
-        .where((line) => line.type == LineType.step)
-        .map((e) => StepFile(p.dirname(path), package, e.value))
-        .toList();
-  }
+  List<StepFile> getStepFiles() => _lines
+      .where((line) => line.type == LineType.step)
+      .map((e) => StepFile(p.dirname(path), package, e.value))
+      .toList();
 
   static List<BddLine> _prepareLines(Iterable<BddLine> input) {
     final headers = input.takeWhile((value) => value.type == LineType.unknown);
