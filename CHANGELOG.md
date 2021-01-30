@@ -1,3 +1,8 @@
+## [0.1.7] - Internal release
+
+* Use `extra_pedantic` 
+* Update dependencies
+
 ## [0.1.6] - 'After' keyword
 
 * Add `After` keyword
