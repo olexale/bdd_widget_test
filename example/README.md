@@ -1,4 +1,4 @@
-Create a `*.feature` file in you lib folder. The minimal file might be:
+Create a `*.feature` file in the `test` folder. The minimal file might be:
 ```
 Feature: Counter
     Scenario: Initial counter value is 0

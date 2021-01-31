@@ -23,7 +23,7 @@ void main() {
 ''';
 
     final feature = FeatureFile(
-      path: 'test.feature',
+      featureDir: 'test.feature',
       package: 'test',
       input: '',
     );
@@ -45,7 +45,7 @@ void main() {
 ''';
 
     final feature = FeatureFile(
-      path: 'test.feature',
+      featureDir: 'test.feature',
       package: 'test',
       input: minimalFeatureFile,
     );
@@ -71,7 +71,7 @@ void main() {
 ''';
 
     final feature = FeatureFile(
-      path: 'test.feature',
+      featureDir: 'test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -103,7 +103,7 @@ void main() {
 ''';
 
     final feature = FeatureFile(
-      path: 'test.feature',
+      featureDir: 'test.feature',
       package: 'test',
       input: bigFeatureFile,
     );

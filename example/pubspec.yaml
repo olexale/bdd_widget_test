@@ -2,3 +2,14 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 name: dummy_yaml
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  build_runner: ^1.11.0
+  bdd_widget_test:
+    path: ../
+  flutter_test:
+    sdk: flutter

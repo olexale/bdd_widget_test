@@ -34,7 +34,7 @@ void main() {
 ''';
 
     final feature = FeatureFile(
-      path: 'test.feature',
+      featureDir: 'test.feature',
       package: 'test',
       input: featureFile,
     );

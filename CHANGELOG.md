@@ -1,3 +1,7 @@
+## [0.5.0] - Subfolders
+
+* Now it's possible to have subfolders in the `step` folder
+
 ## [0.1.7] - Internal release
 
 * Use `extra_pedantic` 

@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:bdd_widget_test/src/existing_steps.dart';
 import 'package:bdd_widget_test/src/feature_file.dart';
+import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:build/build.dart';
+
+import 'package:path/path.dart' as p;
 
 Builder featureBuilder(BuilderOptions options) => FeatureBuilder();
 
@@ -10,23 +14,32 @@ class FeatureBuilder implements Builder {
   Future<void> build(BuildStep buildStep) async {
     final inputId = buildStep.inputId;
     final contents = await buildStep.readAsString(inputId);
+
+    final featureDir = p.dirname(inputId.path);
     final feature = FeatureFile(
-        path: inputId.path, package: inputId.package, input: contents);
+      featureDir: featureDir,
+      package: inputId.package,
+      existingSteps: getExistingStepSubfolders(featureDir),
+      input: contents,
+    );
 
     final featureDart = inputId.changeExtension('_test.dart');
     await buildStep.writeAsString(featureDart, feature.dartContent);
 
-    for (final step in feature.getStepFiles()) {
-      await createFileRecursively(step.filename, step.dartContent);
-    }
+    final steps = feature
+        .getStepFiles()
+        .whereType<NewStepFile>()
+        .map((e) => createFileRecursively(e.filename, e.dartContent));
+    await Future.wait(steps);
   }
 
   Future<void> createFileRecursively(String filename, String content) async {
-    final file = await File(filename).create(recursive: true);
-    final length = await file.length();
-    if (length == 0) {
-      await file.writeAsString(content);
+    final f = File(filename);
+    if (f.existsSync()) {
+      return;
     }
+    final file = await f.create(recursive: true);
+    await file.writeAsString(content);
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:bdd_widget_test/src/feature_file.dart';
+import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -20,9 +21,12 @@ Future<void> iTapIconAndWait(WidgetTester tester, IconData icon) async {
 }
 ''';
 
-    final feature =
-        FeatureFile(path: '$path.feature', package: path, input: featureFile);
+    final feature = FeatureFile(
+        featureDir: '$path.feature', package: path, input: featureFile);
 
-    expect(feature.getStepFiles().single.dartContent, expectedSteps);
+    expect(
+      feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
+      expectedSteps,
+    );
   });
 }

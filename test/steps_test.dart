@@ -6,7 +6,7 @@ void main() {
     const path = 'test';
 
     final feature =
-        FeatureFile(path: '$path.feature', package: path, input: '');
+        FeatureFile(featureDir: '$path.feature', package: path, input: '');
     expect(feature.getStepFiles().length, 0);
   });
 }
