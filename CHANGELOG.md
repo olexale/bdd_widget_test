@@ -1,3 +1,7 @@
+## [1.0.0] - Null safety
+
+* Migrate to null safety
+
 ## [0.5.0] - Subfolders
 
 * Now it's possible to have subfolders in the `step` folder

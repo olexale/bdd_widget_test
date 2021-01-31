@@ -4,10 +4,10 @@ import 'package:bdd_widget_test/src/step_file.dart';
 
 class FeatureFile {
   FeatureFile({
-    this.featureDir,
-    this.package,
+    required this.featureDir,
+    required this.package,
+    required String input,
     this.existingSteps = const <String, String>{},
-    String input,
   }) : _lines = _prepareLines(input
             .split('\n')
             .map((line) => line.trim())
@@ -23,7 +23,7 @@ class FeatureFile {
   final String package;
   final List<BddLine> _lines;
   final Map<String, String> existingSteps;
-  List<StepFile> _stepFiles;
+  late final List<StepFile> _stepFiles;
 
   String get dartContent => generateFeatureDart(_lines, getStepFiles());
 
