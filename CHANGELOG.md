@@ -1,4 +1,4 @@
-## [1.0.0] - Null safety
+## [1.0.0-nullsafety.0] - Null safety
 
 * Migrate to null safety
 
