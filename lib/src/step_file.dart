@@ -4,7 +4,9 @@ import 'package:path/path.dart' as p;
 class StepFile {
   StepFile(String featureDir, this.package, this.line)
       : filename = p.join(featureDir, 'step', '${getStepFilename(line)}.dart'),
-        import = p.join('.', 'step', '${getStepFilename(line)}.dart').replaceAll('\\', '/');
+        import = p
+            .join('.', 'step', '${getStepFilename(line)}.dart')
+            .replaceAll('\\', '/');
 
   final String filename;
   final String import;

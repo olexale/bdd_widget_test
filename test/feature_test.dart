@@ -22,7 +22,11 @@ void main() {
 }
 ''';
 
-    final feature = FeatureFile(path: 'test.feature', input: '');
+    final feature = FeatureFile(
+      path: 'test.feature',
+      package: 'test',
+      input: '',
+    );
     expect(feature.dartContent, expectedFeatureDart);
   });
 
@@ -40,8 +44,11 @@ void main() {
 }
 ''';
 
-    final feature =
-        FeatureFile(path: 'test.feature', input: minimalFeatureFile);
+    final feature = FeatureFile(
+      path: 'test.feature',
+      package: 'test',
+      input: minimalFeatureFile,
+    );
     expect(feature.dartContent, expectedFeatureDart);
   });
 
@@ -63,7 +70,11 @@ void main() {
 }
 ''';
 
-    final feature = FeatureFile(path: 'test.feature', input: featureFile);
+    final feature = FeatureFile(
+      path: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
     expect(feature.dartContent, expectedFeatureDart);
   });
 
@@ -91,7 +102,11 @@ void main() {
 }
 ''';
 
-    final feature = FeatureFile(path: 'test.feature', input: bigFeatureFile);
+    final feature = FeatureFile(
+      path: 'test.feature',
+      package: 'test',
+      input: bigFeatureFile,
+    );
     expect(feature.dartContent, expectedFeatureDart);
   });
 }

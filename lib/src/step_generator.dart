@@ -12,7 +12,7 @@ import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/i_tap_text_and_wait.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
-import 'package:strings/strings.dart';
+import 'package:bdd_widget_test/src/util/string_utils.dart';
 
 String getStepFilename(String stepText) {
   final step = getStepMethodName(stepText);
@@ -26,7 +26,7 @@ String getStepMethodName(String stepText) {
       .replaceAll(repeatingSpacesRegExp, ' ')
       .trim()
       .replaceAll(' ', '_');
-  return camelize(text, true);
+  return camelize(text);
 }
 
 String getStepMethodCall(String stepLine) {

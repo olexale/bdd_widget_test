@@ -33,7 +33,10 @@ void main() {
 ''';
 
     final feature = FeatureFile(
-        path: 'test.feature', input: additionalLines + minimalFeatureFile);
+      path: 'test.feature',
+      package: 'test',
+      input: additionalLines + minimalFeatureFile,
+    );
     expect(feature.dartContent, expectedFeatureDart);
   });
 }

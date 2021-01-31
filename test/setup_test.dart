@@ -39,7 +39,11 @@ void main() {
 }
 ''';
 
-    final feature = FeatureFile(path: 'test.feature', input: featureFile);
+    final feature = FeatureFile(
+      path: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
     expect(feature.dartContent, expectedFeatureDart);
   });
 }
