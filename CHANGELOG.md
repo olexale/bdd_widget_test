@@ -1,3 +1,8 @@
+## [0.6.0] - Background/After refactoring
+
+* Before and After sections do not rely on default `setUp()` and `tearDown()` methods
+* Add a `tester` parameter to Before and After sections
+
 ## [0.5.0] - Subfolders
 
 * Now it's possible to have subfolders in the `step` folder
