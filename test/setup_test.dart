@@ -25,15 +25,17 @@ import './step/the_test_finishes.dart';
 import './step/the_app_is_running.dart';
 
 void main() {
-  setUp(() async {
-    await theServerAlwaysReturnErrors();
-  });
-  tearDown(() async {
-    await theTestFinishes();
-  });
+  Future<void> bddSetUp(WidgetTester tester) async {
+    await theServerAlwaysReturnErrors(tester);
+  }
+  Future<void> bddTearDown(WidgetTester tester) async {
+    await theTestFinishes(tester);
+  }
   group('Testing feature', () {
     testWidgets('Testing scenario', (tester) async {
+      await bddSetUp(tester);
       await theAppIsRunning(tester);
+      await bddTearDown(tester);
     });
   });
 }
