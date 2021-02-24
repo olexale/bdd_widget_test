@@ -68,8 +68,7 @@ int _parseSetup(
     sb.writeln('  Future<void> $title(WidgetTester tester) async {');
     offset++;
     while (lines[offset].type == LineType.step) {
-      sb.writeln(
-          '    await ${getStepMethodName(lines[offset].value)}(tester);');
+      sb.writeln('    await ${getStepMethodCall(lines[offset].value)};');
       offset++;
     }
     sb.writeln('  }');

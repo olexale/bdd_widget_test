@@ -1,3 +1,7 @@
+## [0.6.1] - Background/After fix
+
+* Fix paramteres in Background/After sections
+
 ## [0.6.0] - Background/After refactoring
 
 * Before and After sections do not rely on default `setUp()` and `tearDown()` methods
