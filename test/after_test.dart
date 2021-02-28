@@ -22,12 +22,13 @@ import './step/the_test_finishes.dart';
 import './step/the_app_is_running.dart';
 
 void main() {
-  tearDown(() async {
-    await theTestFinishes();
-  });
+  Future<void> bddTearDown(WidgetTester tester) async {
+    await theTestFinishes(tester);
+  }
   group('Testing feature', () {
     testWidgets('Testing scenario', (tester) async {
       await theAppIsRunning(tester);
+      await bddTearDown(tester);
     });
   });
 }
