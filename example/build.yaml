@@ -8,6 +8,7 @@ targets:
             - package:bdd_widget_test/step/i_see_text.dart
             - package:bdd_widget_test/step/i_dont_see_text.dart
             - package:bdd_widget_test/step/i_see_multiple_texts.dart
+            - package:bdd_widget_test/step/i_tap_text.dart
             - package:bdd_widget_test/step/i_see_icon.dart
             - package:bdd_widget_test/step/i_dont_see_icon.dart
             - package:bdd_widget_test/step/i_tap_icon.dart
