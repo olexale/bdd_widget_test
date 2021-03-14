@@ -16,16 +16,16 @@ abstract class StepFile {
   ) {
     final file = '${getStepFilename(line)}.dart';
 
-    final externalStep =
-        externalSteps.firstWhere((l) => l.contains(file), orElse: () => '');
-    if (externalStep.isNotEmpty) {
-      return ExternalStepFile._(externalStep);
-    }
-
     if (existingSteps.containsKey(file)) {
       final import =
           p.join('.', existingSteps[file], file).replaceAll('\\', '/');
       return ExistingStepFile._(import);
+    }
+
+    final externalStep =
+        externalSteps.firstWhere((l) => l.contains(file), orElse: () => '');
+    if (externalStep.isNotEmpty) {
+      return ExternalStepFile._(externalStep);
     }
 
     final import = p.join('.', stepFolderName, file).replaceAll('\\', '/');
