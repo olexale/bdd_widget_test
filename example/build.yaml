@@ -1,0 +1,12 @@
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          testMethodName: customTestMethodName
+          externalSteps:
+            - package:bdd_sample/i_see_text.dart
+            - package:bdd_sample/i_see_some_text.dart
+            - package:bdd_sample/i_see_some_another_text.dart
+        generate_for:
+          - test/*.feature

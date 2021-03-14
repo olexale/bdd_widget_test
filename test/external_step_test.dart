@@ -1,21 +1,23 @@
 import 'package:bdd_widget_test/src/feature_file.dart';
+import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Existing step will not be generated', () {
+  test('External step will not be generated', () {
     const path = 'test';
     const featureFile = '''
 Feature: Testing feature
     Scenario: Testing scenario
-        Given I have a step
+        Given I have an external step
     ''';
 
     final feature = FeatureFile(
       featureDir: '$path.feature',
       package: path,
       input: featureFile,
-      existingSteps: {'i_have_a_step.dart': 'step'},
+      generatorOptions: const GeneratorOptions(
+          externalSteps: ['package:some_package/i_have_a_step.dart']),
     );
 
     expect(
@@ -23,11 +25,11 @@ Feature: Testing feature
       true,
     );
     expect(
-      feature.getStepFiles().whereType<ExternalStepFile>().isEmpty,
+      feature.getStepFiles().whereType<ExistingStepFile>().isEmpty,
       true,
     );
     expect(
-      feature.getStepFiles().whereType<ExistingStepFile>().length,
+      feature.getStepFiles().whereType<ExternalStepFile>().length,
       1,
     );
   });
