@@ -19,7 +19,7 @@ Future<void> iSeeWidget(
   WidgetTester tester,
   Type type,
 ) async {
-  expect(find.byType(type), findsNothing);
+  expect(find.byType(type), findsOneWidget);
 }
 ''';
 
