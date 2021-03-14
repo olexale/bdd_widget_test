@@ -5,7 +5,11 @@ class ISeeText implements BddStep {
   String get content => '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> iSeeText(WidgetTester tester, String text) async {
+/// Example: When I see {'text'} text
+Future<void> iSeeText(
+  WidgetTester tester,
+  String text,
+) async {
   expect(find.text(text), findsOneWidget);
 }
 ''';

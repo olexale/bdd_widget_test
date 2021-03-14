@@ -85,10 +85,19 @@ You can have as many steps as you like, but it's recommended you keep the number
 This library comes with a list of predefined steps. They will be auto-generated for you, but you may want to adjust their implementation according to your needs.
 
 List of predefined steps:
-* Dismiss the page
+* I dismiss the page
 * I don't see {..} icon
+* I don't see {..} rich text
 * I don't see {..} text
+* I don't see {..} widget
+* I enter {..} into {..} input field
+* I see disabled elevated button
+* I see enabled elevated button
+* I see exactly {..} {..} widgets
 * I see {..} icon
+* I see multiple {..} texts
+* I see multiple {..} widgets
+* I see {..} rich text
 * I see {..} text
 * I tap {..} icon
 * I tap {..} text
@@ -105,6 +114,7 @@ targets:
             - package:bdd_widget_test/step/i_see_text.dart
             - package:bdd_widget_test/step/i_dont_see_text.dart
             - package:bdd_widget_test/step/i_see_multiple_texts.dart
+            - package:bdd_widget_test/step/i_tap_text.dart
             - package:bdd_widget_test/step/i_see_icon.dart
             - package:bdd_widget_test/step/i_dont_see_icon.dart
             - package:bdd_widget_test/step/i_tap_icon.dart

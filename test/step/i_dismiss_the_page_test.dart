@@ -3,19 +3,22 @@ import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('I Tap Text And Wait pre-built step generated', () {
+  test('Dismiss the page pre-built step generated', () {
     const path = 'test';
     const featureFile = '''
 Feature: Testing feature
     Scenario: Testing scenario
-        When I tap {foo} text and wait
+        Then I dismiss the page
     ''';
 
     const expectedSteps = '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> iTapTextAndWait(WidgetTester tester, String text) async {
-  await tester.tap(find.text(text));
+/// Example: Then I dismiss the page
+Future<void> iDismissThePage(
+  WidgetTester tester,
+) async {
+  await tester.pageBack();
   await tester.pumpAndSettle();
 }
 ''';

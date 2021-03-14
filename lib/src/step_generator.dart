@@ -1,15 +1,13 @@
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
-import 'package:bdd_widget_test/src/step/dismiss_the_page.dart';
 import 'package:bdd_widget_test/src/step/generic_step.dart';
+import 'package:bdd_widget_test/src/step/i_dismiss_the_page.dart';
 import 'package:bdd_widget_test/src/step/i_dont_see_icon.dart';
 import 'package:bdd_widget_test/src/step/i_dont_see_text.dart';
 import 'package:bdd_widget_test/src/step/i_see_icon.dart';
 import 'package:bdd_widget_test/src/step/i_see_text.dart';
 import 'package:bdd_widget_test/src/step/i_tap_icon.dart';
-import 'package:bdd_widget_test/src/step/i_tap_icon_and_wait.dart';
 import 'package:bdd_widget_test/src/step/i_tap_text.dart';
-import 'package:bdd_widget_test/src/step/i_tap_text_and_wait.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:bdd_widget_test/src/util/string_utils.dart';
@@ -58,11 +56,9 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
   'iSeeText': (_, __) => ISeeText(),
   'iSeeIcon': (_, __) => ISeeIcon(),
   'iTapText': (_, __) => ITapText(),
-  'iTapTextAndWait': (_, __) => ITapTextAndWait(),
   'iTapIcon': (_, __) => ITapIcon(),
-  'iTapIconAndWait': (_, __) => ITapIconAndWait(),
   'iDontSeeIcon': (_, __) => IDontSeeIcon(),
   'iDontSeeText': (_, __) => IDontSeeText(),
-  'dismissThePage': (_, __) => DismissThePage(),
+  'iDismissThePage': (_, __) => IDismissThePage(),
   'iWait': (_, __) => IWait(),
 };
