@@ -17,12 +17,12 @@ void main() {
     await iDoNotSeeText(tester, '42');
   }
   group('Counter', () {
-    customTestMethodName('Initial counter value is 0', (tester) async {
+    testWidgets('Initial counter value is 0', (tester) async {
       await bddSetUp(tester);
       await iSeeText(tester, '0');
       await bddTearDown(tester);
     });
-    customTestMethodName('Add button increments the counter', (tester) async {
+    testWidgets('Add button increments the counter', (tester) async {
       await bddSetUp(tester);
       await iTapIcon(tester, Icons.add);
       await iSeeText(tester, '1');

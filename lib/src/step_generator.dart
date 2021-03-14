@@ -15,6 +15,7 @@ import 'package:bdd_widget_test/src/step/i_see_multiple_texts.dart';
 import 'package:bdd_widget_test/src/step/i_see_multiple_widgets.dart';
 import 'package:bdd_widget_test/src/step/i_see_rich_text.dart';
 import 'package:bdd_widget_test/src/step/i_see_text.dart';
+import 'package:bdd_widget_test/src/step/i_see_widget.dart';
 import 'package:bdd_widget_test/src/step/i_tap_icon.dart';
 import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
@@ -76,6 +77,7 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
   'iSeeMultipleWidgets': (_, __) => ISeeMultipleWidgets(),
   'iSeeRichText': (_, __) => ISeeRichText(),
   'iSeeText': (_, __) => ISeeText(),
+  'iSeeWidget': (_, __) => ISeeWidget(),
   'iTapIcon': (_, __) => ITapIcon(),
   'iTapText': (_, __) => ITapText(),
   'iWait': (_, __) => IWait(),

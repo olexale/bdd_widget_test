@@ -3,7 +3,7 @@ targets:
     builders:
       bdd_widget_test|featureBuilder:
         options:
-          testMethodName: customTestMethodName
+          # testMethodName: customTestMethodName
           externalSteps:
             - package:bdd_widget_test/step/i_see_text.dart
             - package:bdd_widget_test/step/i_dont_see_text.dart
