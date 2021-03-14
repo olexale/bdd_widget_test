@@ -6,7 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import './step/common/the_app_is_running.dart';
 import './step/i_do_not_see_text.dart';
-import 'package:bdd_sample/i_see_text.dart';
+import 'package:bdd_widget_test/step/i_see_text.dart';
+import 'package:bdd_widget_test/step/i_tap_icon.dart';
 
 void main() {
   Future<void> bddSetUp(WidgetTester tester) async {
@@ -18,8 +19,13 @@ void main() {
   group('Counter', () {
     customTestMethodName('Initial counter value is 0', (tester) async {
       await bddSetUp(tester);
-      await theAppIsRunning(tester);
       await iSeeText(tester, '0');
+      await bddTearDown(tester);
+    });
+    customTestMethodName('Add button increments the counter', (tester) async {
+      await bddSetUp(tester);
+      await iTapIcon(tester, Icons.add);
+      await iSeeText(tester, '1');
       await bddTearDown(tester);
     });
   });

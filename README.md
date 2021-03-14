@@ -94,6 +94,34 @@ List of predefined steps:
 * I tap {..} text
 * The app is running
 
+If you want to use predefined steps without having them in your `steps` folder then you may create a `build.yaml` file in the root of your project with the following content (see the `example` folder):
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          externalSteps:
+            - package:bdd_widget_test/step/i_see_text.dart
+            - package:bdd_widget_test/step/i_dont_see_text.dart
+            - package:bdd_widget_test/step/i_see_multiple_texts.dart
+            - package:bdd_widget_test/step/i_see_icon.dart
+            - package:bdd_widget_test/step/i_dont_see_icon.dart
+            - package:bdd_widget_test/step/i_tap_icon.dart
+            - package:bdd_widget_test/step/i_see_rich_text.dart
+            - package:bdd_widget_test/step/i_dont_see_rich_text.dart
+            - package:bdd_widget_test/step/i_see_widget.dart
+            - package:bdd_widget_test/step/i_dont_see_widget.dart
+            - package:bdd_widget_test/step/i_see_exactly_widgets.dart
+            - package:bdd_widget_test/step/i_see_multiple_widgets.dart
+            - package:bdd_widget_test/step/i_enter_into_input_field.dart
+            - package:bdd_widget_test/step/i_see_disabled_elevated_button.dart
+            - package:bdd_widget_test/step/i_see_enabled_elevated_button.dart
+            - package:bdd_widget_test/step/i_wait.dart
+            - package:bdd_widget_test/step/i_dismiss_the_page.dart
+```
+That will tell the plugin to reuse steps from the plugin itself and do not put them into your code.
+
 ## FAQ
 
 ### How to pass a parameter?
@@ -129,6 +157,23 @@ Feature: ...
 ### Any video tutorials on this?
 
 Sure, you may find a [BDD in Flutter playlist](https://www.youtube.com/playlist?list=PLjaSBcAZ8TqFx51f30aRi_A2szelttOpq) on youtube with the basic showcase.
+
+### How to reuse steps between projects?
+
+You may reference any step using `build.yaml` file (see the `example` folder):
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          externalSteps:
+            - package:<your_package>/<your_step>.dart
+```
+
+### How to group steps in a single project?
+
+You may create sub-folders (like `common`, `login`, `home`, etc.) in the `steps` folder and move generated steps there. The plugin is smart enough to find them (see the `example` folder).
 
 ## Contributing
 

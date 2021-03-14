@@ -1,6 +1,7 @@
 ## [0.7.0] - External steps and build.yaml settings
 
 * Implement external steps
+* Add a bunch of predefined external steps
 * Add possibility to change `testMethodName` in `build.yaml`
 
 ## [0.6.1] - Background/After fix
