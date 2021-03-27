@@ -1,5 +1,3 @@
-// @dart=2.9
-
 import 'dart:io';
 
 import 'package:bdd_widget_test/src/existing_steps.dart';

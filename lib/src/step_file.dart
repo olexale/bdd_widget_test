@@ -3,9 +3,8 @@ import 'package:bdd_widget_test/src/step_generator.dart';
 import 'package:path/path.dart' as p;
 
 abstract class StepFile {
-  const StepFile._(this.import, [this.filename]);
+  const StepFile._(this.import);
   final String import;
-  final String filename;
 
   static StepFile create(
     String featureDir,
@@ -35,11 +34,12 @@ abstract class StepFile {
 }
 
 class NewStepFile extends StepFile {
-  const NewStepFile._(String import, String filename, this.package, this.line)
-      : super._(import, filename);
+  const NewStepFile._(String import, this.filename, this.package, this.line)
+      : super._(import);
 
   final String package;
   final String line;
+  final String filename;
 
   String get dartContent => generateStepDart(package, line);
 }

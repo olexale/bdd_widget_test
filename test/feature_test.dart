@@ -14,9 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 ''';
 
   test('Empty feature file', () {
-    const expectedFeatureDart = expectedHeader +
-        '''
-
+    const expectedFeatureDart = '''$expectedHeader
 
 void main() {
 }
@@ -31,9 +29,8 @@ void main() {
   });
 
   test('simplest feature file parses', () {
-    const expectedFeatureDart = expectedHeader +
-        '''
-import './step/the_app_is_running.dart';
+    const expectedFeatureDart =
+        '''${expectedHeader}import './step/the_app_is_running.dart';
 
 void main() {
   group('Testing feature', () {
@@ -53,9 +50,8 @@ void main() {
   });
 
   test('Step with parameters', () {
-    const expectedFeatureDart = expectedHeader +
-        '''
-import './step/the_app_is_running.dart';
+    const expectedFeatureDart =
+        '''${expectedHeader}import './step/the_app_is_running.dart';
 import './step/i_see_text.dart';
 import './step/i_see_icon.dart';
 
@@ -79,9 +75,7 @@ void main() {
   });
 
   test('Several features in one file', () {
-    const expectedFeatureDart = expectedHeader +
-        '''
-// some comment
+    const expectedFeatureDart = '''$expectedHeader// some comment
 
 import './step/the_app_is_running.dart';
 

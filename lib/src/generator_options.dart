@@ -2,14 +2,15 @@ const defaultTestName = 'testWidgets';
 
 class GeneratorOptions {
   const GeneratorOptions({
-    this.testMethodName,
-    this.externalSteps,
-  });
+    String? testMethodName,
+    List<String>? externalSteps,
+  })  : testMethodName = testMethodName ?? defaultTestName,
+        externalSteps = externalSteps ?? const [];
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
       GeneratorOptions(
-        testMethodName: json['testMethodName'] as String ?? defaultTestName,
-        externalSteps: (json['externalSteps'] as List)?.cast<String>() ?? [],
+        testMethodName: json['testMethodName'] as String?,
+        externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
       );
 
   final String testMethodName;
