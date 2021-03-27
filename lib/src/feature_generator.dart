@@ -7,7 +7,8 @@ import 'package:bdd_widget_test/src/step_generator.dart';
 const _setUpMethodName = 'bddSetUp';
 const _tearDownMethodName = 'bddTearDown';
 
-String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
+String generateFeatureDart(
+    List<BddLine> lines, List<StepFile> steps, String testMethodName) {
   final sb = StringBuffer();
   sb.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
   sb.writeln('// ignore_for_file: unused_import, directives_ordering');
@@ -42,6 +43,7 @@ String generateFeatureDart(List<BddLine> lines, List<StepFile> steps) {
       offset,
       lines.any((l) => l.type == LineType.background),
       lines.any((l) => l.type == LineType.after),
+      testMethodName,
     );
   }
   sb.writeln('}');
@@ -82,6 +84,7 @@ void _parseFeature(
   int offset,
   bool hasSetUp,
   bool hasTearDown,
+  String testMethodName,
 ) {
   sb.writeln('  group(\'${feature.first.value}\', () {');
 
@@ -91,7 +94,7 @@ void _parseFeature(
           : offset), // or 'Backround:' / 'After:'
       (e) => e.type == LineType.scenario).toList();
   for (final scenario in scenarios) {
-    _parseScenario(sb, scenario, hasSetUp, hasTearDown);
+    _parseScenario(sb, scenario, hasSetUp, hasTearDown, testMethodName);
   }
   sb.writeln('  });');
 }
@@ -101,8 +104,10 @@ void _parseScenario(
   List<BddLine> scenario,
   bool hasSetUp,
   bool hasTearDown,
+  String testMethodName,
 ) {
-  sb.writeln('    testWidgets(\'${scenario.first.value}\', (tester) async {');
+  sb.writeln(
+      '    $testMethodName(\'${scenario.first.value}\', (tester) async {');
   if (hasSetUp) {
     sb.writeln('      await $_setUpMethodName(tester);');
   }

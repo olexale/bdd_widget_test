@@ -3,20 +3,25 @@ import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Dismiss the page pre-built step generated', () {
+  test('I See Disabled Elevated Button pre-built step generated', () {
     const path = 'test';
     const featureFile = '''
 Feature: Testing feature
     Scenario: Testing scenario
-        Then dismiss the page
+        When I see disabled elevated button
     ''';
 
     const expectedSteps = '''
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> dismissThePage(WidgetTester tester) async {
-  await tester.pageBack();
-  await tester.pumpAndSettle();
+/// Example: Then I see disabled elevated button
+Future<void> iSeeDisabledElevatedButton(
+  WidgetTester tester,
+) async {
+  final button = find.byType(ElevatedButton);
+
+  expect((tester.firstWidget(button) as ElevatedButton).enabled, false);
 }
 ''';
 

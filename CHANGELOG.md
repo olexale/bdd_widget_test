@@ -2,6 +2,16 @@
 
 * Migrate to null safety
 
+## [0.7.1] - Hotfix
+
+* External steps should have lower priority than local steps
+
+## [0.7.0] - External steps and build.yaml settings
+
+* Implement external steps
+* Add a bunch of predefined external steps
+* Add possibility to change `testMethodName` in `build.yaml`
+
 ## [0.6.1] - Background/After fix
 
 * Fix paramteres in Background/After sections

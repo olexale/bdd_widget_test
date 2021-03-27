@@ -4,14 +4,21 @@ import 'dart:io';
 
 import 'package:bdd_widget_test/src/existing_steps.dart';
 import 'package:bdd_widget_test/src/feature_file.dart';
+import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:build/build.dart';
 
 import 'package:path/path.dart' as p;
 
-Builder featureBuilder(BuilderOptions options) => FeatureBuilder();
+Builder featureBuilder(BuilderOptions options) => FeatureBuilder(
+      GeneratorOptions.fromMap(options.config),
+    );
 
 class FeatureBuilder implements Builder {
+  FeatureBuilder(this.generatorOptions);
+
+  final GeneratorOptions generatorOptions;
+
   @override
   Future<void> build(BuildStep buildStep) async {
     final inputId = buildStep.inputId;
@@ -23,6 +30,7 @@ class FeatureBuilder implements Builder {
       package: inputId.package,
       existingSteps: getExistingStepSubfolders(featureDir),
       input: contents,
+      generatorOptions: generatorOptions,
     );
 
     final featureDart = inputId.changeExtension('_test.dart');

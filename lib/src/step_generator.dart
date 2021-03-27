@@ -1,15 +1,23 @@
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
-import 'package:bdd_widget_test/src/step/dismiss_the_page.dart';
 import 'package:bdd_widget_test/src/step/generic_step.dart';
+import 'package:bdd_widget_test/src/step/i_dismiss_the_page.dart';
 import 'package:bdd_widget_test/src/step/i_dont_see_icon.dart';
+import 'package:bdd_widget_test/src/step/i_dont_see_rich_text.dart';
 import 'package:bdd_widget_test/src/step/i_dont_see_text.dart';
+import 'package:bdd_widget_test/src/step/i_dont_see_widget.dart';
+import 'package:bdd_widget_test/src/step/i_enter_into_input_field.dart';
+import 'package:bdd_widget_test/src/step/i_see_disabled_elevated_button.dart';
+import 'package:bdd_widget_test/src/step/i_see_enabled_elevated_button.dart';
+import 'package:bdd_widget_test/src/step/i_see_exactly_widgets.dart';
 import 'package:bdd_widget_test/src/step/i_see_icon.dart';
+import 'package:bdd_widget_test/src/step/i_see_multiple_texts.dart';
+import 'package:bdd_widget_test/src/step/i_see_multiple_widgets.dart';
+import 'package:bdd_widget_test/src/step/i_see_rich_text.dart';
 import 'package:bdd_widget_test/src/step/i_see_text.dart';
+import 'package:bdd_widget_test/src/step/i_see_widget.dart';
 import 'package:bdd_widget_test/src/step/i_tap_icon.dart';
-import 'package:bdd_widget_test/src/step/i_tap_icon_and_wait.dart';
 import 'package:bdd_widget_test/src/step/i_tap_text.dart';
-import 'package:bdd_widget_test/src/step/i_tap_text_and_wait.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:bdd_widget_test/src/util/string_utils.dart';
@@ -55,14 +63,22 @@ BddStep _getStep(String methodName, String package, String line) {
 
 final predefinedSteps = <String, BddStep Function(String, String)>{
   'theAppIsRunning': (package, _) => TheAppInRunningStep(package),
-  'iSeeText': (_, __) => ISeeText(),
-  'iSeeIcon': (_, __) => ISeeIcon(),
-  'iTapText': (_, __) => ITapText(),
-  'iTapTextAndWait': (_, __) => ITapTextAndWait(),
-  'iTapIcon': (_, __) => ITapIcon(),
-  'iTapIconAndWait': (_, __) => ITapIconAndWait(),
+  'iDismissThePage': (_, __) => IDismissThePage(),
   'iDontSeeIcon': (_, __) => IDontSeeIcon(),
+  'iDontSeeRichText': (_, __) => IDontSeeRichText(),
   'iDontSeeText': (_, __) => IDontSeeText(),
-  'dismissThePage': (_, __) => DismissThePage(),
+  'iDontSeeWidget': (_, __) => IDontSeeWidget(),
+  'iEnterIntoInputField': (_, __) => IEnterIntoInputField(),
+  'iSeeDisabledElevatedButton': (_, __) => ISeeDisabledElevatedButton(),
+  'iSeeEnabledElevatedButton': (_, __) => ISeeEnabledElevatedButton(),
+  'iSeeExactlyWidgets': (_, __) => ISeeExactlyWidgets(),
+  'iSeeIcon': (_, __) => ISeeIcon(),
+  'iSeeMultipleTexts': (_, __) => ISeeMultipleTexts(),
+  'iSeeMultipleWidgets': (_, __) => ISeeMultipleWidgets(),
+  'iSeeRichText': (_, __) => ISeeRichText(),
+  'iSeeText': (_, __) => ISeeText(),
+  'iSeeWidget': (_, __) => ISeeWidget(),
+  'iTapIcon': (_, __) => ITapIcon(),
+  'iTapText': (_, __) => ITapText(),
   'iWait': (_, __) => IWait(),
 };

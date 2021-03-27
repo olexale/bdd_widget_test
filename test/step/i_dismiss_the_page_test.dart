@@ -3,20 +3,22 @@ import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('I Tap Icon And Wait pre-built step generated', () {
+  test('Dismiss the page pre-built step generated', () {
     const path = 'test';
     const featureFile = '''
 Feature: Testing feature
     Scenario: Testing scenario
-        When I tap {Icons.add} icon and wait
+        Then I dismiss the page
     ''';
 
     const expectedSteps = '''
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> iTapIconAndWait(WidgetTester tester, IconData icon) async {
-  await tester.tap(find.byIcon(icon));
+/// Example: Then I dismiss the page
+Future<void> iDismissThePage(
+  WidgetTester tester,
+) async {
+  await tester.pageBack();
   await tester.pumpAndSettle();
 }
 ''';

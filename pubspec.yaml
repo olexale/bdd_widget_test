@@ -14,9 +14,9 @@ dependencies:
   flutter:
     sdk: flutter
   path: ^1.8.0-nullsafety.3
+  flutter_test:
+    sdk: flutter
 
 dev_dependencies:
   build_runner: ^1.11.0
   extra_pedantic: ^1.2.1-nullsafety.0
-  flutter_test:
-    sdk: flutter

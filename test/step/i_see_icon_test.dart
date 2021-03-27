@@ -12,9 +12,14 @@ Feature: Testing feature
     ''';
 
     const expectedSteps = '''
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> iSeeIcon(WidgetTester tester, IconData icon) async {
+/// Example: Then I see {Icons.add} icon
+Future<void> iSeeIcon(
+  WidgetTester tester,
+  IconData icon,
+) async {
   expect(find.byIcon(icon), findsOneWidget);
 }
 ''';
