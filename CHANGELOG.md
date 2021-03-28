@@ -1,3 +1,7 @@
+## [1.0.1] - Tags
+
+* Add `testMethodName` tag
+
 ## [1.0.0] - Null safety
 
 * Migrate to null safety
