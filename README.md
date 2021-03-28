@@ -194,7 +194,7 @@ targets:
           testMethodName: testGoldens
 ```
 
-You may refer to a video from video tutorial for a live demo.
+You may refer to a video from [BDD in Flutter playlist](https://www.youtube.com/playlist?list=PLjaSBcAZ8TqFx51f30aRi_A2szelttOpq) for a live demo.
 
 ### How to reuse steps between projects?
 
