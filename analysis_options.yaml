@@ -1,4 +1,4 @@
-include: package:extra_pedantic/analysis_options_flutter.yaml
+include: package:extra_pedantic/analysis_options.1.2.0_flutter.yaml
 
 analyzer:
   exclude:
