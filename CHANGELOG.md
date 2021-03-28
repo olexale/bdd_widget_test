@@ -1,3 +1,7 @@
+## [1.0.0] - Null safety
+
+* Migrate to null safety
+
 ## [0.7.1] - Hotfix
 
 * External steps should have lower priority than local steps

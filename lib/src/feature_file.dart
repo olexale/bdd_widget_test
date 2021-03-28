@@ -5,11 +5,11 @@ import 'package:bdd_widget_test/src/step_file.dart';
 
 class FeatureFile {
   FeatureFile({
-    this.featureDir,
-    this.package,
+    required this.featureDir,
+    required this.package,
+    required String input,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
-    String input,
   }) : _lines = _prepareLines(input
             .split('\n')
             .map((line) => line.trim())
@@ -21,22 +21,23 @@ class FeatureFile {
               package,
               e.value,
               existingSteps,
-              generatorOptions.externalSteps ?? [],
+              generatorOptions.externalSteps,
             ))
         .toList();
   }
+
+  late List<StepFile> _stepFiles;
 
   final String featureDir;
   final String package;
   final List<BddLine> _lines;
   final Map<String, String> existingSteps;
   final GeneratorOptions generatorOptions;
-  List<StepFile> _stepFiles;
 
   String get dartContent => generateFeatureDart(
         _lines,
         getStepFiles(),
-        generatorOptions.testMethodName ?? defaultTestName,
+        generatorOptions.testMethodName,
       );
 
   List<StepFile> getStepFiles() => _stepFiles;
