@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
@@ -17,9 +15,18 @@ String generateFeatureDart(
   sb.writeln('import \'package:flutter_test/flutter_test.dart\';');
   sb.writeln();
 
+  var featureTestMethodNameOverride = testMethodName;
+
   for (final line
       in lines.takeWhile((value) => value.type != LineType.feature)) {
-    sb.writeln(line.rawLine);
+    if (line.type == LineType.tag) {
+      final methodName = _parseTestMethodNameTag(line.rawLine);
+      if (methodName.isNotEmpty) {
+        featureTestMethodNameOverride = methodName;
+      }
+    } else {
+      sb.writeln(line.rawLine);
+    }
   }
 
   for (final step in steps.map((e) => e.import).toSet()) {
@@ -34,36 +41,28 @@ String generateFeatureDart(
       (e) => e.type == LineType.feature);
 
   for (final feature in features) {
-    final backgroundOffset = _parseBackground(sb, feature);
-    final afterOffset = _parseAfter(sb, feature);
-    final offset = _calculateOffset(backgroundOffset, afterOffset);
+    final hasBackground = _parseBackground(sb, feature);
+    final hasAfter = _parseAfter(sb, feature);
+
     _parseFeature(
       sb,
       feature,
-      offset,
-      lines.any((l) => l.type == LineType.background),
-      lines.any((l) => l.type == LineType.after),
-      testMethodName,
+      hasBackground,
+      hasAfter,
+      featureTestMethodNameOverride,
     );
   }
   sb.writeln('}');
   return sb.toString();
 }
 
-int _parseBackground(StringBuffer sb, List<BddLine> lines) =>
+bool _parseBackground(StringBuffer sb, List<BddLine> lines) =>
     _parseSetup(sb, lines, LineType.background, _setUpMethodName);
 
-int _parseAfter(StringBuffer sb, List<BddLine> lines) =>
+bool _parseAfter(StringBuffer sb, List<BddLine> lines) =>
     _parseSetup(sb, lines, LineType.after, _tearDownMethodName);
 
-int _calculateOffset(int backgroundOffset, int afterOffset) {
-  if (backgroundOffset == -1 && afterOffset == -1) {
-    return -1;
-  }
-  return max(backgroundOffset, afterOffset);
-}
-
-int _parseSetup(
+bool _parseSetup(
     StringBuffer sb, List<BddLine> lines, LineType elementType, String title) {
   var offset = lines.indexWhere((element) => element.type == elementType);
   if (offset != -1) {
@@ -75,13 +74,12 @@ int _parseSetup(
     }
     sb.writeln('  }');
   }
-  return offset;
+  return offset != -1;
 }
 
 void _parseFeature(
   StringBuffer sb,
   List<BddLine> feature,
-  int offset,
   bool hasSetUp,
   bool hasTearDown,
   String testMethodName,
@@ -89,30 +87,53 @@ void _parseFeature(
   sb.writeln('  group(\'${feature.first.value}\', () {');
 
   final scenarios = splitWhen<BddLine>(
-      feature.skip(offset == -1
-          ? 1 // Skip 'Feature:'
-          : offset), // or 'Backround:' / 'After:'
+      feature.skipWhile((e) => e.type != LineType.scenario),
       (e) => e.type == LineType.scenario).toList();
   for (final scenario in scenarios) {
-    _parseScenario(sb, scenario, hasSetUp, hasTearDown, testMethodName);
+    final scenarioTestMethodName =
+        _parseScenaioTags(feature, scenario.first, testMethodName);
+    _parseScenario(
+      sb,
+      scenario.first.value,
+      scenario.where((e) => e.type == LineType.step).toList(),
+      hasSetUp,
+      hasTearDown,
+      scenarioTestMethodName,
+    );
   }
   sb.writeln('  });');
 }
 
+String _parseScenaioTags(
+  List<BddLine> feature,
+  BddLine scenario,
+  String testMethodName,
+) {
+  var scenarioTestMethodName = testMethodName;
+  final prevLine = feature[feature.indexOf(scenario) - 1];
+  if (prevLine.type == LineType.tag) {
+    final testMethodNameOverride = _parseTestMethodNameTag(prevLine.rawLine);
+    if (testMethodNameOverride.isNotEmpty) {
+      scenarioTestMethodName = testMethodNameOverride;
+    }
+  }
+  return scenarioTestMethodName;
+}
+
 void _parseScenario(
   StringBuffer sb,
+  String scenarioTitle,
   List<BddLine> scenario,
   bool hasSetUp,
   bool hasTearDown,
   String testMethodName,
 ) {
-  sb.writeln(
-      '    $testMethodName(\'${scenario.first.value}\', (tester) async {');
+  sb.writeln('    $testMethodName(\'$scenarioTitle\', (tester) async {');
   if (hasSetUp) {
     sb.writeln('      await $_setUpMethodName(tester);');
   }
 
-  for (final step in scenario.skip(1)) {
+  for (final step in scenario) {
     sb.writeln('      await ${getStepMethodCall(step.value)};');
   }
 
@@ -121,6 +142,14 @@ void _parseScenario(
   }
 
   sb.writeln('    });');
+}
+
+String _parseTestMethodNameTag(String rawLine) {
+  const tag = '@testMethodName:';
+  if (rawLine.startsWith(tag)) {
+    return rawLine.substring(tag.length).trim();
+  }
+  return '';
 }
 
 List<List<T>> splitWhen<T>(Iterable<T> original, bool Function(T) predicate) =>
