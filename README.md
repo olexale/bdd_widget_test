@@ -168,6 +168,34 @@ Feature: ...
 
 Sure, you may find a [BDD in Flutter playlist](https://www.youtube.com/playlist?list=PLjaSBcAZ8TqFx51f30aRi_A2szelttOpq) on youtube with the basic showcase.
 
+### How to test the UI? (golden tests)
+
+BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts the simplest option would be to combine BDD widget tests with [golden_toolkit](https://pub.dev/packages/golden_toolkit) plugin.
+
+Everything will stay pretty much the same, but you'll need to tell the plugin to name test methods `testGoldens` instead of `testWidgets`.
+There are three ways on how you can do that:
+1. If you have only few golden test scenarios per feature, you may mark them with the `testMethodName` tag like that:
+```dart
+@testMethodName: testGoldens
+Scenario: My golden scenario
+```
+2. For features full of golden tests you may move the `testMethodName` tag above the `Feature` declaration like that:
+```dart
+@testMethodName: testGoldens
+Feature: My golden feature
+```
+3. If you plan to have golden tests only, you may want to override `testMethodName` for the whole plugin. For that modify your `build.yaml` file like that:
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          testMethodName: testGoldens
+```
+
+You may refer to a video from video tutorial for a live demo.
+
 ### How to reuse steps between projects?
 
 You may reference any step using `build.yaml` file (see the `example` folder):

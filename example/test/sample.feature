@@ -8,6 +8,7 @@ Feature: Counter
         # See the list of built-in step below.
         And I do not see {'42'} text 
     
+    # @testMethodName: testGoldens
     Scenario: Initial counter value is 0
         Then I see {'0'} text
 
