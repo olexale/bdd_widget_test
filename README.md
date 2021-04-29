@@ -1,4 +1,4 @@
-# bdd_widget_test [![Build Status](https://travis-ci.org/olexale/bdd_widget_test.svg?branch=master)](https://travis-ci.org/olexale/bdd_widget_test) [![Coverage Status](https://coveralls.io/repos/github/olexale/bdd_widget_test/badge.svg?branch=master)](https://coveralls.io/github/olexale/bdd_widget_test?branch=master)
+# bdd_widget_test [![Build Status](https://travis-ci.org/olexale/bdd_widget_test.svg?branch=master)](https://travis-ci.org/olexale/bdd_widget_test) [![Coverage Status](https://coveralls.io/repos/github/olexale/bdd_widget_test/badge.svg?branch=master)](https://coveralls.io/github/olexale/bdd_widget_test?branch=master)[![pub package](https://img.shields.io/pub/v/bdd_widget_test.svg)](https://pub.dartlang.org/packages/bdd_widget_test)
 
 A BDD-style widget testing library
 
