@@ -1,3 +1,8 @@
+## [1.0.2] - Update dependencies
+
+* Update plugin's dependencies
+* Fix the "I dismiss the page" step
+
 ## [1.0.1] - Tags
 
 * Add `testMethodName` tag
