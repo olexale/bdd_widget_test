@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 /// Example: Then I dismiss the page
-Future<void> dismissThePage(
+Future<void> iDismissThePage(
   WidgetTester tester,
 ) async {
   await tester.pageBack();
