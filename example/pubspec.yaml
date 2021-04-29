@@ -10,6 +10,6 @@ dependencies:
 dev_dependencies:
   bdd_widget_test:
     path: ../
-  build_runner: null
+  build_runner: ^2.0.1
   flutter_test:
     sdk: flutter
