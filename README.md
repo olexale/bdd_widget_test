@@ -211,7 +211,21 @@ targets:
 
 ### How to group steps in a single project?
 
-You may create sub-folders (like `common`, `login`, `home`, etc.) in the `steps` folder and move generated steps there. The plugin is smart enough to find them (see the `example` folder).
+You may create sub-folders (like `common`, `login`, `home`, etc.) in the `step` folder and move generated steps there. The plugin is smart enough to find them (see the `example` folder).
+
+### I don't like the `step` folder name, how can I change it?
+
+By setting the `stepFolderName` parameter with any name you like in the `build.yaml` file (see the `example` folder):
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          stepFolderName: bdd_steps
+```
+
+You may set a relative path here (like `../../bdd_steps`), just be sure that the target folder is still somewhere under the `test` folder.
 
 ## Contributing
 

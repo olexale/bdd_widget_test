@@ -21,7 +21,7 @@ class FeatureFile {
               package,
               e.value,
               existingSteps,
-              generatorOptions.externalSteps,
+              generatorOptions,
             ))
         .toList();
   }

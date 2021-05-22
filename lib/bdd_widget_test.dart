@@ -26,7 +26,8 @@ class FeatureBuilder implements Builder {
     final feature = FeatureFile(
       featureDir: featureDir,
       package: inputId.package,
-      existingSteps: getExistingStepSubfolders(featureDir),
+      existingSteps:
+          getExistingStepSubfolders(featureDir, generatorOptions.stepFolder),
       input: contents,
       generatorOptions: generatorOptions,
     );

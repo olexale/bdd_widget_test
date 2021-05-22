@@ -1,4 +1,4 @@
-import 'package:bdd_widget_test/src/constants.dart';
+import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
 import 'package:path/path.dart' as p;
 
@@ -11,7 +11,7 @@ abstract class StepFile {
     String package,
     String line,
     Map<String, String> existingSteps,
-    List<String> externalSteps,
+    GeneratorOptions generatorOptions,
   ) {
     final file = '${getStepFilename(line)}.dart';
 
@@ -21,14 +21,15 @@ abstract class StepFile {
       return ExistingStepFile._(import);
     }
 
-    final externalStep =
-        externalSteps.firstWhere((l) => l.contains(file), orElse: () => '');
+    final externalStep = generatorOptions.externalSteps
+        .firstWhere((l) => l.contains(file), orElse: () => '');
     if (externalStep.isNotEmpty) {
       return ExternalStepFile._(externalStep);
     }
 
-    final import = p.join('.', stepFolderName, file).replaceAll('\\', '/');
-    final filename = p.join(featureDir, stepFolderName, file);
+    final import =
+        p.join('.', generatorOptions.stepFolder, file).replaceAll('\\', '/');
+    final filename = p.join(featureDir, generatorOptions.stepFolder, file);
     return NewStepFile._(import, filename, package, line);
   }
 }

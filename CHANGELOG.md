@@ -1,3 +1,7 @@
+## [1.0.3] - Custom step folder name
+
+* Add `stepFolderName` parameter that changes the step folder name
+
 ## [1.0.2] - Update dependencies
 
 * Update plugin's dependencies
