@@ -1,3 +1,7 @@
+## [1.0.3+1] - Custom step folder name hotix
+
+* Hotfix for ".." in custom step names
+
 ## [1.0.3] - Custom step folder name
 
 * Add `stepFolderName` parameter that changes the step folder name
