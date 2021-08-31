@@ -25,7 +25,7 @@ You may get the actual version from [installation instructions](https://pub.dart
 ### Write features
 
 Create `*.feature` file inside `test` folder. Let's say you're testing the default Flutter counter app, the content might be:
-```
+```ruby
 Feature: Counter
     Scenario: Initial counter value is 0
         Given the app is running
@@ -50,7 +50,7 @@ flutter test
 ## Feature file syntax
 
 Feature file sample:
-```
+```ruby
 // comment here
 
 Feature: Counter
@@ -137,7 +137,7 @@ That will tell the plugin to reuse steps from the plugin itself and do not put t
 ### How to pass a parameter?
 
 You may use curly brackets to pass the parameter into a `step`. The syntax is following:
-```
+```ruby
   When I see {42} number
   And I see {Icons.add} icon
 ```
@@ -148,7 +148,7 @@ You may call methods in step parameters, but most probably it's not what you wan
 ### How to add additional imports to test files?
 
 Most of the time you shouldn't do that, as the BDD tests simulate user's behavior and it's just not possible for users to know the implementation details. Nevertheless, sometimes it might be in hand, i.e. when you have custom domain models or components. For example, if you need to check Cupertino icons in the test, you may have:
-```
+```ruby
 import 'package:flutter/cupertino.dart';
 
 Feature: ...
@@ -158,7 +158,7 @@ Feature: ...
 ### How to adjust linter for auto-generated tests?
 
 Use the same trick as above, just write linter rules you wish to ignore at the beginning of the feature file:
-```
+```ruby
 // ignore_for_file: avoid_as, prefer_is_not_empty
 
 Feature: ...
