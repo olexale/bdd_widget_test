@@ -227,6 +227,30 @@ targets:
 
 You may set a relative path here (like `../../bdd_steps`), just be sure that the target folder is still somewhere under the `test` folder.
 
+### How to write integration tests?
+
+1. Add `integration_test` dependency to the `pubspec.yaml` file:
+```yaml
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+```
+2. Modify `build.yaml` file to support code generation in the `integration_test` folder like that (here is the full [sample](example/build.yaml)):
+```yaml
+targets:
+  $default:
+    sources:
+      - integration_test/**   # By default, build runner will not generate code in the integration folder
+      - test/**               # so we override paths for code generation here
+      - lib/**
+      - $package$
+```
+3. (Optional) If you plan to re-use steps between integration and widget tests set a common step folder in the `build.yaml` file like that (here is the full [sample](example/build.yaml)):
+```yaml
+stepFolderName: ../test/step
+```
+4. Done. Now you may create feature files in `integration_test` folder. You may want to review the [official documentation](https://flutter.dev/docs/testing/integration-tests) for instructions on how to run integration tests.
+
 ## Contributing
 
 If you find a bug or would like to request a new feature, just [open an issue](https://github.com/olexale/bdd_widget_test/issues/new). Your contributions are always welcome!
