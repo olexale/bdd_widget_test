@@ -9,7 +9,7 @@ targets:
       bdd_widget_test|featureBuilder:
         options:
           # stepFolderName: bdd_steps
-          stepFolderName: ../test/step # this trick is required to share steps between widget andintegration tests
+          stepFolderName: ../test/step # this trick is required to share steps between widget and integration tests
           # testMethodName: customTestMethodName
           externalSteps:
             - package:bdd_widget_test/step/i_see_text.dart
