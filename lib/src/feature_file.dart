@@ -8,6 +8,7 @@ class FeatureFile {
     required this.featureDir,
     required this.package,
     required String input,
+    this.isIntegrationTest = false,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
   }) : _lines = _prepareLines(input
@@ -30,6 +31,7 @@ class FeatureFile {
 
   final String featureDir;
   final String package;
+  final bool isIntegrationTest;
   final List<BddLine> _lines;
   final Map<String, String> existingSteps;
   final GeneratorOptions generatorOptions;
@@ -38,6 +40,7 @@ class FeatureFile {
         _lines,
         getStepFiles(),
         generatorOptions.testMethodName,
+        isIntegrationTest,
       );
 
   List<StepFile> getStepFiles() => _stepFiles;
