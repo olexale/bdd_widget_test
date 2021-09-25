@@ -1,3 +1,7 @@
+## [1.1.0] - Integration tests
+
+* Add support for integration tests
+
 ## [1.0.3+1] - Custom step folder name hotix
 
 * Hotfix for ".." in custom step names

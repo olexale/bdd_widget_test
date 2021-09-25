@@ -11,5 +11,9 @@ dev_dependencies:
   bdd_widget_test:
     path: ../
   build_runner: ^2.0.1
+  integration_test:
+    sdk: flutter
   flutter_test:
+    sdk: flutter
+  flutter_driver:
     sdk: flutter

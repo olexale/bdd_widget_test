@@ -26,6 +26,7 @@ class FeatureBuilder implements Builder {
     final feature = FeatureFile(
       featureDir: featureDir,
       package: inputId.package,
+      isIntegrationTest: inputId.pathSegments.contains('integration_test'),
       existingSteps:
           getExistingStepSubfolders(featureDir, generatorOptions.stepFolder),
       input: contents,
