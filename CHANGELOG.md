@@ -1,3 +1,7 @@
+## [1.2.0] - Scenario Outline
+
+* Add scenario outline support
+
 ## [1.1.0] - Integration tests
 
 * Add support for integration tests

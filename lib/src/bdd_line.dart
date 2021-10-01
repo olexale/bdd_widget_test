@@ -3,6 +3,8 @@ class BddLine {
       : type = _lineTypeFromString(rawLine),
         value = _removeLinePrefix(rawLine);
 
+  BddLine.fromValue(this.type, this.value) : rawLine = '';
+
   final String rawLine;
   final String value;
   final LineType type;
@@ -13,8 +15,10 @@ enum LineType {
   background,
   tag,
   scenario,
+  scenarioOutline,
   step,
   after,
+  examples,
   unknown,
 }
 
@@ -31,8 +35,14 @@ LineType _lineTypeFromString(String line) {
   if (scenarioMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.scenario;
   }
+  if (scenarioOutlineMarkers.any((marker) => line.startsWith(marker))) {
+    return LineType.scenarioOutline;
+  }
   if (stepMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.step;
+  }
+  if (examplesMarkers.any((marker) => line.startsWith(marker))) {
+    return LineType.examples;
   }
   if (tagMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.tag;
@@ -45,7 +55,9 @@ const backgroundMarkers = ['Background:'];
 const afterMarkers = ['After:'];
 const tagMarkers = ['@'];
 const scenarioMarkers = ['Scenario:', 'Example:'];
+const scenarioOutlineMarkers = ['Scenario Outline:'];
 const stepMarkers = ['Given', 'When', 'Then', 'And', 'But'];
+const examplesMarkers = ['Examples:', 'Scenarios', '|'];
 
 String _removeLinePrefix(String rawLine) {
   final lines = rawLine.split(' ');

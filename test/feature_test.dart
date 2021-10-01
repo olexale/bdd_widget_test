@@ -33,8 +33,8 @@ void main() {
         '''${expectedHeader}import './step/the_app_is_running.dart';
 
 void main() {
-  group('Testing feature', () {
-    testWidgets('Testing scenario', (tester) async {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
     });
   });
@@ -56,8 +56,8 @@ import './step/i_see_text.dart';
 import './step/i_see_icon.dart';
 
 void main() {
-  group('Testing feature', () {
-    testWidgets('Testing scenario', (tester) async {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
       await iSeeText(tester, 'nice param');
       await iSeeIcon(tester, Icons.add);
@@ -80,16 +80,16 @@ void main() {
 import './step/the_app_is_running.dart';
 
 void main() {
-  group('First testing feature', () {
-    testWidgets('First testing scenario', (tester) async {
+  group(\'\'\'First testing feature\'\'\', () {
+    testWidgets(\'\'\'First testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
     });
   });
-  group('Second testing feature', () {
-    testWidgets('First testing scenario', (tester) async {
+  group(\'\'\'Second testing feature\'\'\', () {
+    testWidgets(\'\'\'First testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
     });
-    testWidgets('Second testing scenario', (tester) async {
+    testWidgets(\'\'\'Second testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
     });
   });

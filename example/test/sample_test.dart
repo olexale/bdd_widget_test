@@ -8,24 +8,46 @@ import './../test/step/common/the_app_is_running.dart';
 import './../test/step/i_do_not_see_text.dart';
 import 'package:bdd_widget_test/step/i_see_text.dart';
 import 'package:bdd_widget_test/step/i_tap_icon.dart';
+import './../test/step/i_tap_icon_times.dart';
 
 void main() {
   Future<void> bddSetUp(WidgetTester tester) async {
     await theAppIsRunning(tester);
   }
   Future<void> bddTearDown(WidgetTester tester) async {
-    await iDoNotSeeText(tester, '42');
+    await iDoNotSeeText(tester, 'surprise');
   }
-  group('Counter', () {
-    testWidgets('Initial counter value is 0', (tester) async {
+  group('''Counter''', () {
+    testWidgets('''Initial counter value is 0''', (tester) async {
       await bddSetUp(tester);
       await iSeeText(tester, '0');
       await bddTearDown(tester);
     });
-    testWidgets('Add button increments the counter', (tester) async {
+    testWidgets('''Add button increments the counter''', (tester) async {
       await bddSetUp(tester);
       await iTapIcon(tester, Icons.add);
       await iSeeText(tester, '1');
+      await bddTearDown(tester);
+    });
+    testWidgets('''Outline: Plus button increases the counter (0, '0')''', (tester) async {
+      await bddSetUp(tester);
+      await theAppIsRunning(tester);
+      await iTapIconTimes(tester, Icons.add, 0);
+      await iSeeText(tester, '0');
+      await bddTearDown(tester);
+    });
+    testWidgets('''Outline: Plus button increases the counter (1, '1')''', (tester) async {
+      await bddSetUp(tester);
+      await theAppIsRunning(tester);
+      await iTapIconTimes(tester, Icons.add, 1);
+      await iSeeText(tester, '1');
+      await bddTearDown(tester);
+    });
+    testWidgets('''Outline: Plus button increases the counter (42, '42')''', (tester) async {
+      await bddSetUp(tester);
+      await theAppIsRunning(tester);
+      await iTapIconTimes(tester, Icons.add, 42);
+      await iSeeText(tester, '42');
       await bddTearDown(tester);
     });
   });

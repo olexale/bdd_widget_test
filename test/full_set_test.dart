@@ -33,8 +33,8 @@ void main() {
   Future<void> bddTearDown(WidgetTester tester) async {
     await iDoNotSeeText(tester, '42');
   }
-  group('Counter', () {
-    customTestWidgets('Initial counter value is 0', (tester) async {
+  group(\'\'\'Counter\'\'\', () {
+    customTestWidgets(\'\'\'Initial counter value is 0\'\'\', (tester) async {
       await bddSetUp(tester);
       await theAppIsRunning(tester);
       await iSeeText(tester, '0');

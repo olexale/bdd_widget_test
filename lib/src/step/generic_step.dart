@@ -19,11 +19,18 @@ ${getStepSignature(rawLine)} {
   String getStepSignature(String stepLine) {
     final params = parametersValueRegExp.allMatches(stepLine);
     if (params.isEmpty) {
-      return 'Future<void> $methodName(WidgetTester tester) async';
+      final examples = examplesRegExp.allMatches(stepLine);
+      if (examples.isEmpty) {
+        return 'Future<void> $methodName(WidgetTester tester) async';
+      } else {
+        return _generateSignature(examples.length);
+      }
     }
+    return _generateSignature(params.length);
+  }
 
-    final p = List.generate(params.length, (index) => index + 1);
-
+  String _generateSignature(int paramsCount) {
+    final p = List.generate(paramsCount, (index) => index + 1);
     final methodParameters = p.map((p) => 'dynamic param$p').join(', ');
     return 'Future<void> $methodName(WidgetTester tester, $methodParameters) async';
   }

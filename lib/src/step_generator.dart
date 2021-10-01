@@ -30,6 +30,7 @@ String getStepFilename(String stepText) {
 String getStepMethodName(String stepText) {
   final text = stepText
       .replaceAll(parametersRegExp, '')
+      .replaceAll(examplesRegExp, '')
       .replaceAll(charactersAndNumbersRegExp, '')
       .replaceAll(repeatingSpacesRegExp, ' ')
       .trim()

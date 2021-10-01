@@ -15,12 +15,12 @@ void main() {
   Future<void> bddSetUp(WidgetTester tester) async {
     await theAppIsRunning(tester);
   }
-  group('Counter', () {
-    testWidgets('Initial counter value is 0', (tester) async {
+  group('''Counter''', () {
+    testWidgets('''Initial counter value is 0''', (tester) async {
       await bddSetUp(tester);
       await iSeeText(tester, '0');
     });
-    testWidgets('Add button increments the counter', (tester) async {
+    testWidgets('''Add button increments the counter''', (tester) async {
       await bddSetUp(tester);
       await iTapIcon(tester, Icons.add);
       await iSeeText(tester, '1');

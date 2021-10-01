@@ -25,8 +25,8 @@ void main() {
   Future<void> bddTearDown(WidgetTester tester) async {
     await theTestFinishes(tester);
   }
-  group('Testing feature', () {
-    testWidgets('Testing scenario', (tester) async {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
       await bddTearDown(tester);
     });

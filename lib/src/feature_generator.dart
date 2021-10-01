@@ -1,9 +1,8 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
+import 'package:bdd_widget_test/src/scenario_generator.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
-
-const _setUpMethodName = 'bddSetUp';
-const _tearDownMethodName = 'bddTearDown';
+import 'package:bdd_widget_test/src/util/constants.dart';
 
 String generateFeatureDart(
   List<BddLine> lines,
@@ -68,10 +67,10 @@ String generateFeatureDart(
 }
 
 bool _parseBackground(StringBuffer sb, List<BddLine> lines) =>
-    _parseSetup(sb, lines, LineType.background, _setUpMethodName);
+    _parseSetup(sb, lines, LineType.background, setUpMethodName);
 
 bool _parseAfter(StringBuffer sb, List<BddLine> lines) =>
-    _parseSetup(sb, lines, LineType.after, _tearDownMethodName);
+    _parseSetup(sb, lines, LineType.after, tearDownMethodName);
 
 bool _parseSetup(
     StringBuffer sb, List<BddLine> lines, LineType elementType, String title) {
@@ -95,25 +94,43 @@ void _parseFeature(
   bool hasTearDown,
   String testMethodName,
 ) {
-  sb.writeln('  group(\'${feature.first.value}\', () {');
+  sb.writeln('  group(\'\'\'${feature.first.value}\'\'\', () {');
 
   final scenarios = splitWhen<BddLine>(
-      feature.skipWhile((e) => e.type != LineType.scenario),
-      (e) => e.type == LineType.scenario).toList();
+    feature.skipWhile((e) => !_isScenarioKindLine(e.type)),
+    (e) => _isScenarioKindLine(e.type),
+  ).toList();
   for (final scenario in scenarios) {
     final scenarioTestMethodName =
         _parseScenaioTags(feature, scenario.first, testMethodName);
-    _parseScenario(
-      sb,
-      scenario.first.value,
-      scenario.where((e) => e.type == LineType.step).toList(),
-      hasSetUp,
-      hasTearDown,
-      scenarioTestMethodName,
-    );
+    if (scenario.first.type == LineType.scenario) {
+      parseScenario(
+        sb,
+        scenario.first.value,
+        scenario.where((e) => e.type == LineType.step).toList(),
+        hasSetUp,
+        hasTearDown,
+        scenarioTestMethodName,
+      );
+    } else {
+      final generatedScenarios = generateScenariosFromScenaioOutline(scenario);
+      for (final g in generatedScenarios) {
+        parseScenario(
+          sb,
+          g.first.value,
+          g.where((e) => e.type == LineType.step).toList(),
+          hasSetUp,
+          hasTearDown,
+          scenarioTestMethodName,
+        );
+      }
+    }
   }
   sb.writeln('  });');
 }
+
+bool _isScenarioKindLine(LineType type) =>
+    type == LineType.scenario || type == LineType.scenarioOutline;
 
 String _parseScenaioTags(
   List<BddLine> feature,
@@ -129,30 +146,6 @@ String _parseScenaioTags(
     }
   }
   return scenarioTestMethodName;
-}
-
-void _parseScenario(
-  StringBuffer sb,
-  String scenarioTitle,
-  List<BddLine> scenario,
-  bool hasSetUp,
-  bool hasTearDown,
-  String testMethodName,
-) {
-  sb.writeln('    $testMethodName(\'$scenarioTitle\', (tester) async {');
-  if (hasSetUp) {
-    sb.writeln('      await $_setUpMethodName(tester);');
-  }
-
-  for (final step in scenario) {
-    sb.writeln('      await ${getStepMethodCall(step.value)};');
-  }
-
-  if (hasTearDown) {
-    sb.writeln('      await $_tearDownMethodName(tester);');
-  }
-
-  sb.writeln('    });');
 }
 
 String _parseTestMethodNameTag(String rawLine) {

@@ -25,8 +25,8 @@ void main() {
   Future<void> bddSetUp(WidgetTester tester) async {
     await theServerAlwaysReturnErrors(tester);
   }
-  group('Testing feature', () {
-    testWidgets('Testing scenario', (tester) async {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await bddSetUp(tester);
       await theAppIsRunning(tester);
     });

@@ -22,8 +22,8 @@ import 'package:flutter/cupertino.dart';
         '''$expectedHeader${additionalLines}import './step/the_app_is_running.dart';
 
 void main() {
-  group('Testing feature', () {
-    testWidgets('Testing scenario', (tester) async {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
     });
   });
