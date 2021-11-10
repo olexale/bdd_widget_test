@@ -102,6 +102,29 @@ Feature: Sample
     |   42  |  '42'  |
 ```
 
+If you need to have the same step but with different parameters, you may use a `DataTable`-like syntax:
+```ruby
+Feature: Sample
+
+  Scenario: An answer
+    Given the app is running
+    When I enter <input> text into <field> text field
+    | input      | field |
+    | '42'       |   0  |
+    | 'question' |   1  |
+    Then I see {'Do not forget your towel!'} text
+```
+The above is equivalent to:
+```ruby
+Feature: Sample
+
+  Scenario: An answer
+    Given the app is running
+    When I enter {'42'} text into {0} text field
+    And I enter {'question'} text into {1} text field
+    Then I see {'Do not forget your towel!'} text
+```
+
 ## Predefined steps
 
 This library comes with a list of predefined steps. They will be auto-generated for you, but you may want to adjust their implementation according to your needs.
