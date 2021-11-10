@@ -17,7 +17,7 @@ ${getStepSignature(rawLine)} {
 ''';
 
   String getStepSignature(String stepLine) {
-    final params = parametersValueRegExp.allMatches(stepLine);
+    final params = parametersRegExp.allMatches(stepLine);
     if (params.isEmpty) {
       final examples = examplesRegExp.allMatches(stepLine);
       if (examples.isEmpty) {

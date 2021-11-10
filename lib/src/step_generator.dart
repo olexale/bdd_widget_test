@@ -38,15 +38,16 @@ String getStepMethodName(String stepText) {
   return camelize(text);
 }
 
-String getStepMethodCall(String stepLine) {
+String getStepMethodCall(String stepLine, {List<String>? forceParams}) {
   final name = getStepMethodName(stepLine);
 
   final params = parametersValueRegExp.allMatches(stepLine);
-  if (params.isEmpty) {
+  if (params.isEmpty && forceParams == null) {
     return '$name(tester)';
   }
 
-  final methodParameters = params.map((p) => p.group(0)).join(', ');
+  final methodParameters =
+      forceParams ?? params.map((p) => p.group(0)).join(', ');
   return '$name(tester, $methodParameters)';
 }
 

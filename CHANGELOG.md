@@ -1,3 +1,7 @@
+## [1.2.1] - Data Tables
+
+* Add data tables support
+
 ## [1.2.0] - Scenario Outline
 
 * Add scenario outline support

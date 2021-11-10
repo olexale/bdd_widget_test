@@ -19,6 +19,7 @@ enum LineType {
   step,
   after,
   examples,
+  exampleTitle,
   unknown,
 }
 
@@ -44,6 +45,9 @@ LineType _lineTypeFromString(String line) {
   if (examplesMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.examples;
   }
+  if (examplesTitleMarkers.any((marker) => line.startsWith(marker))) {
+    return LineType.exampleTitle;
+  }
   if (tagMarkers.any((marker) => line.startsWith(marker))) {
     return LineType.tag;
   }
@@ -57,7 +61,8 @@ const tagMarkers = ['@'];
 const scenarioMarkers = ['Scenario:', 'Example:'];
 const scenarioOutlineMarkers = ['Scenario Outline:'];
 const stepMarkers = ['Given', 'When', 'Then', 'And', 'But'];
-const examplesMarkers = ['Examples:', 'Scenarios', '|'];
+const examplesMarkers = ['|'];
+const examplesTitleMarkers = ['Examples:', 'Scenarios'];
 
 String _removeLinePrefix(String rawLine) {
   final lines = rawLine.split(' ');

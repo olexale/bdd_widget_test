@@ -40,12 +40,12 @@ List<Map<String, String>> _getExamples(
   List<BddLine> scenario,
 ) {
   final exampleLines = scenario
+      .skipWhile((l) => l.type != LineType.exampleTitle)
       .where((l) => l.type == LineType.examples)
-      .skip(1) // Skip 'Examples:` line
       .map((e) => e.rawLine.substring(
             // Remove the first and the last '|' separator
             1,
-            e.rawLine.length - 2,
+            e.rawLine.length - 1,
           ))
       .map(_parseExampleLine);
   final names = exampleLines.first;
@@ -61,7 +61,7 @@ Iterable<BddLine> _processScenarioLines(
   yield BddLine.fromValue(
       name.type, '${name.value} (${examples.values.join(', ')})');
 
-  for (final line in lines.skip(1).where((l) => l.type == LineType.step)) {
+  for (final line in lines.skip(1)) {
     yield BddLine.fromValue(
         line.type, _replacePlaceholders(line.value, examples));
   }
@@ -70,7 +70,7 @@ Iterable<BddLine> _processScenarioLines(
 String _replacePlaceholders(String line, Map<String, String> example) {
   var replaced = line;
   for (final e in example.keys) {
-    replaced = replaced.replaceAll(' <$e> ', ' {${example[e]}} ');
+    replaced = replaced.replaceAll('<$e>', '{${example[e]}}');
   }
   return replaced;
 }

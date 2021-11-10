@@ -51,7 +51,7 @@ flutter test
 
 Feature file sample:
 ```ruby
-// comment here
+# comment here
 
 Feature: Counter
 

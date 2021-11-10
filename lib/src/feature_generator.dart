@@ -1,4 +1,5 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
+import 'package:bdd_widget_test/src/data_table_parser.dart';
 import 'package:bdd_widget_test/src/scenario_generator.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
@@ -103,27 +104,21 @@ void _parseFeature(
   for (final scenario in scenarios) {
     final scenarioTestMethodName =
         _parseScenaioTags(feature, scenario.first, testMethodName);
-    if (scenario.first.type == LineType.scenario) {
+
+    final flattenDataTables = replaceDataTables(scenario).toList();
+    final scenariosToParse = flattenDataTables.first.type == LineType.scenario
+        ? [flattenDataTables]
+        : generateScenariosFromScenaioOutline(flattenDataTables);
+
+    for (final s in scenariosToParse) {
       parseScenario(
         sb,
-        scenario.first.value,
-        scenario.where((e) => e.type == LineType.step).toList(),
+        s.first.value,
+        s.where((e) => e.type == LineType.step).toList(),
         hasSetUp,
         hasTearDown,
         scenarioTestMethodName,
       );
-    } else {
-      final generatedScenarios = generateScenariosFromScenaioOutline(scenario);
-      for (final g in generatedScenarios) {
-        parseScenario(
-          sb,
-          g.first.value,
-          g.where((e) => e.type == LineType.step).toList(),
-          hasSetUp,
-          hasTearDown,
-          scenarioTestMethodName,
-        );
-      }
     }
   }
   sb.writeln('  });');
