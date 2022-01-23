@@ -254,6 +254,23 @@ targets:
             - package:<your_package>/<your_step>.dart
 ```
 
+If you have many packages you might want to reuse the whole list of external steps. For that you'll have to create a `bdd_options.yaml` file in the root folder of your project with the following content: 
+```yaml
+include: package:bdd_widget_test/bdd_options.yaml # if you want to reuse default steps as well
+externalSteps:
+  - package:<your_package>/<your_step>.dart
+```
+
+Alternatively, ff you need just to include an external config, use the `include` option in the `build.yaml` config:
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          include: package:<your_package>/bdd_options.yaml
+```
+
 ### How to group steps in a single project?
 
 You may create sub-folders (like `common`, `login`, `home`, etc.) in the `step` folder and move generated steps there. The plugin is smart enough to find them (see the `example` folder).

@@ -19,6 +19,8 @@ class FeatureBuilder implements Builder {
 
   @override
   Future<void> build(BuildStep buildStep) async {
+    final options = await prepareOptions();
+
     final inputId = buildStep.inputId;
     final contents = await buildStep.readAsString(inputId);
 
@@ -27,10 +29,9 @@ class FeatureBuilder implements Builder {
       featureDir: featureDir,
       package: inputId.package,
       isIntegrationTest: inputId.pathSegments.contains('integration_test'),
-      existingSteps:
-          getExistingStepSubfolders(featureDir, generatorOptions.stepFolder),
+      existingSteps: getExistingStepSubfolders(featureDir, options.stepFolder),
       input: contents,
-      generatorOptions: generatorOptions,
+      generatorOptions: options,
     );
 
     final featureDart = inputId.changeExtension('_test.dart');
@@ -41,6 +42,17 @@ class FeatureBuilder implements Builder {
         .whereType<NewStepFile>()
         .map((e) => createFileRecursively(e.filename, e.dartContent));
     await Future.wait(steps);
+  }
+
+  Future<GeneratorOptions> prepareOptions() async {
+    final fileOptions = File('bdd_options.yaml').existsSync()
+        ? readFromUri(Uri.file('bdd_options.yaml'))
+        : null;
+    final mergedOptions = fileOptions != null
+        ? merge(generatorOptions, fileOptions)
+        : generatorOptions;
+    final options = await flattenOptions(mergedOptions);
+    return options;
   }
 
   Future<void> createFileRecursively(String filename, String content) async {
