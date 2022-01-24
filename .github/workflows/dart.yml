@@ -1,0 +1,33 @@
+name: Dart
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**/README.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Flutter SDK
+        uses: flutter-actions/setup-flutter@v1
+        with:
+          sdk: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze project source
+        run: flutter analyze . --fatal-infos
+
+      - name: Run tests
+        run: flutter test --coverage
+        
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@1.1.3
+        with:
+          github-token: ${{ secrets.COVERALLS_TOKEN }}
