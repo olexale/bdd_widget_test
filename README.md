@@ -125,6 +125,30 @@ Feature: Sample
     Then I see {'Do not forget your towel!'} text
 ```
 
+## Tags
+
+Tags are used to filter scenarios in the test runner. Here are some examples:
+```ruby
+@slow
+@integration
+Feature: Sample
+
+  @important
+  Scenario: An answer
+    Given the app is running
+```
+
+Here we mark the test as `slow`, `integration`, and `important`. 
+
+To run tests that are marked with `@important` tag, you can use the following command:
+```sh
+flutter test --tags important
+```
+To exclude tests that are marked with `@slow` tag, you can use the following command:
+```sh
+flutter test --exclude-tags slow
+```
+
 ## Predefined steps
 
 This library comes with a list of predefined steps. They will be auto-generated for you, but you may want to adjust their implementation according to your needs.
