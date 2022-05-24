@@ -9,6 +9,7 @@ void parseScenario(
   bool hasSetUp,
   bool hasTearDown,
   String testMethodName,
+  List<String> tags,
 ) {
   sb.writeln(
       '    $testMethodName(\'\'\'$scenarioTitle\'\'\', (tester) async {');
@@ -24,7 +25,8 @@ void parseScenario(
     sb.writeln('      await $tearDownMethodName(tester);');
   }
 
-  sb.writeln('    });');
+  sb.writeln(
+      '    }${tags.isNotEmpty ? ', tags: [\'${tags.join('\', \'')}\']' : ''});');
 }
 
 List<List<BddLine>> generateScenariosFromScenaioOutline(

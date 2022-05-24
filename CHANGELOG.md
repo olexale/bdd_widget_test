@@ -1,3 +1,7 @@
+## [1.3.1] - Add tags
+
+* Add tags
+
 ## [1.3.0] - Add bdd_options.yaml
 
 * Add possibility to store config outside of `build.yaml`. Now we may re-use the same config (for example `external_steps`) across different packages.
