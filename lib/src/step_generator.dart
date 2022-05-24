@@ -29,10 +29,9 @@ String getStepFilename(String stepText) {
 }
 
 String getStepMethodName(String stepText) {
-  final text = removeDiacritics(stepText
+  final text = removeDiacritics(stepText)
       .replaceAll(parametersRegExp, '')
-      .replaceAll(examplesRegExp, ''))
-      .replaceAll(r"'", ' ')
+      .replaceAll(examplesRegExp, '')
       .replaceAll(charactersAndNumbersRegExp, '')
       .replaceAll(repeatingSpacesRegExp, ' ')
       .trim()
