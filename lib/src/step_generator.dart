@@ -21,6 +21,7 @@ import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:bdd_widget_test/src/util/string_utils.dart';
+import 'package:diacritic/diacritic.dart';
 
 String getStepFilename(String stepText) {
   final step = getStepMethodName(stepText);
@@ -28,9 +29,10 @@ String getStepFilename(String stepText) {
 }
 
 String getStepMethodName(String stepText) {
-  final text = stepText
+  final text = removeDiacritics(stepText
       .replaceAll(parametersRegExp, '')
-      .replaceAll(examplesRegExp, '')
+      .replaceAll(examplesRegExp, ''))
+      .replaceAll(r"'", ' ')
       .replaceAll(charactersAndNumbersRegExp, '')
       .replaceAll(repeatingSpacesRegExp, ' ')
       .trim()
