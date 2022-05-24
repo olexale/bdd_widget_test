@@ -1,3 +1,7 @@
+## [1.3.2] - Add diacritics support
+
+* Add diacritics support (thanks @vidibu)
+
 ## [1.3.1] - Add tags
 
 * Add tags
