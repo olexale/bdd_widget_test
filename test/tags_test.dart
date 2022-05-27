@@ -60,7 +60,7 @@ void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
-    }, tags: ['integration', 'slow']);
+    }, tags: ['integration', 'slow'],);
   });
 }
 ''';

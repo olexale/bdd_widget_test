@@ -26,7 +26,7 @@ void parseScenario(
   }
 
   sb.writeln(
-      '    }${tags.isNotEmpty ? ', tags: [\'${tags.join('\', \'')}\']' : ''});');
+      '    }${tags.isNotEmpty ? ', tags: [\'${tags.join('\', \'')}\'],' : ''});');
 }
 
 List<List<BddLine>> generateScenariosFromScenaioOutline(
