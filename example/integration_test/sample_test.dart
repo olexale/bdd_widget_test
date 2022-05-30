@@ -17,13 +17,23 @@ void main() {
   }
   group('''Counter''', () {
     testWidgets('''Initial counter value is 0''', (tester) async {
-      await bddSetUp(tester);
-      await iSeeText(tester, '0');
+      try {
+        await bddSetUp(tester);
+        await iSeeText(tester, '0');
+      } on Exception catch (error, stackTrace) {
+        debugPrint('${error.toString()}: $stackTrace');
+        rethrow;
+      }
     });
     testWidgets('''Add button increments the counter''', (tester) async {
-      await bddSetUp(tester);
-      await iTapIcon(tester, Icons.add);
-      await iSeeText(tester, '1');
+      try {
+        await bddSetUp(tester);
+        await iTapIcon(tester, Icons.add);
+        await iSeeText(tester, '1');
+      } on Exception catch (error, stackTrace) {
+        debugPrint('${error.toString()}: $stackTrace');
+        rethrow;
+      }
     });
   });
 }
