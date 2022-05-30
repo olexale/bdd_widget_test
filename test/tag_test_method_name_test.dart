@@ -23,7 +23,12 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     customTestWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theAppIsRunning(tester);
+      try {
+        await theAppIsRunning(tester);
+      } on Exception catch (error, stackTrace) {
+        debugPrint(\'\${error.toString()}: \$stackTrace\');
+        rethrow;
+      }
     });
   });
 }
@@ -62,10 +67,20 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     customTestWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theAppIsRunning(tester);
+      try {
+        await theAppIsRunning(tester);
+      } on Exception catch (error, stackTrace) {
+        debugPrint(\'\${error.toString()}: \$stackTrace\');
+        rethrow;
+      }
     });
     otherTestWidgets(\'\'\'Testing scenario 2\'\'\', (tester) async {
-      await theAppIsRunning(tester);
+      try {
+        await theAppIsRunning(tester);
+      } on Exception catch (error, stackTrace) {
+        debugPrint(\'\${error.toString()}: \$stackTrace\');
+        rethrow;
+      }
     });
   });
 }

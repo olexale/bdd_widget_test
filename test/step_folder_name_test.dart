@@ -22,7 +22,12 @@ import './../../../custom_steps/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theAppIsRunning(tester);
+      try {
+        await theAppIsRunning(tester);
+      } on Exception catch (error, stackTrace) {
+        debugPrint(\'\${error.toString()}: \$stackTrace\');
+        rethrow;
+      }
     });
   });
 }

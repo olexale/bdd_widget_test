@@ -30,10 +30,15 @@ import './step/user_with_twitter_is_still_there.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
-      await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
-      await iWait(tester);
-      await userWithTwitterIsStillThere(tester, 'Oleksandr', '@olexale');
+      try {
+        await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
+        await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
+        await iWait(tester);
+        await userWithTwitterIsStillThere(tester, 'Oleksandr', '@olexale');
+      } on Exception catch (error, stackTrace) {
+        debugPrint(\'\${error.toString()}: \$stackTrace\');
+        rethrow;
+      }
     });
   });
 }

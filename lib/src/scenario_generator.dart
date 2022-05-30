@@ -13,18 +13,25 @@ void parseScenario(
 ) {
   sb.writeln(
       '    $testMethodName(\'\'\'$scenarioTitle\'\'\', (tester) async {');
+  sb.writeln('      try {');
   if (hasSetUp) {
-    sb.writeln('      await $setUpMethodName(tester);');
+    sb.writeln('        await $setUpMethodName(tester);');
   }
 
   for (final step in scenario) {
-    sb.writeln('      await ${getStepMethodCall(step.value)};');
+    sb.writeln('        await ${getStepMethodCall(step.value)};');
   }
 
+  sb.writeln('      } on Exception catch (error, stackTrace) {');
+  sb.writeln('        debugPrint(\'\${error.toString()}: \$stackTrace\');');
+  sb.writeln('        rethrow;');
   if (hasTearDown) {
-    sb.writeln('      await $tearDownMethodName(tester);');
+    sb.writeln('      } finally {');
+    sb.writeln('        await $tearDownMethodName(tester);');
+    sb.writeln('      }');
+  } else {
+    sb.writeln('      }');
   }
-
   sb.writeln(
       '    }${tags.isNotEmpty ? ', tags: [\'${tags.join('\', \'')}\']' : ''});');
 }
