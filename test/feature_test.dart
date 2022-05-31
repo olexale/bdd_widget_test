@@ -35,12 +35,7 @@ void main() {
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      try {
         await theAppIsRunning(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
 }
@@ -63,14 +58,9 @@ import './step/i_see_icon.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      try {
         await theAppIsRunning(tester);
         await iSeeText(tester, 'nice param');
         await iSeeIcon(tester, Icons.add);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
 }
@@ -92,30 +82,15 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'First testing feature\'\'\', () {
     testWidgets(\'\'\'First testing scenario\'\'\', (tester) async {
-      try {
         await theAppIsRunning(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
   group(\'\'\'Second testing feature\'\'\', () {
     testWidgets(\'\'\'First testing scenario\'\'\', (tester) async {
-      try {
         await theAppIsRunning(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
     testWidgets(\'\'\'Second testing scenario\'\'\', (tester) async {
-      try {
         await theAppIsRunning(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
 }

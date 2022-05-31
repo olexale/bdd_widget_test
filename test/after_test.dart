@@ -29,9 +29,6 @@ void main() {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       try {
         await theAppIsRunning(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
       } finally {
         await bddTearDown(tester);
       }

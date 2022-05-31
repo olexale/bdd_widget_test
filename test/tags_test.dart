@@ -24,12 +24,7 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      try {
         await theAppIsRunning(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
 }
@@ -64,12 +59,7 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      try {
         await theAppIsRunning(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     }, tags: ['integration', 'slow']);
   });
 }

@@ -13,7 +13,9 @@ void parseScenario(
 ) {
   sb.writeln(
       '    $testMethodName(\'\'\'$scenarioTitle\'\'\', (tester) async {');
-  sb.writeln('      try {');
+  if (hasTearDown) {
+    sb.writeln('      try {');
+  }
   if (hasSetUp) {
     sb.writeln('        await $setUpMethodName(tester);');
   }
@@ -22,14 +24,9 @@ void parseScenario(
     sb.writeln('        await ${getStepMethodCall(step.value)};');
   }
 
-  sb.writeln('      } on Exception catch (error, stackTrace) {');
-  sb.writeln('        debugPrint(\'\${error.toString()}: \$stackTrace\');');
-  sb.writeln('        rethrow;');
   if (hasTearDown) {
     sb.writeln('      } finally {');
     sb.writeln('        await $tearDownMethodName(tester);');
-    sb.writeln('      }');
-  } else {
     sb.writeln('      }');
   }
   sb.writeln(

@@ -22,9 +22,6 @@ void main() {
       try {
         await bddSetUp(tester);
         await iSeeText(tester, '0');
-      } on Exception catch (error, stackTrace) {
-        debugPrint('${error.toString()}: $stackTrace');
-        rethrow;
       } finally {
         await bddTearDown(tester);
       }
@@ -34,9 +31,6 @@ void main() {
         await bddSetUp(tester);
         await iTapIcon(tester, Icons.add);
         await iSeeText(tester, '1');
-      } on Exception catch (error, stackTrace) {
-        debugPrint('${error.toString()}: $stackTrace');
-        rethrow;
       } finally {
         await bddTearDown(tester);
       }
@@ -47,9 +41,6 @@ void main() {
         await theAppIsRunning(tester);
         await iTapIconTimes(tester, Icons.add, 0);
         await iSeeText(tester, '0');
-      } on Exception catch (error, stackTrace) {
-        debugPrint('${error.toString()}: $stackTrace');
-        rethrow;
       } finally {
         await bddTearDown(tester);
       }
@@ -60,9 +51,6 @@ void main() {
         await theAppIsRunning(tester);
         await iTapIconTimes(tester, Icons.add, 1);
         await iSeeText(tester, '1');
-      } on Exception catch (error, stackTrace) {
-        debugPrint('${error.toString()}: $stackTrace');
-        rethrow;
       } finally {
         await bddTearDown(tester);
       }
@@ -73,9 +61,6 @@ void main() {
         await theAppIsRunning(tester);
         await iTapIconTimes(tester, Icons.add, 42);
         await iSeeText(tester, '42');
-      } on Exception catch (error, stackTrace) {
-        debugPrint('${error.toString()}: $stackTrace');
-        rethrow;
       } finally {
         await bddTearDown(tester);
       }

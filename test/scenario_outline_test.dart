@@ -30,24 +30,14 @@ import './step/i_should_have_cucumbers.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Outline: eating (12, 5, 7)\'\'\', (tester) async {
-      try {
         await thereAreCucumbers(tester, 12);
         await iEatCucumbers(tester, 5);
         await iShouldHaveCucumbers(tester, 7);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
     testWidgets(\'\'\'Outline: eating (20, 5, 15)\'\'\', (tester) async {
-      try {
         await thereAreCucumbers(tester, 20);
         await iEatCucumbers(tester, 5);
         await iShouldHaveCucumbers(tester, 15);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
 }
@@ -85,20 +75,10 @@ import './step/there_are_mixed_parameters.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Outline: params (12, '5', Icons.add)\'\'\', (tester) async {
-      try {
         await thereAreMixedParameters(tester, 12, '5', Icons.add);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
     testWidgets(\'\'\'Outline: params ('20', 5.0, MyClass)\'\'\', (tester) async {
-      try {
         await thereAreMixedParameters(tester, '20', 5.0, MyClass);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
 }

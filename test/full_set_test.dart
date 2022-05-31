@@ -39,9 +39,6 @@ void main() {
         await bddSetUp(tester);
         await theAppIsRunning(tester);
         await iSeeText(tester, '0');
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
       } finally {
         await bddTearDown(tester);
       }

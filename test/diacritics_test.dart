@@ -21,12 +21,7 @@ import './step/los_diacriticos_son_util.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      try {
         await losDiacriticosSonUtil(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
 }

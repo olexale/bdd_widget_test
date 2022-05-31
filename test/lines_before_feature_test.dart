@@ -24,12 +24,7 @@ import 'package:flutter/cupertino.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      try {
         await theAppIsRunning(tester);
-      } on Exception catch (error, stackTrace) {
-        debugPrint(\'\${error.toString()}: \$stackTrace\');
-        rethrow;
-      }
     });
   });
 }
