@@ -30,14 +30,14 @@ import './step/i_should_have_cucumbers.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Outline: eating (12, 5, 7)\'\'\', (tester) async {
-        await thereAreCucumbers(tester, 12);
-        await iEatCucumbers(tester, 5);
-        await iShouldHaveCucumbers(tester, 7);
+      await thereAreCucumbers(tester, 12);
+      await iEatCucumbers(tester, 5);
+      await iShouldHaveCucumbers(tester, 7);
     });
     testWidgets(\'\'\'Outline: eating (20, 5, 15)\'\'\', (tester) async {
-        await thereAreCucumbers(tester, 20);
-        await iEatCucumbers(tester, 5);
-        await iShouldHaveCucumbers(tester, 15);
+      await thereAreCucumbers(tester, 20);
+      await iEatCucumbers(tester, 5);
+      await iShouldHaveCucumbers(tester, 15);
     });
   });
 }
@@ -75,10 +75,10 @@ import './step/there_are_mixed_parameters.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Outline: params (12, '5', Icons.add)\'\'\', (tester) async {
-        await thereAreMixedParameters(tester, 12, '5', Icons.add);
+      await thereAreMixedParameters(tester, 12, '5', Icons.add);
     });
     testWidgets(\'\'\'Outline: params ('20', 5.0, MyClass)\'\'\', (tester) async {
-        await thereAreMixedParameters(tester, '20', 5.0, MyClass);
+      await thereAreMixedParameters(tester, '20', 5.0, MyClass);
     });
   });
 }

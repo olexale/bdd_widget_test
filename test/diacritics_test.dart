@@ -21,7 +21,7 @@ import './step/los_diacriticos_son_util.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-        await losDiacriticosSonUtil(tester);
+      await losDiacriticosSonUtil(tester);
     });
   });
 }

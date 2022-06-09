@@ -24,7 +24,7 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-        await theAppIsRunning(tester);
+      await theAppIsRunning(tester);
     });
   });
 }
@@ -59,7 +59,7 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-        await theAppIsRunning(tester);
+      await theAppIsRunning(tester);
     }, tags: ['integration', 'slow']);
   });
 }

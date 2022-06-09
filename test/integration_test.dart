@@ -19,7 +19,7 @@ void main() {
 
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-        await theAppIsRunning(tester);
+      await theAppIsRunning(tester);
     });
   });
 }

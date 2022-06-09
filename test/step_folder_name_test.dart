@@ -22,7 +22,7 @@ import './../../../custom_steps/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-        await theAppIsRunning(tester);
+      await theAppIsRunning(tester);
     });
   });
 }

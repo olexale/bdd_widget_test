@@ -23,7 +23,7 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     customTestWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-        await theAppIsRunning(tester);
+      await theAppIsRunning(tester);
     });
   });
 }
@@ -62,10 +62,10 @@ import './step/the_app_is_running.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     customTestWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-        await theAppIsRunning(tester);
+      await theAppIsRunning(tester);
     });
     otherTestWidgets(\'\'\'Testing scenario 2\'\'\', (tester) async {
-        await theAppIsRunning(tester);
+      await theAppIsRunning(tester);
     });
   });
 }
