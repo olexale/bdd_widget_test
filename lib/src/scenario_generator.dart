@@ -13,18 +13,23 @@ void parseScenario(
 ) {
   sb.writeln(
       '    $testMethodName(\'\'\'$scenarioTitle\'\'\', (tester) async {');
+  if (hasTearDown) {
+    sb.writeln('      try {');
+  }
+  final spaces = hasTearDown ? '        ' : '      ';
   if (hasSetUp) {
-    sb.writeln('      await $setUpMethodName(tester);');
+    sb.writeln('${spaces}await $setUpMethodName(tester);');
   }
 
   for (final step in scenario) {
-    sb.writeln('      await ${getStepMethodCall(step.value)};');
+    sb.writeln('${spaces}await ${getStepMethodCall(step.value)};');
   }
 
   if (hasTearDown) {
-    sb.writeln('      await $tearDownMethodName(tester);');
+    sb.writeln('      } finally {');
+    sb.writeln('        await $tearDownMethodName(tester);');
+    sb.writeln('      }');
   }
-
   sb.writeln(
       '    }${tags.isNotEmpty ? ', tags: [\'${tags.join('\', \'')}\']' : ''});');
 }

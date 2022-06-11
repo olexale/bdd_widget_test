@@ -27,8 +27,11 @@ void main() {
   }
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theAppIsRunning(tester);
-      await bddTearDown(tester);
+      try {
+        await theAppIsRunning(tester);
+      } finally {
+        await bddTearDown(tester);
+      }
     });
   });
 }

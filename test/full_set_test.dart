@@ -35,10 +35,13 @@ void main() {
   }
   group(\'\'\'Counter\'\'\', () {
     customTestWidgets(\'\'\'Initial counter value is 0\'\'\', (tester) async {
-      await bddSetUp(tester);
-      await theAppIsRunning(tester);
-      await iSeeText(tester, '0');
-      await bddTearDown(tester);
+      try {
+        await bddSetUp(tester);
+        await theAppIsRunning(tester);
+        await iSeeText(tester, '0');
+      } finally {
+        await bddTearDown(tester);
+      }
     });
   });
 }

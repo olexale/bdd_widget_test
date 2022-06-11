@@ -19,36 +19,51 @@ void main() {
   }
   group('''Counter''', () {
     testWidgets('''Initial counter value is 0''', (tester) async {
-      await bddSetUp(tester);
-      await iSeeText(tester, '0');
-      await bddTearDown(tester);
+      try {
+        await bddSetUp(tester);
+        await iSeeText(tester, '0');
+      } finally {
+        await bddTearDown(tester);
+      }
     });
     testWidgets('''Add button increments the counter''', (tester) async {
-      await bddSetUp(tester);
-      await iTapIcon(tester, Icons.add);
-      await iSeeText(tester, '1');
-      await bddTearDown(tester);
+      try {
+        await bddSetUp(tester);
+        await iTapIcon(tester, Icons.add);
+        await iSeeText(tester, '1');
+      } finally {
+        await bddTearDown(tester);
+      }
     });
     testWidgets('''Outline: Plus button increases the counter (0, '0')''', (tester) async {
-      await bddSetUp(tester);
-      await theAppIsRunning(tester);
-      await iTapIconTimes(tester, Icons.add, 0);
-      await iSeeText(tester, '0');
-      await bddTearDown(tester);
+      try {
+        await bddSetUp(tester);
+        await theAppIsRunning(tester);
+        await iTapIconTimes(tester, Icons.add, 0);
+        await iSeeText(tester, '0');
+      } finally {
+        await bddTearDown(tester);
+      }
     });
     testWidgets('''Outline: Plus button increases the counter (1, '1')''', (tester) async {
-      await bddSetUp(tester);
-      await theAppIsRunning(tester);
-      await iTapIconTimes(tester, Icons.add, 1);
-      await iSeeText(tester, '1');
-      await bddTearDown(tester);
+      try {
+        await bddSetUp(tester);
+        await theAppIsRunning(tester);
+        await iTapIconTimes(tester, Icons.add, 1);
+        await iSeeText(tester, '1');
+      } finally {
+        await bddTearDown(tester);
+      }
     });
     testWidgets('''Outline: Plus button increases the counter (42, '42')''', (tester) async {
-      await bddSetUp(tester);
-      await theAppIsRunning(tester);
-      await iTapIconTimes(tester, Icons.add, 42);
-      await iSeeText(tester, '42');
-      await bddTearDown(tester);
+      try {
+        await bddSetUp(tester);
+        await theAppIsRunning(tester);
+        await iTapIconTimes(tester, Icons.add, 42);
+        await iSeeText(tester, '42');
+      } finally {
+        await bddTearDown(tester);
+      }
     });
   });
 }
