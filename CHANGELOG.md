@@ -1,3 +1,7 @@
+## [1.4.0] - 'After' block improvement
+
+* BREAKING CHANGE - Make 'After' block execute even when the test fails (by @jamontes79)
+
 ## [1.3.2] - Add diacritics support
 
 * Add diacritics support (thanks @vidibu)
