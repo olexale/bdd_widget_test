@@ -1,3 +1,7 @@
+## [1.4.1] - 'After' block improvement
+
+* 100% code coverage
+
 ## [1.4.0] - 'After' block improvement
 
 * BREAKING CHANGE - Make 'After' block execute even when the test fails (by @jamontes79)
