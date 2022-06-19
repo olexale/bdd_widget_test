@@ -6,6 +6,11 @@ on:
     paths-ignore:
       - '**/README.md'
 
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**/README.md'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,21 +18,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Flutter SDK
+      - name: 🐦 Setup Flutter SDK
         uses: flutter-actions/setup-flutter@v1
         with:
-          version: '3.0.1'
+          version: '3.0.2'
 
-      - name: Install dependencies
+      - name: 🛠 Install dependencies
         run: flutter pub get
 
-      - name: Analyze project source
+      - name: 🕵️‍♀️ Analyze project source
         run: flutter analyze . --fatal-infos
 
-      - name: Run tests
+      - name: 🧪 Run tests
         run: flutter test --coverage
+
+      - name: 🎯 Check Code Coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v1
         
-      - name: Coveralls GitHub Action
+      - name: 🥇 Update coverage badge
         uses: coverallsapp/github-action@1.1.3
         with:
           github-token: ${{ secrets.github_token }}
