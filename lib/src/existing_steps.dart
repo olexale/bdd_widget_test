@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:path/path.dart' as p;
 
 /// key - step filename, value - path for import (ex: {'i_have_a_step.dart': 'step/common'})
@@ -8,7 +7,7 @@ Map<String, String> getExistingStepSubfolders(
   String stepFolderName,
 ) {
   final stepFolder = p.join(featureDir, stepFolderName);
-  final steps = Directory(stepFolder);
+  final steps = fs.directory(stepFolder);
   if (!steps.existsSync()) {
     return {};
   }

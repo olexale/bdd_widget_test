@@ -1,6 +1,5 @@
-import 'dart:io';
-import 'dart:isolate';
-
+import 'package:bdd_widget_test/src/util/fs.dart';
+import 'package:bdd_widget_test/src/util/isolate_helper.dart';
 import 'package:yaml/yaml.dart';
 
 const _defaultTestName = 'testWidgets';
@@ -40,7 +39,7 @@ Future<GeneratorOptions> flattenOptions(GeneratorOptions options) async {
 }
 
 Future<GeneratorOptions> readFromPackage(String packageUri) async {
-  final uri = await Isolate.resolvePackageUri(
+  final uri = await resolvePackageUri(
     Uri.parse(packageUri),
   );
   if (uri == null) {
@@ -50,7 +49,8 @@ Future<GeneratorOptions> readFromPackage(String packageUri) async {
 }
 
 GeneratorOptions readFromUri(Uri uri) {
-  final doc = loadYamlNode(File.fromUri(uri).readAsStringSync()) as YamlMap;
+  final rawYaml = fs.file(uri).readAsStringSync();
+  final doc = loadYamlNode(rawYaml) as YamlMap;
   return GeneratorOptions(
     testMethodName: doc['testMethodName'] as String?,
     externalSteps: (doc['externalSteps'] as List?)?.cast<String>(),
