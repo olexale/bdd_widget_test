@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:bdd_widget_test/src/existing_steps.dart';
 import 'package:bdd_widget_test/src/feature_file.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
+import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:build/build.dart';
 
 import 'package:path/path.dart' as p;
@@ -45,7 +44,7 @@ class FeatureBuilder implements Builder {
   }
 
   Future<GeneratorOptions> prepareOptions() async {
-    final fileOptions = File('bdd_options.yaml').existsSync()
+    final fileOptions = fs.file('bdd_options.yaml').existsSync()
         ? readFromUri(Uri.file('bdd_options.yaml'))
         : null;
     final mergedOptions = fileOptions != null
@@ -56,7 +55,7 @@ class FeatureBuilder implements Builder {
   }
 
   Future<void> createFileRecursively(String filename, String content) async {
-    final f = File(filename);
+    final f = fs.file(filename);
     if (f.existsSync()) {
       return;
     }

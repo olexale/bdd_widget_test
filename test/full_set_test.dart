@@ -9,7 +9,7 @@ Feature: Counter
     Background:
         Given the app is running
     After:
-        And I do not see {'42'} text
+        And _I do not see {'42'} text
     Scenario: Initial counter value is 0
         Given the app is running
         Then I see {'0'} text
@@ -23,7 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
-import './step/i_do_not_see_text.dart';
+import './step/_i_do_not_see_text.dart';
 import 'package:bdd_sample/i_see_text.dart';
 
 void main() {
@@ -31,7 +31,7 @@ void main() {
     await theAppIsRunning(tester);
   }
   Future<void> bddTearDown(WidgetTester tester) async {
-    await iDoNotSeeText(tester, '42');
+    await _iDoNotSeeText(tester, '42');
   }
   group(\'\'\'Counter\'\'\', () {
     customTestWidgets(\'\'\'Initial counter value is 0\'\'\', (tester) async {
