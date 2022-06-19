@@ -1,6 +1,6 @@
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 @visibleForTesting
 FileSystem? fsInstance;

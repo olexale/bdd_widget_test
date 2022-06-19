@@ -1,6 +1,5 @@
 import 'dart:isolate';
-
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 @visibleForTesting
 Future<Uri?> Function(Uri)? resolvePackageUriFactory;
