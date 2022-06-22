@@ -29,27 +29,17 @@ String getStepFilename(String stepText) {
 }
 
 String getStepMethodName(String stepText) {
-  final text = removeDiacritics(stepText)
-      .replaceAll(parametersRegExp, '')
-      .replaceAll(examplesRegExp, '')
-      .replaceAll(charactersAndNumbersRegExp, '')
-      .replaceAll(repeatingSpacesRegExp, ' ')
-      .trim()
-      .replaceAll(' ', '_');
-  return camelize(text);
+  final step = parseRawStepLine(stepText).first;
+  return _camelizedString(step);
 }
 
 String getStepMethodCall(String stepLine, {List<String>? forceParams}) {
-  final name = getStepMethodName(stepLine);
-
-  final params = parametersValueRegExp.allMatches(stepLine);
-  if (params.isEmpty && forceParams == null) {
-    return '$name(tester)';
-  }
-
-  final methodParameters =
-      forceParams ?? params.map((p) => p.group(0)).join(', ');
-  return '$name(tester, $methodParameters)';
+  final step = parseRawStepLine(stepLine);
+  final parameters = [
+    'tester',
+    if (forceParams != null) ...forceParams else ...step.skip(1)
+  ].join(', ');
+  return '${_camelizedString(step[0])}($parameters)';
 }
 
 String generateStepDart(String package, String line) {
@@ -85,3 +75,51 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
   'iTapText': (_, __) => ITapText(),
   'iWait': (_, __) => IWait(),
 };
+
+/// Return an array of Strings where first element is the step name and the rest
+/// are parameters.
+List<String> parseRawStepLine(String stepLine) {
+  final name = StringBuffer();
+  final parameters = <String>[];
+  final parameter = StringBuffer();
+
+  var bracketsNesting = 0;
+  for (var i = 0; i < stepLine.length; ++i) {
+    final c = stepLine[i];
+    if (c == '{') {
+      // this is needed for cases when there is { inside parameter, like
+      // When I run {func foo(){} func bar() {print('hey');}} code
+      bracketsNesting++;
+      if (bracketsNesting == 1) {
+        // Found a parameter, skipping adding {
+        continue;
+      }
+    }
+    if (c == '}') {
+      bracketsNesting--;
+      if (bracketsNesting == 0) {
+        // The end of the parameter, flushing the value, skiping }
+        parameters.add(parameter.toString());
+        parameter.clear();
+        continue;
+      }
+    }
+
+    if (bracketsNesting == 0) {
+      name.write(c);
+    } else {
+      parameter.write(c);
+    }
+  }
+  return [name.toString(), ...parameters];
+}
+
+String _camelizedString(String input) {
+  final text = removeDiacritics(input)
+      .replaceAll(examplesRegExp, '')
+      .replaceAll(charactersAndNumbersRegExp, '')
+      .replaceAll(repeatingSpacesRegExp, ' ')
+      .trim()
+      .replaceAll(' ', '_');
+  return camelize(text);
+}
