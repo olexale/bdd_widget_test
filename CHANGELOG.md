@@ -1,4 +1,8 @@
-## [1.4.1] - 'After' block improvement
+## [1.4.2] - Nested brackets
+
+* Fix nested brackets bug
+
+## [1.4.1] - Code coverage
 
 * 100% code coverage
 
