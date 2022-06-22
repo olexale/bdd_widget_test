@@ -26,6 +26,9 @@ jobs:
       - name: 🛠 Install dependencies
         run: flutter pub get
 
+      - name: 👨‍🎨 Validate formatting
+        run: flutter format --set-exit-if-changed lib test
+
       - name: 🕵️‍♀️ Analyze project source
         run: flutter analyze . --fatal-infos
 

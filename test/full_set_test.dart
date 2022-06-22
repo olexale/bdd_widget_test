@@ -12,6 +12,7 @@ Feature: Counter
         And _I do not see {'42'} text
     Scenario: Initial counter value is 0
         Given the app is running
+        And I run {'func foo() {}; func bar() { print("hey!"); };'} code
         Then I see {'0'} text
 ''';
 
@@ -24,6 +25,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
 import './step/_i_do_not_see_text.dart';
+import './step/i_run_code.dart';
 import 'package:bdd_sample/i_see_text.dart';
 
 void main() {
@@ -38,6 +40,7 @@ void main() {
       try {
         await bddSetUp(tester);
         await theAppIsRunning(tester);
+        await iRunCode(tester, 'func foo() {}; func bar() { print("hey!"); };');
         await iSeeText(tester, '0');
       } finally {
         await bddTearDown(tester);

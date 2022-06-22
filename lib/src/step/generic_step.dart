@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
+import 'package:bdd_widget_test/src/step_generator.dart';
 
 class GenericStep implements BddStep {
   GenericStep(this.methodName, this.rawLine);
@@ -17,7 +18,7 @@ ${getStepSignature(rawLine)} {
 ''';
 
   String getStepSignature(String stepLine) {
-    final params = parametersRegExp.allMatches(stepLine);
+    final params = parseRawStepLine(stepLine).skip(1);
     if (params.isEmpty) {
       final examples = examplesRegExp.allMatches(stepLine);
       if (examples.isEmpty) {
