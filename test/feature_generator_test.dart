@@ -7,6 +7,8 @@ import 'package:file/memory.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
+import 'util/testing_data.dart';
+
 void main() {
   setUp(() {
     resolvePackageUriFactory = (uri) {
@@ -116,15 +118,6 @@ testMethodName: customName
 stepFolderName: scenarios
 ''');
 
-    // resolvePackageUriFactory = (uri) {
-    //   if (uri.path == externalYaml) {
-    //     return Future.value(
-    //       Uri.parse(externalYaml),
-    //     );
-    //   }
-    //   throw Exception();
-    // };
-
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: unused_import, directives_ordering\n'
         '\n'
@@ -145,25 +138,78 @@ stepFolderName: scenarios
     final content = await generate(scenario);
     expect(content, expected);
   });
+
+  test('nested includes', () async {
+    const includeYaml = 'bdd_options.yaml';
+    const externalYaml1 = 'external_options_1.yaml';
+    const externalYaml2 = 'external_options_2.yaml';
+    const externalYaml3 = 'external_options_3.yaml';
+
+    fs.file(includeYaml)
+      ..createSync()
+      ..writeAsStringSync('''
+include: 
+  - $externalYaml1
+  - $externalYaml2
+''');
+
+    fs.file(externalYaml1)
+      ..createSync()
+      ..writeAsStringSync('''
+testMethodName: customName
+''');
+
+    fs.file(externalYaml2)
+      ..createSync()
+      ..writeAsStringSync('''
+include: $externalYaml3
+''');
+
+    fs.file(externalYaml3)
+      ..createSync()
+      ..writeAsStringSync('''
+stepFolderName: scenarios
+''');
+
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+        '// ignore_for_file: unused_import, directives_ordering\n'
+        '\n'
+        'import \'package:flutter/material.dart\';\n'
+        'import \'package:flutter_test/flutter_test.dart\';\n'
+        '\n'
+        'import \'./scenarios/the_app_is_running.dart\';\n'
+        '\n'
+        'void main() {\n'
+        '  group(\'\'\'Testing feature\'\'\', () {\n'
+        '    customName(\'\'\'Testing scenario\'\'\', (tester) async {\n'
+        '      await theAppIsRunning(tester);\n'
+        '    });\n'
+        '  });\n'
+        '}\n';
+
+    const scenario = 'options';
+    final content = await generate(
+        scenario,
+        const BuilderOptions(<String, dynamic>{
+          'include': externalYaml3,
+        }));
+    expect(content, expected);
+  });
 }
 
 // ----------------------------------------------------------------------------
 const pkgName = 'pkg';
 
-final builder = featureBuilder(const BuilderOptions(
-  <String, dynamic>{},
-));
-
-Future<String> generate(String scenario) async {
+Future<String> generate(String scenario, [BuilderOptions? options]) async {
   final path = 'test/builder_scenarios/$scenario';
 
   final srcs = <String, String>{
-    '$pkgName|$path/sample.feature': builtValueSource,
+    '$pkgName|$path/sample.feature': minimalFeatureFile,
   };
 
   final writer = InMemoryAssetWriter();
   await testBuilder(
-    builder,
+    featureBuilder(options ?? const BuilderOptions(<String, dynamic>{})),
     srcs,
     rootPackage: pkgName,
     writer: writer,
@@ -172,12 +218,6 @@ Future<String> generate(String scenario) async {
     writer.assets[AssetId(pkgName, '$path/sample_test.dart')] ?? [],
   );
 }
-
-const String builtValueSource = r'''
-Feature: Testing feature
-    Scenario: Testing scenario
-        Given the app is running
-''';
 
 String getStepFolderName(String scenario) => p.joinAll([
       fs.currentDirectory.path,

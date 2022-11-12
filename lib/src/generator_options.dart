@@ -20,25 +20,32 @@ class GeneratorOptions {
         testMethodName: json['testMethodName'] as String?,
         externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
         stepFolderName: json['stepFolderName'] as String?,
-        include: json['include'] as String?,
+        include: json['include'] is String
+            ? [(json['include'] as String)]
+            : (json['include'] as List?)?.cast<String>(),
       );
 
   final String stepFolder;
   final String testMethodName;
-  final String? include;
+  final List<String>? include;
   final List<String> externalSteps;
 }
 
 Future<GeneratorOptions> flattenOptions(GeneratorOptions options) async {
-  if (options.include == null) {
+  if (options.include?.isEmpty ?? true) {
     return options;
   }
-  final includedOptions = await readFromPackage(options.include!);
-  final newOptions = merge(options, includedOptions);
-  return flattenOptions(newOptions);
+  var resultOptions = options;
+  for (final include in resultOptions.include!) {
+    final includedOptions = await _readFromPackage(include);
+    final newOptions = merge(resultOptions, includedOptions);
+    resultOptions = await flattenOptions(newOptions);
+  }
+
+  return resultOptions;
 }
 
-Future<GeneratorOptions> readFromPackage(String packageUri) async {
+Future<GeneratorOptions> _readFromPackage(String packageUri) async {
   final uri = await resolvePackageUri(
     Uri.parse(packageUri),
   );
@@ -55,7 +62,9 @@ GeneratorOptions readFromUri(Uri uri) {
     testMethodName: doc['testMethodName'] as String?,
     externalSteps: (doc['externalSteps'] as List?)?.cast<String>(),
     stepFolderName: doc['stepFolderName'] as String?,
-    include: doc['include'] as String?,
+    include: doc['include'] is String
+        ? [(doc['include'] as String)]
+        : (doc['include'] as YamlList?)?.value.cast<String>(),
   );
 }
 
