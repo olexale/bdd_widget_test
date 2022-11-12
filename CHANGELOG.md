@@ -1,3 +1,7 @@
+## [1.4.3] - Multiple includes
+
+* Add multiple includes to the config file
+
 ## [1.4.2] - Nested brackets
 
 * Fix nested brackets bug
