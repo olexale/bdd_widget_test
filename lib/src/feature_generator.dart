@@ -15,14 +15,8 @@ String generateFeatureDart(
   final sb = StringBuffer();
   sb.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
   sb.writeln('// ignore_for_file: unused_import, directives_ordering');
-  sb.writeln();
-  sb.writeln('import \'package:flutter/material.dart\';');
-  sb.writeln('import \'package:flutter_test/flutter_test.dart\';');
-  if (isIntegrationTest) {
-    sb.writeln('import \'package:integration_test/integration_test.dart\';');
-  }
-  sb.writeln();
 
+  sb.writeln();
   var featureTestMethodNameOverride = testMethodName;
   final tags = <String>[];
 
@@ -43,7 +37,13 @@ String generateFeatureDart(
   if (tags.isNotEmpty) {
     sb.writeln("@Tags(['${tags.join("', '")}'])");
   }
+  sb.writeln('import \'package:flutter/material.dart\';');
+  sb.writeln('import \'package:flutter_test/flutter_test.dart\';');
+  if (isIntegrationTest) {
+    sb.writeln('import \'package:integration_test/integration_test.dart\';');
+  }
 
+  sb.writeln();
   for (final step in steps.map((e) => e.import).toSet()) {
     sb.writeln('import \'$step\';');
   }

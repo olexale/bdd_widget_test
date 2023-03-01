@@ -9,6 +9,8 @@ void main() {
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
+''';
+    const expectedImports = '''
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,7 +21,7 @@ import 'package:flutter/cupertino.dart';
 
 ''';
     const expectedFeatureDart =
-        '''$expectedHeader${additionalLines}import './step/the_app_is_running.dart';
+        '''$expectedHeader$additionalLines${expectedImports}import './step/the_app_is_running.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
