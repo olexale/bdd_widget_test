@@ -4,18 +4,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'util/testing_data.dart';
 
 void main() {
-  const expectedHeader = '''
-// GENERATED CODE - DO NOT MODIFY BY HAND
+  const expectedComment = '''// GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
+''';
+  const expectedImports = '''
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 ''';
+  const expectedHeader = '''$expectedComment$expectedImports''';
 
   test('Empty feature file', () {
-    const expectedFeatureDart = '''$expectedHeader
-
+    const expectedFeatureDart = '''$expectedComment
+$expectedImports
 void main() {
 }
 ''';
@@ -75,9 +77,9 @@ void main() {
   });
 
   test('Several features in one file', () {
-    const expectedFeatureDart = '''$expectedHeader// some comment
+    const expectedFeatureDart = '''$expectedComment// some comment
 
-import './step/the_app_is_running.dart';
+${expectedImports}import './step/the_app_is_running.dart';
 
 void main() {
   group(\'\'\'First testing feature\'\'\', () {

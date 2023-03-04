@@ -15,10 +15,10 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
+@Tags(['integration', 'slow'])
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-@Tags(['integration', 'slow'])
 import './step/the_app_is_running.dart';
 
 void main() {
