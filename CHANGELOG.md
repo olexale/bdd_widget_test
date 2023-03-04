@@ -1,3 +1,8 @@
+## [1.4.4] - Bugfix
+
+* Fix bug for feature tags (by @GuillaumeMorinQc)
+* Apply stricter linter
+
 ## [1.4.3] - Multiple includes
 
 * Add multiple includes to the config file
