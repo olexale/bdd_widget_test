@@ -55,12 +55,13 @@ void main() {
       package: 'test',
       input: featureFile,
       generatorOptions: const GeneratorOptions(
-          testMethodName: 'customTestWidgets',
-          externalSteps: [
-            'package:bdd_sample/i_see_text.dart',
-            'package:bdd_sample/i_see_some_text.dart',
-            'package:bdd_sample/i_see_some_other_text.dart',
-          ]),
+        testMethodName: 'customTestWidgets',
+        externalSteps: [
+          'package:bdd_sample/i_see_text.dart',
+          'package:bdd_sample/i_see_some_text.dart',
+          'package:bdd_sample/i_see_some_other_text.dart',
+        ],
+      ),
     );
     expect(feature.dartContent, expectedFeatureDart);
   });

@@ -20,7 +20,10 @@ Future<void> iInvokeTest(WidgetTester tester) async {
 ''';
 
     final feature = FeatureFile(
-        featureDir: '$path.feature', package: path, input: featureFile);
+      featureDir: '$path.feature',
+      package: path,
+      input: featureFile,
+    );
 
     expect(
       feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
@@ -45,7 +48,10 @@ Future<void> iInvokeTestWithParameter(WidgetTester tester, dynamic param1, dynam
 ''';
 
     final feature = FeatureFile(
-        featureDir: '$path.feature', package: path, input: featureFile);
+      featureDir: '$path.feature',
+      package: path,
+      input: featureFile,
+    );
 
     expect(
       feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
@@ -55,10 +61,10 @@ Future<void> iInvokeTestWithParameter(WidgetTester tester, dynamic param1, dynam
 
   test('Special characters ignored', () {
     const path = 'test';
-    const featureFile = '''
+    const featureFile = r'''
 Feature: Testing feature
     Scenario: Testing scenario
-        When !  I@ #invoke\$%   ^'`~  &*+=) test ?   &&/| \\ ;:
+        When !  I@ #invoke$%   ^'`~  &*+=) test ?   &&/| \ ;:
     ''';
 
     const expectedSteps = '''
@@ -70,7 +76,10 @@ Future<void> iInvokeTest(WidgetTester tester) async {
 ''';
 
     final feature = FeatureFile(
-        featureDir: '$path.feature', package: path, input: featureFile);
+      featureDir: '$path.feature',
+      package: path,
+      input: featureFile,
+    );
 
     expect(
       feature.getStepFiles().whereType<NewStepFile>().single.dartContent,

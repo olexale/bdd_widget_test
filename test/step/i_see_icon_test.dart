@@ -25,7 +25,10 @@ Future<void> iSeeIcon(
 ''';
 
     final feature = FeatureFile(
-        featureDir: '$path.feature', package: path, input: featureFile);
+      featureDir: '$path.feature',
+      package: path,
+      input: featureFile,
+    );
 
     expect(
       feature.getStepFiles().whereType<NewStepFile>().single.dartContent,

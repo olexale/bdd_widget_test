@@ -12,7 +12,8 @@ void parseScenario(
   List<String> tags,
 ) {
   sb.writeln(
-      '    $testMethodName(\'\'\'$scenarioTitle\'\'\', (tester) async {');
+    "    $testMethodName('''$scenarioTitle''', (tester) async {",
+  );
   if (hasTearDown) {
     sb.writeln('      try {');
   }
@@ -31,7 +32,8 @@ void parseScenario(
     sb.writeln('      }');
   }
   sb.writeln(
-      '    }${tags.isNotEmpty ? ', tags: [\'${tags.join('\', \'')}\']' : ''});');
+    '    }${tags.isNotEmpty ? ", tags: ['${tags.join("', '")}']" : ''});',
+  );
 }
 
 List<List<BddLine>> generateScenariosFromScenaioOutline(
@@ -49,11 +51,13 @@ List<Map<String, String>> _getExamples(
   final exampleLines = scenario
       .skipWhile((l) => l.type != LineType.exampleTitle)
       .where((l) => l.type == LineType.examples)
-      .map((e) => e.rawLine.substring(
-            // Remove the first and the last '|' separator
-            1,
-            e.rawLine.length - 1,
-          ))
+      .map(
+        (e) => e.rawLine.substring(
+          // Remove the first and the last '|' separator
+          1,
+          e.rawLine.length - 1,
+        ),
+      )
       .map(_parseExampleLine);
   final names = exampleLines.first;
   return exampleLines.skip(1).map((e) => Map.fromIterables(names, e)).toList();
@@ -63,14 +67,20 @@ List<String> _parseExampleLine(String line) =>
     line.split('|').map((e) => e.trim()).toList();
 
 Iterable<BddLine> _processScenarioLines(
-    List<BddLine> lines, Map<String, String> examples) sync* {
+  List<BddLine> lines,
+  Map<String, String> examples,
+) sync* {
   final name = lines.first;
   yield BddLine.fromValue(
-      name.type, '${name.value} (${examples.values.join(', ')})');
+    name.type,
+    '${name.value} (${examples.values.join(', ')})',
+  );
 
   for (final line in lines.skip(1)) {
     yield BddLine.fromValue(
-        line.type, _replacePlaceholders(line.value, examples));
+      line.type,
+      _replacePlaceholders(line.value, examples),
+    );
   }
 }
 

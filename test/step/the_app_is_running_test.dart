@@ -18,7 +18,10 @@ Future<void> theAppIsRunning(WidgetTester tester) async {
 ''';
 
     final feature = FeatureFile(
-        featureDir: '$path.feature', package: path, input: minimalFeatureFile);
+      featureDir: '$path.feature',
+      package: path,
+      input: minimalFeatureFile,
+    );
 
     expect(
       feature.getStepFiles().whereType<NewStepFile>().single.dartContent,

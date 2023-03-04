@@ -4,7 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'util/testing_data.dart';
 
 void main() {
-  const expectedComment = '''// GENERATED CODE - DO NOT MODIFY BY HAND
+  const expectedComment = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
 ''';
@@ -16,7 +17,8 @@ import 'package:flutter_test/flutter_test.dart';
   const expectedHeader = '''$expectedComment$expectedImports''';
 
   test('Empty feature file', () {
-    const expectedFeatureDart = '''$expectedComment
+    const expectedFeatureDart = '''
+$expectedComment
 $expectedImports
 void main() {
 }
@@ -31,8 +33,8 @@ void main() {
   });
 
   test('simplest feature file parses', () {
-    const expectedFeatureDart =
-        '''${expectedHeader}import './step/the_app_is_running.dart';
+    const expectedFeatureDart = '''
+${expectedHeader}import './step/the_app_is_running.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
@@ -52,8 +54,8 @@ void main() {
   });
 
   test('Step with parameters', () {
-    const expectedFeatureDart =
-        '''${expectedHeader}import './step/the_app_is_running.dart';
+    const expectedFeatureDart = '''
+${expectedHeader}import './step/the_app_is_running.dart';
 import './step/i_see_text.dart';
 import './step/i_see_icon.dart';
 
@@ -77,7 +79,8 @@ void main() {
   });
 
   test('Several features in one file', () {
-    const expectedFeatureDart = '''$expectedComment// some comment
+    const expectedFeatureDart = '''
+$expectedComment// some comment
 
 ${expectedImports}import './step/the_app_is_running.dart';
 

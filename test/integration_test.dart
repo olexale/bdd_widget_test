@@ -5,7 +5,8 @@ import 'util/testing_data.dart';
 
 void main() {
   test('integration-related lines are added', () {
-    const expectedFeatureDart = '''// GENERATED CODE - DO NOT MODIFY BY HAND
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
 import 'package:flutter/material.dart';

@@ -17,7 +17,8 @@ Feature: Testing feature
       package: path,
       input: featureFile,
       generatorOptions: const GeneratorOptions(
-          externalSteps: ['package:some_package/i_have_an_external_step.dart']),
+        externalSteps: ['package:some_package/i_have_an_external_step.dart'],
+      ),
     );
 
     expect(

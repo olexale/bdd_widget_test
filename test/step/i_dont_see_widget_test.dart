@@ -3,7 +3,7 @@ import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('I Don\'t See Widget pre-built step generated', () {
+  test("I Don't See Widget pre-built step generated", () {
     const path = 'test';
     const featureFile = '''
 Feature: Testing feature
@@ -24,7 +24,10 @@ Future<void> iDontSeeWidget(
 ''';
 
     final feature = FeatureFile(
-        featureDir: '$path.feature', package: path, input: featureFile);
+      featureDir: '$path.feature',
+      package: path,
+      input: featureFile,
+    );
 
     expect(
       feature.getStepFiles().whereType<NewStepFile>().single.dartContent,

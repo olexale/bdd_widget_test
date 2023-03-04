@@ -11,19 +11,23 @@ class FeatureFile {
     this.isIntegrationTest = false,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
-  }) : _lines = _prepareLines(input
-            .split('\n')
-            .map((line) => line.trim())
-            .map((line) => BddLine(line))) {
+  }) : _lines = _prepareLines(
+          input
+              .split('\n')
+              .map((line) => line.trim())
+              .map((line) => BddLine(line)),
+        ) {
     _stepFiles = _lines
         .where((line) => line.type == LineType.step)
-        .map((e) => StepFile.create(
-              featureDir,
-              package,
-              e.value,
-              existingSteps,
-              generatorOptions,
-            ))
+        .map(
+          (e) => StepFile.create(
+            featureDir,
+            package,
+            e.value,
+            existingSteps,
+            generatorOptions,
+          ),
+        )
         .toList();
   }
 

@@ -37,15 +37,15 @@ String generateFeatureDart(
   if (tags.isNotEmpty) {
     sb.writeln("@Tags(['${tags.join("', '")}'])");
   }
-  sb.writeln('import \'package:flutter/material.dart\';');
-  sb.writeln('import \'package:flutter_test/flutter_test.dart\';');
+  sb.writeln("import 'package:flutter/material.dart';");
+  sb.writeln("import 'package:flutter_test/flutter_test.dart';");
   if (isIntegrationTest) {
-    sb.writeln('import \'package:integration_test/integration_test.dart\';');
+    sb.writeln("import 'package:integration_test/integration_test.dart';");
   }
 
   sb.writeln();
   for (final step in steps.map((e) => e.import).toSet()) {
-    sb.writeln('import \'$step\';');
+    sb.writeln("import '$step';");
   }
 
   sb.writeln();
@@ -56,8 +56,9 @@ String generateFeatureDart(
   }
 
   final features = splitWhen<BddLine>(
-      lines.skipWhile((value) => value.type != LineType.feature), // skip header
-      (e) => e.type == LineType.feature);
+    lines.skipWhile((value) => value.type != LineType.feature), // skip header
+    (e) => e.type == LineType.feature,
+  );
 
   for (final feature in features) {
     final hasBackground = _parseBackground(sb, feature);
@@ -82,7 +83,11 @@ bool _parseAfter(StringBuffer sb, List<BddLine> lines) =>
     _parseSetup(sb, lines, LineType.after, tearDownMethodName);
 
 bool _parseSetup(
-    StringBuffer sb, List<BddLine> lines, LineType elementType, String title) {
+  StringBuffer sb,
+  List<BddLine> lines,
+  LineType elementType,
+  String title,
+) {
   var offset = lines.indexWhere((element) => element.type == elementType);
   if (offset != -1) {
     sb.writeln('  Future<void> $title(WidgetTester tester) async {');
@@ -103,11 +108,11 @@ void _parseFeature(
   bool hasTearDown,
   String testMethodName,
 ) {
-  sb.writeln('  group(\'\'\'${feature.first.value}\'\'\', () {');
+  sb.writeln("  group('''${feature.first.value}''', () {");
 
   final scenarios = _splitScenarios(
-          feature.skipWhile((value) => !_isNewScenario(value.type)).toList())
-      .toList();
+    feature.skipWhile((value) => !_isNewScenario(value.type)).toList(),
+  ).toList();
   for (final scenario in scenarios) {
     final scenarioTagLines =
         scenario.where((line) => line.type == LineType.tag).toList();
@@ -118,8 +123,8 @@ void _parseFeature(
     );
 
     final flattenDataTables = replaceDataTables(
-            scenario.skipWhile((line) => line.type == LineType.tag).toList())
-        .toList();
+      scenario.skipWhile((line) => line.type == LineType.tag).toList(),
+    ).toList();
     final scenariosToParse = flattenDataTables.first.type == LineType.scenario
         ? [flattenDataTables]
         : generateScenariosFromScenaioOutline(flattenDataTables);

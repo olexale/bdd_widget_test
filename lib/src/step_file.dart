@@ -17,7 +17,7 @@ abstract class StepFile {
 
     if (existingSteps.containsKey(file)) {
       final import =
-          p.join('.', existingSteps[file], file).replaceAll('\\', '/');
+          p.join('.', existingSteps[file], file).replaceAll(r'\', '/');
       return ExistingStepFile._(import);
     }
 
@@ -28,7 +28,7 @@ abstract class StepFile {
     }
 
     final import =
-        p.join('.', generatorOptions.stepFolder, file).replaceAll('\\', '/');
+        p.join('.', generatorOptions.stepFolder, file).replaceAll(r'\', '/');
     final filename = p.join(featureDir, generatorOptions.stepFolder, file);
     return NewStepFile._(import, filename, package, line);
   }

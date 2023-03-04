@@ -7,6 +7,7 @@ Future<void> iDontSeeRichText(
   String text,
 ) async {
   final finder = find.byWidgetPredicate(
-      (widget) => widget is RichText && widget.text.toPlainText() == text);
+    (widget) => widget is RichText && widget.text.toPlainText() == text,
+  );
   expect(finder, findsNothing);
 }

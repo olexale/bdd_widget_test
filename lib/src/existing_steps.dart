@@ -29,6 +29,8 @@ String _getStepSubfolders(
   String stepFolderName,
 ) {
   final pathDiff = currentStepPath.getRange(
-      stepFolderPathSegmentsLength - 1, currentStepPath.length - 1);
+    stepFolderPathSegmentsLength - 1,
+    currentStepPath.length - 1,
+  );
   return p.joinAll([stepFolderName, ...pathDiff]);
 }

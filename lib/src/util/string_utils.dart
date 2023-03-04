@@ -13,7 +13,7 @@ const int _ASCII_END = 127; // _ascii list length
 String underscore(String input) {
   final sb = StringBuffer();
   var separate = false;
-  Characters(input).forEach((s) {
+  for (final s in Characters(input)) {
     final type = _getAsciiType(s.runes);
 
     if (separate && type & _UPPER != 0) {
@@ -24,7 +24,7 @@ String underscore(String input) {
       sb.write(s.toLowerCase());
       separate = type & _ALPHA_NUM != 0 || type & _UNDERSCORE != 0 && separate;
     }
-  });
+  }
 
   return sb.toString();
 }
@@ -38,7 +38,7 @@ String camelize(String input) {
   var isBeginning = true;
   var remove = false;
 
-  Characters(string).forEach((s) {
+  for (final s in Characters(string)) {
     final type = _getAsciiType(s.runes);
 
     if (capitalize && type & _ALPHA != 0) {
@@ -68,7 +68,7 @@ String camelize(String input) {
         sb.write(s);
       }
     }
-  });
+  }
 
   return sb.toString();
 }

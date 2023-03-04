@@ -24,19 +24,18 @@ void main() {
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: unused_import, directives_ordering\n'
         '\n'
-        'import \'package:flutter/material.dart\';\n'
-        'import \'package:flutter_test/flutter_test.dart\';\n'
+        "import 'package:flutter/material.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
-        'import \'./step/the_app_is_running.dart\';\n'
+        "import './step/the_app_is_running.dart';\n"
         '\n'
         'void main() {\n'
-        '  group(\'\'\'Testing feature\'\'\', () {\n'
-        '    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {\n'
+        "  group('''Testing feature''', () {\n"
+        "    testWidgets('''Testing scenario''', (tester) async {\n"
         '      await theAppIsRunning(tester);\n'
         '    });\n'
         '  });\n'
-        '}\n'
-        '';
+        '}\n';
     const scenario = 'simple';
     final content = await generate(scenario);
     expect(content, expected);
@@ -68,14 +67,14 @@ testMethodName: customName
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: unused_import, directives_ordering\n'
         '\n'
-        'import \'package:flutter/material.dart\';\n'
-        'import \'package:flutter_test/flutter_test.dart\';\n'
+        "import 'package:flutter/material.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
-        'import \'./scenarios/the_app_is_running.dart\';\n'
+        "import './scenarios/the_app_is_running.dart';\n"
         '\n'
         'void main() {\n'
-        '  group(\'\'\'Testing feature\'\'\', () {\n'
-        '    customName(\'\'\'Testing scenario\'\'\', (tester) async {\n'
+        "  group('''Testing feature''', () {\n"
+        "    customName('''Testing scenario''', (tester) async {\n"
         '      await theAppIsRunning(tester);\n'
         '    });\n'
         '  });\n'
@@ -121,14 +120,14 @@ stepFolderName: scenarios
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: unused_import, directives_ordering\n'
         '\n'
-        'import \'package:flutter/material.dart\';\n'
-        'import \'package:flutter_test/flutter_test.dart\';\n'
+        "import 'package:flutter/material.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
-        'import \'./scenarios/the_app_is_running.dart\';\n'
+        "import './scenarios/the_app_is_running.dart';\n"
         '\n'
         'void main() {\n'
-        '  group(\'\'\'Testing feature\'\'\', () {\n'
-        '    customName(\'\'\'Testing scenario\'\'\', (tester) async {\n'
+        "  group('''Testing feature''', () {\n"
+        "    customName('''Testing scenario''', (tester) async {\n"
         '      await theAppIsRunning(tester);\n'
         '    });\n'
         '  });\n'
@@ -174,14 +173,14 @@ stepFolderName: scenarios
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: unused_import, directives_ordering\n'
         '\n'
-        'import \'package:flutter/material.dart\';\n'
-        'import \'package:flutter_test/flutter_test.dart\';\n'
+        "import 'package:flutter/material.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
-        'import \'./scenarios/the_app_is_running.dart\';\n'
+        "import './scenarios/the_app_is_running.dart';\n"
         '\n'
         'void main() {\n'
-        '  group(\'\'\'Testing feature\'\'\', () {\n'
-        '    customName(\'\'\'Testing scenario\'\'\', (tester) async {\n'
+        "  group('''Testing feature''', () {\n"
+        "    customName('''Testing scenario''', (tester) async {\n"
         '      await theAppIsRunning(tester);\n'
         '    });\n'
         '  });\n'
@@ -189,10 +188,11 @@ stepFolderName: scenarios
 
     const scenario = 'options';
     final content = await generate(
-        scenario,
-        const BuilderOptions(<String, dynamic>{
-          'include': externalYaml3,
-        }));
+      scenario,
+      const BuilderOptions(<String, dynamic>{
+        'include': externalYaml3,
+      }),
+    );
     expect(content, expected);
   });
 }
@@ -209,7 +209,7 @@ Future<String> generate(String scenario, [BuilderOptions? options]) async {
 
   final writer = InMemoryAssetWriter();
   await testBuilder(
-    featureBuilder(options ?? const BuilderOptions(<String, dynamic>{})),
+    featureBuilder(options ?? BuilderOptions.empty),
     srcs,
     rootPackage: pkgName,
     writer: writer,

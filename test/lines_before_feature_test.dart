@@ -20,8 +20,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/cupertino.dart';
 
 ''';
-    const expectedFeatureDart =
-        '''$expectedHeader$additionalLines${expectedImports}import './step/the_app_is_running.dart';
+    const expectedFeatureDart = '''
+$expectedHeader$additionalLines${expectedImports}import './step/the_app_is_running.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
