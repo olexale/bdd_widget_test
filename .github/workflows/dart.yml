@@ -21,13 +21,13 @@ jobs:
       - name: 🐦 Setup Flutter SDK
         uses: flutter-actions/setup-flutter@v1
         with:
-          version: '3.0.2'
+          version: '3.7.6'
 
       - name: 🛠 Install dependencies
         run: flutter pub get
 
       - name: 👨‍🎨 Validate formatting
-        run: flutter format --set-exit-if-changed lib test
+        run: dart format --set-exit-if-changed lib test
 
       - name: 🕵️‍♀️ Analyze project source
         run: flutter analyze . --fatal-infos

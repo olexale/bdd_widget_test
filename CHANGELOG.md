@@ -1,7 +1,8 @@
-## [1.4.4] - Bugfix
+## [1.5.0] - Bugfix and new SDK constraints
 
 * Fix bug for feature tags (by @GuillaumeMorinQc)
 * Apply stricter linter
+* Update Dart SDK constraints
 
 ## [1.4.3] - Multiple includes
 

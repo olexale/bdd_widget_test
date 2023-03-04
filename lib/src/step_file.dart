@@ -35,8 +35,8 @@ abstract class StepFile {
 }
 
 class NewStepFile extends StepFile {
-  const NewStepFile._(String import, this.filename, this.package, this.line)
-      : super._(import);
+  const NewStepFile._(super.import, this.filename, this.package, this.line)
+      : super._();
 
   final String package;
   final String line;
@@ -46,9 +46,9 @@ class NewStepFile extends StepFile {
 }
 
 class ExistingStepFile extends StepFile {
-  const ExistingStepFile._(String import) : super._(import);
+  const ExistingStepFile._(super.import) : super._();
 }
 
 class ExternalStepFile extends StepFile {
-  const ExternalStepFile._(String import) : super._(import);
+  const ExternalStepFile._(super.import) : super._();
 }

@@ -12,10 +12,7 @@ class FeatureFile {
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
   }) : _lines = _prepareLines(
-          input
-              .split('\n')
-              .map((line) => line.trim())
-              .map((line) => BddLine(line)),
+          input.split('\n').map((line) => line.trim()).map(BddLine.new),
         ) {
     _stepFiles = _lines
         .where((line) => line.type == LineType.step)
