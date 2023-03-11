@@ -6,18 +6,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 import './../test/step/common/the_app_is_running.dart';
 import './../test/step/i_do_not_see_text.dart';
-import 'package:bdd_widget_test/step/i_see_text.dart';
-import 'package:bdd_widget_test/step/i_tap_icon.dart';
+import './../test/step/i_see_text.dart';
+import './../test/step/i_tap_icon.dart';
 import './../test/step/i_tap_icon_times.dart';
 
 void main() {
-  Future<void> bddSetUp(WidgetTester tester) async {
-    await theAppIsRunning(tester);
-  }
-  Future<void> bddTearDown(WidgetTester tester) async {
-    await iDoNotSeeText(tester, 'surprise');
-  }
   group('''Counter''', () {
+    Future<void> bddSetUp(WidgetTester tester) async {
+      await theAppIsRunning(tester);
+    }
+    Future<void> bddTearDown(WidgetTester tester) async {
+      await iDoNotSeeText(tester, 'surprise');
+    }
     testWidgets('''Initial counter value is 0''', (tester) async {
       try {
         await bddSetUp(tester);

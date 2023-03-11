@@ -22,10 +22,10 @@ import './step/the_server_always_return_errors.dart';
 import './step/the_app_is_running.dart';
 
 void main() {
-  Future<void> bddSetUp(WidgetTester tester) async {
-    await theServerAlwaysReturnErrors(tester);
-  }
   group(\'\'\'Testing feature\'\'\', () {
+    Future<void> bddSetUp(WidgetTester tester) async {
+      await theServerAlwaysReturnErrors(tester);
+    }
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await bddSetUp(tester);
       await theAppIsRunning(tester);

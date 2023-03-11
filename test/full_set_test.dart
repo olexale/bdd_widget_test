@@ -14,6 +14,11 @@ Feature: Counter
         Given the app is running
         And I run {'func foo() {}; func bar() { print("hey!"); };'} code
         Then I see {'0'} text
+Feature: Counter 2
+    Background:
+        Given the app is running
+    Scenario: Initial counter value is 0
+        Given the app is running
 ''';
 
     const expectedFeatureDart = '''
@@ -29,13 +34,13 @@ import './step/i_run_code.dart';
 import 'package:bdd_sample/i_see_text.dart';
 
 void main() {
-  Future<void> bddSetUp(WidgetTester tester) async {
-    await theAppIsRunning(tester);
-  }
-  Future<void> bddTearDown(WidgetTester tester) async {
-    await _iDoNotSeeText(tester, '42');
-  }
   group(\'\'\'Counter\'\'\', () {
+    Future<void> bddSetUp(WidgetTester tester) async {
+      await theAppIsRunning(tester);
+    }
+    Future<void> bddTearDown(WidgetTester tester) async {
+      await _iDoNotSeeText(tester, '42');
+    }
     customTestWidgets(\'\'\'Initial counter value is 0\'\'\', (tester) async {
       try {
         await bddSetUp(tester);
@@ -45,6 +50,15 @@ void main() {
       } finally {
         await bddTearDown(tester);
       }
+    });
+  });
+  group(\'\'\'Counter 2\'\'\', () {
+    Future<void> bddSetUp(WidgetTester tester) async {
+      await theAppIsRunning(tester);
+    }
+    customTestWidgets(\'\'\'Initial counter value is 0\'\'\', (tester) async {
+      await bddSetUp(tester);
+      await theAppIsRunning(tester);
     });
   });
 }

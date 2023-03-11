@@ -61,6 +61,8 @@ String generateFeatureDart(
   );
 
   for (final feature in features) {
+    sb.writeln("  group('''${feature.first.value}''', () {");
+
     final hasBackground = _parseBackground(sb, feature);
     final hasAfter = _parseAfter(sb, feature);
 
@@ -90,13 +92,13 @@ bool _parseSetup(
 ) {
   var offset = lines.indexWhere((element) => element.type == elementType);
   if (offset != -1) {
-    sb.writeln('  Future<void> $title(WidgetTester tester) async {');
+    sb.writeln('    Future<void> $title(WidgetTester tester) async {');
     offset++;
     while (lines[offset].type == LineType.step) {
-      sb.writeln('    await ${getStepMethodCall(lines[offset].value)};');
+      sb.writeln('      await ${getStepMethodCall(lines[offset].value)};');
       offset++;
     }
-    sb.writeln('  }');
+    sb.writeln('    }');
   }
   return offset != -1;
 }
@@ -108,8 +110,6 @@ void _parseFeature(
   bool hasTearDown,
   String testMethodName,
 ) {
-  sb.writeln("  group('''${feature.first.value}''', () {");
-
   final scenarios = _splitScenarios(
     feature.skipWhile((value) => !_isNewScenario(value.type)).toList(),
   ).toList();
