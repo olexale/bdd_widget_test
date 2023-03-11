@@ -1,3 +1,7 @@
+## [1.5.1] - Bugfix
+
+* Fix Background/After sections for files with multiple features defined
+
 ## [1.5.0] - Bugfix and new SDK constraints
 
 * Fix bug for feature tags (by @GuillaumeMorinQc)
