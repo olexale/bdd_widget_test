@@ -1,3 +1,7 @@
+## [1.6.0] - Change step folder destination
+
+* **BREAKING CHANGE** - Introduce relative and absolute paths for step folder destination
+If you didn't change the step folder name, you should not notice this change. However, if you changed it to a non-relative path (like `my_steps`), from now, the plugin will create a `test/my_steps` folder. To prevent this behavior - make the step folder name relative, i.e. to `./my_steps`.
 ## [1.5.1] - Bugfix
 
 * Fix Background/After sections for files with multiple features defined
