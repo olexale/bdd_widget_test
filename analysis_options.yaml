@@ -1,10 +1,5 @@
 include: package:very_good_analysis/analysis_options.yaml
 
-analyzer:
-  exclude:
-    # workaround for https://github.com/dart-lang/sdk/issues/42910
-    - 'example/**'
-
 linter:
   rules:
     avoid_positional_boolean_parameters: false

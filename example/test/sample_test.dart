@@ -4,11 +4,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import './../test/step/common/the_app_is_running.dart';
-import './../test/step/i_do_not_see_text.dart';
+import './step/common/the_app_is_running.dart';
+import './step/i_do_not_see_text.dart';
 import 'package:bdd_widget_test/step/i_see_text.dart';
 import 'package:bdd_widget_test/step/i_tap_icon.dart';
-import './../test/step/i_tap_icon_times.dart';
+import './step/i_tap_icon_times.dart';
 
 void main() {
   group('''Counter''', () {

@@ -3,7 +3,7 @@ import 'package:bdd_widget_test/src/util/isolate_helper.dart';
 import 'package:yaml/yaml.dart';
 
 const _defaultTestName = 'testWidgets';
-const _stepFolderName = 'step';
+const _stepFolderName = './step';
 
 class GeneratorOptions {
   const GeneratorOptions({

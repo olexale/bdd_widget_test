@@ -1,3 +1,4 @@
+import 'package:bdd_widget_test/src/util/constants.dart';
 import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:path/path.dart' as p;
 
@@ -6,7 +7,13 @@ Map<String, String> getExistingStepSubfolders(
   String featureDir,
   String stepFolderName,
 ) {
-  final stepFolder = p.join(featureDir, stepFolderName);
+  final stepFolder = p.join(
+    stepFolderName.startsWith('./') || stepFolderName.startsWith('../')
+        ? featureDir
+        : testFolderName,
+    stepFolderName,
+  );
+
   final steps = fs.directory(stepFolder);
   if (!steps.existsSync()) {
     return {};
@@ -14,23 +21,12 @@ Map<String, String> getExistingStepSubfolders(
   return steps.listSync(recursive: true).asMap().map(
         (_, step) => MapEntry<String, String>(
           p.basename(step.path),
-          _getStepSubfolders(
-            steps.uri.pathSegments.length,
-            step.uri.pathSegments,
-            stepFolderName,
+          p.dirname(
+            p.relative(
+              step.path,
+              from: featureDir,
+            ),
           ),
         ),
       );
-}
-
-String _getStepSubfolders(
-  int stepFolderPathSegmentsLength,
-  List<String> currentStepPath,
-  String stepFolderName,
-) {
-  final pathDiff = currentStepPath.getRange(
-    stepFolderPathSegmentsLength - 1,
-    currentStepPath.length - 1,
-  );
-  return p.joinAll([stepFolderName, ...pathDiff]);
 }

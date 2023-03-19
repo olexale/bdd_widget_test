@@ -58,7 +58,7 @@ void main() {
 
   test('custom bdd_options', () async {
     const bddOptions = '''
-stepFolderName: scenarios
+stepFolderName: ./scenarios
 testMethodName: customName
 ''';
     fs.file('bdd_options.yaml')
@@ -114,7 +114,7 @@ testMethodName: customName
     fs.file(externalYaml)
       ..createSync()
       ..writeAsStringSync('''
-stepFolderName: scenarios
+stepFolderName: ./scenarios
 ''');
 
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
@@ -167,7 +167,7 @@ include: $externalYaml3
     fs.file(externalYaml3)
       ..createSync()
       ..writeAsStringSync('''
-stepFolderName: scenarios
+stepFolderName: ./scenarios
 ''');
 
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'

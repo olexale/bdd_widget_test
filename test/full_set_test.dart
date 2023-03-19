@@ -3,7 +3,7 @@ import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('testMethodName test ', () {
+  test('fully custom test ', () {
     const featureFile = '''
 Feature: Counter
     Background:
@@ -28,9 +28,9 @@ Feature: Counter 2
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import './step/the_app_is_running.dart';
-import './step/_i_do_not_see_text.dart';
-import './step/i_run_code.dart';
+import '../../my_steps/the_app_is_running.dart';
+import '../../my_steps/_i_do_not_see_text.dart';
+import '../../my_steps/i_run_code.dart';
 import 'package:bdd_sample/i_see_text.dart';
 
 void main() {
@@ -65,10 +65,11 @@ void main() {
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
-      package: 'test',
+      featureDir: 'test/sub-feature/feature',
+      package: 'bdd_feature',
       input: featureFile,
       generatorOptions: const GeneratorOptions(
+        stepFolderName: 'my_steps',
         testMethodName: 'customTestWidgets',
         externalSteps: [
           'package:bdd_sample/i_see_text.dart',
