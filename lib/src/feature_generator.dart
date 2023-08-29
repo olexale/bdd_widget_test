@@ -3,14 +3,15 @@ import 'package:bdd_widget_test/src/data_table_parser.dart';
 import 'package:bdd_widget_test/src/scenario_generator.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
+import 'package:bdd_widget_test/src/util/common.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
-import 'package:collection/collection.dart';
 
 String generateFeatureDart(
   List<BddLine> lines,
   List<StepFile> steps,
   String testMethodName,
   String testerType,
+  String testerName,
   bool isIntegrationTest,
 ) {
   final sb = StringBuffer();
@@ -19,17 +20,23 @@ String generateFeatureDart(
 
   sb.writeln();
   var featureTestMethodNameOverride = testMethodName;
-  var testerOverride = testerType;
+  var testerTypeOverride = testerType;
+  var testerNameOverride = testerName;
   final tags = <String>[];
 
   for (final line
       in lines.takeWhile((value) => value.type != LineType.feature)) {
     if (line.type == LineType.tag) {
-      final methodName = _parseTestMethodNameTag(line.rawLine);
-      final parsedTesterType = parseTesterTypeTag(line.rawLine);
-      if (methodName.isNotEmpty || parsedTesterType.isNotEmpty) {
+      final methodName = parseCustomTag(line.rawLine, testMethodNameTag);
+      final parsedTesterType = parseCustomTag(line.rawLine, testerTypeTag);
+      final parsedTesterName = parseCustomTag(line.rawLine, testerNameTag);
+
+      if (methodName.isNotEmpty ||
+          parsedTesterType.isNotEmpty ||
+          parsedTesterName.isNotEmpty) {
         if (methodName.isNotEmpty) featureTestMethodNameOverride = methodName;
-        if (parsedTesterType.isNotEmpty) testerOverride = parsedTesterType;
+        if (parsedTesterType.isNotEmpty) testerTypeOverride = parsedTesterType;
+        if (parsedTesterName.isNotEmpty) testerNameOverride = parsedTesterName;
       } else {
         tags.add(line.rawLine.substring('@'.length));
       }
@@ -70,9 +77,11 @@ String generateFeatureDart(
     final hasBackground = _parseBackground(
       sb,
       feature,
-      testerOverride,
+      testerTypeOverride,
+      testerNameOverride,
     );
-    final hasAfter = _parseAfter(sb, feature, testerOverride);
+    final hasAfter =
+        _parseAfter(sb, feature, testerTypeOverride, testerNameOverride);
 
     _parseFeature(
       sb,
@@ -80,6 +89,7 @@ String generateFeatureDart(
       hasBackground,
       hasAfter,
       featureTestMethodNameOverride,
+      testerNameOverride,
     );
   }
   sb.writeln('}');
@@ -90,11 +100,31 @@ bool _parseBackground(
   StringBuffer sb,
   List<BddLine> lines,
   String testerType,
+  String testerName,
 ) =>
-    _parseSetup(sb, lines, LineType.background, setUpMethodName, testerType);
+    _parseSetup(
+      sb,
+      lines,
+      LineType.background,
+      setUpMethodName,
+      testerType,
+      testerName,
+    );
 
-bool _parseAfter(StringBuffer sb, List<BddLine> lines, String testerType) =>
-    _parseSetup(sb, lines, LineType.after, tearDownMethodName, testerType);
+bool _parseAfter(
+  StringBuffer sb,
+  List<BddLine> lines,
+  String testerType,
+  String testerName,
+) =>
+    _parseSetup(
+      sb,
+      lines,
+      LineType.after,
+      tearDownMethodName,
+      testerType,
+      testerName,
+    );
 
 bool _parseSetup(
   StringBuffer sb,
@@ -102,13 +132,16 @@ bool _parseSetup(
   LineType elementType,
   String title,
   String testerType,
+  String testerName,
 ) {
   var offset = lines.indexWhere((element) => element.type == elementType);
   if (offset != -1) {
-    sb.writeln('    Future<void> $title($testerType tester) async {');
+    sb.writeln('    Future<void> $title($testerType $testerName) async {');
     offset++;
     while (lines[offset].type == LineType.step) {
-      sb.writeln('      await ${getStepMethodCall(lines[offset].value)};');
+      sb.writeln(
+        '      await ${getStepMethodCall(lines[offset].value, testerName)};',
+      );
       offset++;
     }
     sb.writeln('    }');
@@ -122,6 +155,7 @@ void _parseFeature(
   bool hasSetUp,
   bool hasTearDown,
   String testMethodName,
+  String testerName,
 ) {
   final scenarios = _splitScenarios(
     feature.skipWhile((value) => !_isNewScenario(value.type)).toList(),
@@ -130,9 +164,10 @@ void _parseFeature(
     final scenarioTagLines =
         scenario.where((line) => line.type == LineType.tag).toList();
 
-    final scenarioTestMethodName = _parseTestMethodName(
+    final scenarioTestMethodName = parseCustomTagFromFeatureTagLine(
       scenarioTagLines,
       testMethodName,
+      testMethodNameTag,
     );
 
     final flattenDataTables = replaceDataTables(
@@ -150,6 +185,7 @@ void _parseFeature(
         hasSetUp,
         hasTearDown,
         scenarioTestMethodName,
+        testerName,
         scenarioTagLines
             .where((tag) => !tag.rawLine.startsWith(testMethodNameTag))
             .map((line) => line.rawLine.substring('@'.length))
@@ -165,33 +201,6 @@ bool _isNewScenario(LineType type) =>
 
 bool _isScenarioKindLine(LineType type) =>
     type == LineType.scenario || type == LineType.scenarioOutline;
-
-String _parseTestMethodName(
-  List<BddLine> featureTagLines,
-  String testMethodName,
-) {
-  var scenarioTestMethodName = testMethodName;
-
-  final customMethodTagLine = featureTagLines
-      .firstWhereOrNull((line) => line.rawLine.startsWith(testMethodNameTag));
-
-  if (customMethodTagLine != null) {
-    final testMethodNameOverride = _parseTestMethodNameTag(
-      customMethodTagLine.rawLine,
-    );
-    if (testMethodNameOverride.isNotEmpty) {
-      scenarioTestMethodName = testMethodNameOverride;
-    }
-  }
-  return scenarioTestMethodName;
-}
-
-String _parseTestMethodNameTag(String rawLine) {
-  if (rawLine.startsWith(testMethodNameTag)) {
-    return rawLine.substring(testMethodNameTag.length).trim();
-  }
-  return '';
-}
 
 List<List<T>> splitWhen<T>(Iterable<T> original, bool Function(T) predicate) =>
     original.fold(<List<T>>[], (previousValue, element) {

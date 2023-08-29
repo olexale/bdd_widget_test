@@ -1,8 +1,6 @@
-import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
-import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
 
 abstract class StepFile {
@@ -15,13 +13,18 @@ abstract class StepFile {
     String line,
     Map<String, String> existingSteps,
     GeneratorOptions generatorOptions,
-    String testerTypeTag,
+    String testerTypeTagValue,
+    String testerNameTagValue,
   ) {
     final file = '${getStepFilename(line)}.dart';
 
-    final testerType = testerTypeTag.isNotEmpty
-        ? parseTesterTypeTag(testerTypeTag)
+    final testerType = testerTypeTagValue.isNotEmpty
+        ? testerTypeTagValue
         : generatorOptions.testerType;
+
+    final testerName = testerNameTagValue.isNotEmpty
+        ? testerNameTagValue
+        : generatorOptions.testerName;
 
     if (existingSteps.containsKey(file)) {
       final import =
@@ -40,7 +43,14 @@ abstract class StepFile {
       final import =
           p.join(generatorOptions.stepFolder, file).replaceAll(r'\', '/');
       final filename = p.join(featureDir, generatorOptions.stepFolder, file);
-      return NewStepFile._(import, filename, package, line, testerType);
+      return NewStepFile._(
+        import,
+        filename,
+        package,
+        line,
+        testerType,
+        testerName,
+      );
     }
 
     final pathToTestFolder = p.relative(testFolderName, from: featureDir);
@@ -48,7 +58,14 @@ abstract class StepFile {
         .join(pathToTestFolder, generatorOptions.stepFolder, file)
         .replaceAll(r'\', '/');
     final filename = p.join(testFolderName, generatorOptions.stepFolder, file);
-    return NewStepFile._(import, filename, package, line, testerType);
+    return NewStepFile._(
+      import,
+      filename,
+      package,
+      line,
+      testerType,
+      testerName,
+    );
   }
 }
 
@@ -59,14 +76,17 @@ class NewStepFile extends StepFile {
     this.package,
     this.line,
     this.testerType,
+    this.testerName,
   ) : super._();
 
   final String package;
   final String line;
   final String filename;
   final String testerType;
+  final String testerName;
 
-  String get dartContent => generateStepDart(package, line, testerType);
+  String get dartContent =>
+      generateStepDart(package, line, testerType, testerName);
 }
 
 class ExistingStepFile extends StepFile {
@@ -75,34 +95,4 @@ class ExistingStepFile extends StepFile {
 
 class ExternalStepFile extends StepFile {
   const ExternalStepFile._(super.import) : super._();
-}
-
-/// [parseTesterType] returns tester type e.g. PatrolTester || WidgetTester (default)
-String parseTesterType(
-  List<BddLine> featureTagLines,
-  String defaultTesterType,
-) {
-  var stepTesterType = defaultTesterType;
-
-  final customTesterTypeTagline = featureTagLines
-      .firstWhereOrNull((line) => line.rawLine.startsWith(testerTypeTag));
-
-  if (customTesterTypeTagline != null) {
-    final testerTypeOverride = parseTesterTypeTag(
-      customTesterTypeTagline.rawLine,
-    );
-    if (testerTypeOverride.isNotEmpty) {
-      stepTesterType = testerTypeOverride;
-    }
-  }
-  return stepTesterType;
-}
-
-/// [parseTesterTypeTag] Returns tester type or empty string if not found.
-/// Example: @testerTypeTag returns PatrolTester || WidgetTester (default)
-String parseTesterTypeTag(String rawLine) {
-  if (rawLine.startsWith(testerTypeTag)) {
-    return rawLine.substring(testerTypeTag.length).trim();
-  }
-  return '';
 }
