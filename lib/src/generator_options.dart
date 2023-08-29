@@ -2,8 +2,9 @@ import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:bdd_widget_test/src/util/isolate_helper.dart';
 import 'package:yaml/yaml.dart';
 
-const _defaultTestName = 'testWidgets';
+const _defaultTestMethodName = 'testWidgets';
 const _defaultTesterType = 'WidgetTester';
+const _defaultTesterName = 'tester';
 const _stepFolderName = './step';
 
 class GeneratorOptions {
@@ -12,16 +13,19 @@ class GeneratorOptions {
     List<String>? externalSteps,
     String? stepFolderName,
     String? testerType,
+    String? testerName,
     this.include,
   })  : stepFolder = stepFolderName ?? _stepFolderName,
-        testMethodName = testMethodName ?? _defaultTestName,
+        testMethodName = testMethodName ?? _defaultTestMethodName,
         testerType = testerType ?? _defaultTesterType,
+        testerName = testerName ?? _defaultTesterName,
         externalSteps = externalSteps ?? const [];
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
       GeneratorOptions(
         testMethodName: json['testMethodName'] as String?,
         testerType: json['testerType'] as String?,
+        testerName: json['testerName'] as String?,
         externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
         stepFolderName: json['stepFolderName'] as String?,
         include: json['include'] is String
@@ -32,6 +36,7 @@ class GeneratorOptions {
   final String stepFolder;
   final String testMethodName;
   final String testerType;
+  final String testerName;
   final List<String>? include;
   final List<String> externalSteps;
 }
@@ -66,6 +71,7 @@ GeneratorOptions readFromUri(Uri uri) {
   return GeneratorOptions(
     testMethodName: doc['testMethodName'] as String?,
     testerType: doc['testerType'] as String?,
+    testerName: doc['testerName'] as String?,
     externalSteps: (doc['externalSteps'] as List?)?.cast<String>(),
     stepFolderName: doc['stepFolderName'] as String?,
     include: doc['include'] is String
@@ -76,11 +82,13 @@ GeneratorOptions readFromUri(Uri uri) {
 
 GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
     GeneratorOptions(
-      testMethodName: a.testMethodName != _defaultTestName
+      testMethodName: a.testMethodName != _defaultTestMethodName
           ? a.testMethodName
           : b.testMethodName,
       testerType:
           a.testerType != _defaultTesterType ? a.testerType : b.testerType,
+      testerName:
+          a.testerName != _defaultTesterName ? a.testerName : b.testerName,
       stepFolderName:
           a.stepFolder != _stepFolderName ? a.stepFolder : b.stepFolder,
       externalSteps: [...a.externalSteps, ...b.externalSteps],
