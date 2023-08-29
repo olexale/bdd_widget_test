@@ -10,6 +10,7 @@ String generateFeatureDart(
   List<BddLine> lines,
   List<StepFile> steps,
   String testMethodName,
+  String testerType,
   bool isIntegrationTest,
 ) {
   final sb = StringBuffer();
@@ -18,14 +19,17 @@ String generateFeatureDart(
 
   sb.writeln();
   var featureTestMethodNameOverride = testMethodName;
+  var testerOverride = testerType;
   final tags = <String>[];
 
   for (final line
       in lines.takeWhile((value) => value.type != LineType.feature)) {
     if (line.type == LineType.tag) {
       final methodName = _parseTestMethodNameTag(line.rawLine);
-      if (methodName.isNotEmpty) {
-        featureTestMethodNameOverride = methodName;
+      final parsedTesterType = parseTesterTypeTag(line.rawLine);
+      if (methodName.isNotEmpty || parsedTesterType.isNotEmpty) {
+        if (methodName.isNotEmpty) featureTestMethodNameOverride = methodName;
+        if (parsedTesterType.isNotEmpty) testerOverride = parsedTesterType;
       } else {
         tags.add(line.rawLine.substring('@'.length));
       }
@@ -63,8 +67,12 @@ String generateFeatureDart(
   for (final feature in features) {
     sb.writeln("  group('''${feature.first.value}''', () {");
 
-    final hasBackground = _parseBackground(sb, feature);
-    final hasAfter = _parseAfter(sb, feature);
+    final hasBackground = _parseBackground(
+      sb,
+      feature,
+      testerOverride,
+    );
+    final hasAfter = _parseAfter(sb, feature, testerOverride);
 
     _parseFeature(
       sb,
@@ -78,21 +86,26 @@ String generateFeatureDart(
   return sb.toString();
 }
 
-bool _parseBackground(StringBuffer sb, List<BddLine> lines) =>
-    _parseSetup(sb, lines, LineType.background, setUpMethodName);
+bool _parseBackground(
+  StringBuffer sb,
+  List<BddLine> lines,
+  String testerType,
+) =>
+    _parseSetup(sb, lines, LineType.background, setUpMethodName, testerType);
 
-bool _parseAfter(StringBuffer sb, List<BddLine> lines) =>
-    _parseSetup(sb, lines, LineType.after, tearDownMethodName);
+bool _parseAfter(StringBuffer sb, List<BddLine> lines, String testerType) =>
+    _parseSetup(sb, lines, LineType.after, tearDownMethodName, testerType);
 
 bool _parseSetup(
   StringBuffer sb,
   List<BddLine> lines,
   LineType elementType,
   String title,
+  String testerType,
 ) {
   var offset = lines.indexWhere((element) => element.type == elementType);
   if (offset != -1) {
-    sb.writeln('    Future<void> $title(WidgetTester tester) async {');
+    sb.writeln('    Future<void> $title($testerType tester) async {');
     offset++;
     while (lines[offset].type == LineType.step) {
       sb.writeln('      await ${getStepMethodCall(lines[offset].value)};');
