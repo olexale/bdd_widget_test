@@ -14,6 +14,8 @@ class FeatureFile {
   }) : _lines = _prepareLines(
           input.split('\n').map((line) => line.trim()).map(BddLine.new),
         ) {
+    _testerType = parseTesterType(_lines, generatorOptions.testerType);
+
     _stepFiles = _lines
         .where((line) => line.type == LineType.step)
         .map(
@@ -23,12 +25,14 @@ class FeatureFile {
             e.value,
             existingSteps,
             generatorOptions,
+            _testerType,
           ),
         )
         .toList();
   }
 
   late List<StepFile> _stepFiles;
+  late String _testerType;
 
   final String featureDir;
   final String package;
@@ -41,6 +45,7 @@ class FeatureFile {
         _lines,
         getStepFiles(),
         generatorOptions.testMethodName,
+        _testerType,
         isIntegrationTest,
       );
 

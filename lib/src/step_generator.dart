@@ -42,15 +42,22 @@ String getStepMethodCall(String stepLine, {List<String>? forceParams}) {
   return '${_camelizedString(step[0])}($parameters)';
 }
 
-String generateStepDart(String package, String line) {
+String generateStepDart(String package, String line, String testerType) {
   final methodName = getStepMethodName(line);
-  final bddStep = _getStep(methodName, package, line);
+
+  final bddStep = _getStep(methodName, package, line, testerType);
   return bddStep.content;
 }
 
-BddStep _getStep(String methodName, String package, String line) {
-  final factory =
-      predefinedSteps[methodName] ?? (_, __) => GenericStep(methodName, line);
+BddStep _getStep(
+  String methodName,
+  String package,
+  String line,
+  String testerType,
+) {
+  //for now, predefined steps don't support testerType
+  final factory = predefinedSteps[methodName] ??
+      (_, __) => GenericStep(methodName, line, testerType);
   return factory(package, line);
 }
 

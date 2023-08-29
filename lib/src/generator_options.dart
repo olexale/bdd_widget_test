@@ -3,6 +3,7 @@ import 'package:bdd_widget_test/src/util/isolate_helper.dart';
 import 'package:yaml/yaml.dart';
 
 const _defaultTestName = 'testWidgets';
+const _defaultTesterType = 'WidgetTester';
 const _stepFolderName = './step';
 
 class GeneratorOptions {
@@ -10,14 +11,17 @@ class GeneratorOptions {
     String? testMethodName,
     List<String>? externalSteps,
     String? stepFolderName,
+    String? testerType,
     this.include,
   })  : stepFolder = stepFolderName ?? _stepFolderName,
         testMethodName = testMethodName ?? _defaultTestName,
+        testerType = testerType ?? _defaultTesterType,
         externalSteps = externalSteps ?? const [];
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
       GeneratorOptions(
         testMethodName: json['testMethodName'] as String?,
+        testerType: json['testerType'] as String?,
         externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
         stepFolderName: json['stepFolderName'] as String?,
         include: json['include'] is String
@@ -27,6 +31,7 @@ class GeneratorOptions {
 
   final String stepFolder;
   final String testMethodName;
+  final String testerType;
   final List<String>? include;
   final List<String> externalSteps;
 }
@@ -60,6 +65,7 @@ GeneratorOptions readFromUri(Uri uri) {
   final doc = loadYamlNode(rawYaml) as YamlMap;
   return GeneratorOptions(
     testMethodName: doc['testMethodName'] as String?,
+    testerType: doc['testerType'] as String?,
     externalSteps: (doc['externalSteps'] as List?)?.cast<String>(),
     stepFolderName: doc['stepFolderName'] as String?,
     include: doc['include'] is String
@@ -73,6 +79,8 @@ GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
       testMethodName: a.testMethodName != _defaultTestName
           ? a.testMethodName
           : b.testMethodName,
+      testerType:
+          a.testerType != _defaultTesterType ? a.testerType : b.testerType,
       stepFolderName:
           a.stepFolder != _stepFolderName ? a.stepFolder : b.stepFolder,
       externalSteps: [...a.externalSteps, ...b.externalSteps],
