@@ -11,6 +11,7 @@ void parseScenario(
   String testMethodName,
   String testerName,
   List<String> tags,
+  String scenarioParams,
 ) {
   sb.writeln(
     "    $testMethodName('''$scenarioTitle''', ($testerName) async {",
@@ -33,8 +34,16 @@ void parseScenario(
     sb.writeln('      }');
   }
   sb.writeln(
-    '    }${tags.isNotEmpty ? ", tags: ['${tags.join("', '")}']" : ''});',
+    '    }${tags.isNotEmpty ? ", tags: ['${tags.join("', '")}']" : ''}${scenarioParams.isNotEmpty ? ',' : ');'}',
   );
+  if (scenarioParams.isNotEmpty) {
+    for (final param in scenarioParams.split(', ')) {
+      sb.writeln('     $param,');
+    }
+    sb.writeln(
+      '     );',
+    );
+  }
 }
 
 List<List<BddLine>> generateScenariosFromScenaioOutline(

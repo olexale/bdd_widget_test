@@ -163,11 +163,16 @@ void _parseFeature(
   for (final scenario in scenarios) {
     final scenarioTagLines =
         scenario.where((line) => line.type == LineType.tag).toList();
-
     final scenarioTestMethodName = parseCustomTagFromFeatureTagLine(
       scenarioTagLines,
       testMethodName,
       testMethodNameTag,
+    );
+
+    final scenarioParams = parseCustomTagFromFeatureTagLine(
+      scenarioTagLines,
+      '',
+      scenarioParamsTag,
     );
 
     final flattenDataTables = replaceDataTables(
@@ -187,9 +192,14 @@ void _parseFeature(
         scenarioTestMethodName,
         testerName,
         scenarioTagLines
-            .where((tag) => !tag.rawLine.startsWith(testMethodNameTag))
+            .where(
+              (tag) =>
+                  !tag.rawLine.startsWith(testMethodNameTag) &&
+                  !tag.rawLine.startsWith(scenarioParamsTag),
+            )
             .map((line) => line.rawLine.substring('@'.length))
             .toList(),
+        scenarioParams,
       );
     }
   }
