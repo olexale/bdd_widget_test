@@ -76,7 +76,8 @@ void main() {
       package: 'test',
       input: featureFile,
       isIntegrationTest: true,
-      generatorOptions: const GeneratorOptions(testerType: 'PatrolIntegrationTester'),
+      generatorOptions:
+          const GeneratorOptions(testerType: 'PatrolIntegrationTester'),
     );
     expect(feature.dartContent, expectedFeatureDart);
   });
