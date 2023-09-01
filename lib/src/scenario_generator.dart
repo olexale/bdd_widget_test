@@ -9,31 +9,41 @@ void parseScenario(
   bool hasSetUp,
   bool hasTearDown,
   String testMethodName,
+  String testerName,
   List<String> tags,
+  String scenarioParams,
 ) {
   sb.writeln(
-    "    $testMethodName('''$scenarioTitle''', (tester) async {",
+    "    $testMethodName('''$scenarioTitle''', ($testerName) async {",
   );
   if (hasTearDown) {
     sb.writeln('      try {');
   }
   final spaces = hasTearDown ? '        ' : '      ';
   if (hasSetUp) {
-    sb.writeln('${spaces}await $setUpMethodName(tester);');
+    sb.writeln('${spaces}await $setUpMethodName($testerName);');
   }
 
   for (final step in scenario) {
-    sb.writeln('${spaces}await ${getStepMethodCall(step.value)};');
+    sb.writeln('${spaces}await ${getStepMethodCall(step.value, testerName)};');
   }
 
   if (hasTearDown) {
     sb.writeln('      } finally {');
-    sb.writeln('        await $tearDownMethodName(tester);');
+    sb.writeln('        await $tearDownMethodName($testerName);');
     sb.writeln('      }');
   }
   sb.writeln(
-    '    }${tags.isNotEmpty ? ", tags: ['${tags.join("', '")}']" : ''});',
+    '    }${tags.isNotEmpty ? ", tags: ['${tags.join("', '")}']" : ''}${scenarioParams.isNotEmpty ? ',' : ');'}',
   );
+  if (scenarioParams.isNotEmpty) {
+    for (final param in scenarioParams.split(', ')) {
+      sb.writeln('     $param,');
+    }
+    sb.writeln(
+      '     );',
+    );
+  }
 }
 
 List<List<BddLine>> generateScenariosFromScenaioOutline(

@@ -2,6 +2,8 @@ import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/feature_generator.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
+import 'package:bdd_widget_test/src/util/common.dart';
+import 'package:bdd_widget_test/src/util/constants.dart';
 
 class FeatureFile {
   FeatureFile({
@@ -14,6 +16,18 @@ class FeatureFile {
   }) : _lines = _prepareLines(
           input.split('\n').map((line) => line.trim()).map(BddLine.new),
         ) {
+    _testerType = parseCustomTagFromFeatureTagLine(
+      _lines,
+      generatorOptions.testerType,
+      testerTypeTag,
+    );
+
+    _testerName = parseCustomTagFromFeatureTagLine(
+      _lines,
+      generatorOptions.testerName,
+      testerNameTag,
+    );
+
     _stepFiles = _lines
         .where((line) => line.type == LineType.step)
         .map(
@@ -23,12 +37,16 @@ class FeatureFile {
             e.value,
             existingSteps,
             generatorOptions,
+            _testerType,
+            _testerName,
           ),
         )
         .toList();
   }
 
   late List<StepFile> _stepFiles;
+  late String _testerType;
+  late String _testerName;
 
   final String featureDir;
   final String package;
@@ -41,6 +59,8 @@ class FeatureFile {
         _lines,
         getStepFiles(),
         generatorOptions.testMethodName,
+        _testerType,
+        _testerName,
         isIntegrationTest,
       );
 

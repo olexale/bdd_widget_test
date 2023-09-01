@@ -1,3 +1,8 @@
+## [1.6.1] - Allow custom tester type, name and scenario parameters
+* Allow addition of custom tester type from other test packages using `@testerType:` tag the value can be like `PatrolIntegrationTester` instead of `WidgetTester`(default) 
+* Allow addition of custom tester name using `@testerName:` tag, the value can be like `$`, `integrationTest` instead of `tester` leaving `tester`(default)
+* Allow passing scenario parameters using `@scenarioParams:` tag, for example: `@scenarioParams: skip: false, timeout: Timeout(Duration(seconds: 1))` and many more. 
+* Though these additions do not affect predefined steps.
 ## [1.6.0] - Change step folder destination
 
 * **BREAKING CHANGE** - Introduce relative and absolute paths for step folder destination
