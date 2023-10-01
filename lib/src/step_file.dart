@@ -18,14 +18,6 @@ abstract class StepFile {
   ) {
     final file = '${getStepFilename(line)}.dart';
 
-    final testerType = testerTypeTagValue.isNotEmpty
-        ? testerTypeTagValue
-        : generatorOptions.testerType;
-
-    final testerName = testerNameTagValue.isNotEmpty
-        ? testerNameTagValue
-        : generatorOptions.testerName;
-
     if (existingSteps.containsKey(file)) {
       final import =
           p.join('.', existingSteps[file], file).replaceAll(r'\', '/');
@@ -48,8 +40,8 @@ abstract class StepFile {
         filename,
         package,
         line,
-        testerType,
-        testerName,
+        testerTypeTagValue,
+        testerNameTagValue,
       );
     }
 
@@ -63,8 +55,8 @@ abstract class StepFile {
       filename,
       package,
       line,
-      testerType,
-      testerName,
+      testerTypeTagValue,
+      testerNameTagValue,
     );
   }
 }
