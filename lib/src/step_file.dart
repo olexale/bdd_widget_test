@@ -13,6 +13,8 @@ abstract class StepFile {
     String line,
     Map<String, String> existingSteps,
     GeneratorOptions generatorOptions,
+    String testerTypeTagValue,
+    String testerNameTagValue,
   ) {
     final file = '${getStepFilename(line)}.dart';
 
@@ -33,7 +35,14 @@ abstract class StepFile {
       final import =
           p.join(generatorOptions.stepFolder, file).replaceAll(r'\', '/');
       final filename = p.join(featureDir, generatorOptions.stepFolder, file);
-      return NewStepFile._(import, filename, package, line);
+      return NewStepFile._(
+        import,
+        filename,
+        package,
+        line,
+        testerTypeTagValue,
+        testerNameTagValue,
+      );
     }
 
     final pathToTestFolder = p.relative(testFolderName, from: featureDir);
@@ -41,19 +50,35 @@ abstract class StepFile {
         .join(pathToTestFolder, generatorOptions.stepFolder, file)
         .replaceAll(r'\', '/');
     final filename = p.join(testFolderName, generatorOptions.stepFolder, file);
-    return NewStepFile._(import, filename, package, line);
+    return NewStepFile._(
+      import,
+      filename,
+      package,
+      line,
+      testerTypeTagValue,
+      testerNameTagValue,
+    );
   }
 }
 
 class NewStepFile extends StepFile {
-  const NewStepFile._(super.import, this.filename, this.package, this.line)
-      : super._();
+  const NewStepFile._(
+    super.import,
+    this.filename,
+    this.package,
+    this.line,
+    this.testerType,
+    this.testerName,
+  ) : super._();
 
   final String package;
   final String line;
   final String filename;
+  final String testerType;
+  final String testerName;
 
-  String get dartContent => generateStepDart(package, line);
+  String get dartContent =>
+      generateStepDart(package, line, testerType, testerName);
 }
 
 class ExistingStepFile extends StepFile {
