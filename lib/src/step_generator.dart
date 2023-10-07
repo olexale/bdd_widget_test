@@ -41,7 +41,7 @@ String getStepMethodCall(
   final step = parseRawStepLine(stepLine);
   final parameters = [
     customTesterName,
-    if (forceParams != null) ...forceParams else ...step.skip(1)
+    if (forceParams != null) ...forceParams else ...step.skip(1),
   ].join(', ');
   return '${_camelizedString(step[0])}($parameters)';
 }

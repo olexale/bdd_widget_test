@@ -15,7 +15,7 @@ Iterable<BddLine> replaceDataTables(List<BddLine> lines) sync* {
     if (i + 1 < lines.length && _foundDataTable(lines, i)) {
       final dataTable = [
         lines[i],
-        ...lines.skip(i + 1).takeWhile((l) => l.type == LineType.examples)
+        ...lines.skip(i + 1).takeWhile((l) => l.type == LineType.examples),
       ];
       final data = generateScenariosFromScenaioOutline([
         // pretend to be an Example section to re-use some logic

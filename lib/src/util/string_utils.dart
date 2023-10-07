@@ -211,5 +211,5 @@ final List<int> _ascii = <int>[
   0,
   0,
   0,
-  0
+  0,
 ];

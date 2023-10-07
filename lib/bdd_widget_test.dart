@@ -65,6 +65,6 @@ class FeatureBuilder implements Builder {
 
   @override
   final buildExtensions = const {
-    '.feature': ['_test.dart']
+    '.feature': ['_test.dart'],
   };
 }
