@@ -15,11 +15,9 @@ void main() {
     Future<void> bddSetUp(WidgetTester tester) async {
       await theAppIsRunning(tester);
     }
-
     Future<void> bddTearDown(WidgetTester tester) async {
       await iDoNotSeeText(tester, 'surprise');
     }
-
     testWidgets('''Initial counter value is 0''', (tester) async {
       try {
         await bddSetUp(tester);
@@ -37,8 +35,7 @@ void main() {
         await bddTearDown(tester);
       }
     });
-    testWidgets('''Outline: Plus button increases the counter (0, '0')''',
-        (tester) async {
+    testWidgets('''Outline: Plus button increases the counter (0, '0')''', (tester) async {
       try {
         await bddSetUp(tester);
         await theAppIsRunning(tester);
@@ -48,8 +45,7 @@ void main() {
         await bddTearDown(tester);
       }
     });
-    testWidgets('''Outline: Plus button increases the counter (1, '1')''',
-        (tester) async {
+    testWidgets('''Outline: Plus button increases the counter (1, '1')''', (tester) async {
       try {
         await bddSetUp(tester);
         await theAppIsRunning(tester);
@@ -59,8 +55,7 @@ void main() {
         await bddTearDown(tester);
       }
     });
-    testWidgets('''Outline: Plus button increases the counter (42, '42')''',
-        (tester) async {
+    testWidgets('''Outline: Plus button increases the counter (42, '42')''', (tester) async {
       try {
         await bddSetUp(tester);
         await theAppIsRunning(tester);
