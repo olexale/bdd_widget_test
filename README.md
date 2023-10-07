@@ -339,6 +339,45 @@ stepFolderName: step
 ```
 4. Done. Now you may create feature files in `integration_test` folder. You may want to review the [official documentation](https://flutter.dev/docs/testing/integration-tests) for instructions on how to run integration tests.
 
+### Patrol tests
+
+[Patrol](https://pub.dev/packages/patrol) is a popular testing framework for Flutter. It provides a possibility to control native UI from the Dart code, and also provides a new custom finder that simplifies the development process of the widget tests. You may use Patrol together with bdd_widget_test to get the best from both worlds.
+
+Here is an example of a BDD scenario with Patrol framework:
+```dart
+import 'package:patrol/patrol.dart';
+
+@testMethodName: patrolTest
+@testerName: $
+@testerType: PatrolIntegrationTester
+Feature: Counter
+    
+    Background:
+        Given the app is running
+    
+    Scenario: Initial counter value is 0
+        Then I see {'0'} text
+
+    @scenarioParams: nativeAutomation: true
+    Scenario: Add button increments the counter
+        When I tap {Icons.add} icon
+        Then I see {'1'} text
+```
+
+Notice, that the second scenario is marked as "nativeAutomation" to make it possible to control native UI. Also, the tester type is set to `PatrolIntegrationTester` to make it possible to use the new custom finder.
+
+If you plan to use Patrol in all your tests, it makes sense to set method name, tester name, and tester type in the `build.yaml` file:
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          testMethodName: patrolTest
+          testerName: $
+          testerType: PatrolIntegrationTester
+```
+
 ## Contributing
 
 If you find a bug or would like to request a new feature, just [open an issue](https://github.com/olexale/bdd_widget_test/issues/new). Your contributions are always welcome!

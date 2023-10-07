@@ -17,3 +17,4 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
+  patrol: ^2.3.0
