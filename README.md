@@ -364,9 +364,9 @@ Feature: Counter
         Then I see {'1'} text
 ```
 
-Notice, that the second scenario is marked as "nativeAutomation" to make it possible to control native UI. Also, the tester type is set to `PatrolIntegrationTester` to make it possible to use the new custom finder.
+Notice how the second scenario is annotated with `nativeAutomation` enabling you to control native UI elements. Setting the tester type to `PatrolIntegrationTester` allows you to use the power of the custom finder introduced by Patrol.
 
-If you plan to use Patrol in all your tests, it makes sense to set method name, tester name, and tester type in the `build.yaml` file:
+To streamline your testing setup, you can conveniently configure key parameters in the `build.yaml` file if you plan to use Patrol in all your tests:
 ```yaml
 targets:
   $default:
