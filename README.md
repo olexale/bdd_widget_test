@@ -12,7 +12,7 @@ The aim of this library is in combining two effective and easy-to-use techniques
 
 ### Add the dependency
 
-Add `build_runner` and `bdd_widget_test` dependcies to `dev_dependencies` section of the `pubspec.yaml` file.
+Add `build_runner` and `bdd_widget_test` dependencies to `dev_dependencies` section of the `pubspec.yaml` file.
 ```yaml
 dev_dependencies:
   build_runner:
