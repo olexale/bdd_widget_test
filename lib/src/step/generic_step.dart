@@ -1,6 +1,7 @@
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
+import 'package:collection/collection.dart';
 
 class GenericStep implements BddStep {
   GenericStep(
@@ -19,31 +20,26 @@ class GenericStep implements BddStep {
   String get content => '''
 import 'package:flutter_test/flutter_test.dart';
 
-${getStepSignature(rawLine, testerType, customTesterName)} {
+Future<void> $methodName($testerType $customTesterName${_getMethodParameters(rawLine)}) async {
   throw UnimplementedError();
 }
 ''';
 
-  String getStepSignature(
-    String stepLine,
-    String testerType,
-    String testerName,
-  ) {
+  String _getMethodParameters(String stepLine) {
     final params = parseRawStepLine(stepLine).skip(1);
-    if (params.isEmpty) {
-      final examples = examplesRegExp.allMatches(stepLine);
-      if (examples.isEmpty) {
-        return 'Future<void> $methodName($testerType $testerName) async';
-      } else {
-        return _generateSignature(examples.length, testerName);
-      }
+    if (params.isNotEmpty) {
+      return params
+          .mapIndexed(
+            (index, p) => ', dynamic param${index + 1}',
+          )
+          .join();
     }
-    return _generateSignature(params.length, testerName);
-  }
 
-  String _generateSignature(int paramsCount, String testerName) {
-    final p = List.generate(paramsCount, (index) => index + 1);
-    final methodParameters = p.map((p) => 'dynamic param$p').join(', ');
-    return 'Future<void> $methodName($testerType $testerName, $methodParameters) async';
+    final examples = examplesRegExp.allMatches(stepLine);
+    if (examples.isNotEmpty) {
+      return examples.map((p) => ', dynamic ${p.group(1)}').join();
+    }
+
+    return '';
   }
 }

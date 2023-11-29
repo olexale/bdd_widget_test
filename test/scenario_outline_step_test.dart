@@ -18,7 +18,7 @@ Feature: Testing feature
     const expectedStep = '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> thereAreCucumbers(WidgetTester tester, dynamic param1) async {
+Future<void> thereAreCucumbers(WidgetTester tester, dynamic start) async {
   throw UnimplementedError();
 }
 ''';
