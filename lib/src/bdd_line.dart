@@ -62,7 +62,7 @@ const scenarioMarkers = ['Scenario:', 'Example:'];
 const scenarioOutlineMarkers = ['Scenario Outline:'];
 const stepMarkers = ['Given', 'When', 'Then', 'And', 'But'];
 const examplesMarkers = ['|'];
-const examplesTitleMarkers = ['Examples:', 'Scenarios'];
+const examplesTitleMarkers = ['Examples:', 'Scenarios:'];
 
 String _removeLinePrefix(String rawLine) {
   final lines = rawLine.split(' ');
