@@ -57,7 +57,7 @@ Feature: Testing feature
   Scenario Outline: params
     Given there are mixed <int> <String> <Custom> parameters
 
-    Examples:
+    Scenarios:
       | int   | String  | Custom     |
       |  12   |   '5'   |  Icons.add |
       |  '20' |   5.0   |   MyClass  |
