@@ -36,13 +36,13 @@ Future<void> iInvokeTest(WidgetTester tester) async {
     const featureFile = '''
 Feature: Testing feature
     Scenario: Testing scenario
-        When I invoke {0} test with {Some} parameter
+        When I invoke {0} test with {Some} parameter and {true} parameter and {'value'} parameter
     ''';
 
     const expectedSteps = '''
 import 'package:flutter_test/flutter_test.dart';
 
-Future<void> iInvokeTestWithParameter(WidgetTester tester, dynamic param1, dynamic param2) async {
+Future<void> iInvokeTestWithParameterAndParameterAndParameter(WidgetTester tester, num param1, dynamic param2, bool param3, String param4) async {
   throw UnimplementedError();
 }
 ''';

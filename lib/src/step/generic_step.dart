@@ -30,7 +30,7 @@ Future<void> $methodName($testerType $customTesterName${_getMethodParameters(raw
     if (params.isNotEmpty) {
       return params
           .mapIndexed(
-            (index, p) => ', dynamic param${index + 1}',
+            (index, p) => ', ${_getGenericParameterType(p)} param${index + 1}',
           )
           .join();
     }
@@ -41,5 +41,19 @@ Future<void> $methodName($testerType $customTesterName${_getMethodParameters(raw
     }
 
     return '';
+  }
+
+  String _getGenericParameterType(String parameter) {
+    if (parameter == 'true' || parameter == 'false') {
+      return 'bool';
+    }
+    if (num.tryParse(parameter) != null) {
+      return 'num';
+    }
+    if ((parameter.startsWith('"') && parameter.endsWith('"')) ||
+        (parameter.startsWith("'") && parameter.endsWith("'"))) {
+      return 'String';
+    }
+    return 'dynamic';
   }
 }
