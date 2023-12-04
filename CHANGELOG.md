@@ -1,3 +1,8 @@
+## [1.6.2] - Generic step generation improvement (by @lsaudon)
+
+* Automatically detect parameter names in scenario outlines
+* Audomatically detect parameter types in regular scenarios
+
 ## [1.6.1] - Allow custom tester type, name and scenario parameters (by @mkhtradm01)
 
 * Allow addition of custom tester type from other test packages using `@testerType:` tag the value can be like `PatrolIntegrationTester` instead of `WidgetTester`(default) 
