@@ -14,6 +14,7 @@ Feature: Testing feature
     const expectedSteps = '''
 import 'package:flutter_test/flutter_test.dart';
 
+/// Usage: I invoke test
 Future<void> iInvokeTest(WidgetTester tester) async {
   throw UnimplementedError();
 }
@@ -42,6 +43,7 @@ Feature: Testing feature
     const expectedSteps = '''
 import 'package:flutter_test/flutter_test.dart';
 
+/// Usage: I invoke {0} test with {Some} parameter and {true} parameter and {'value'} parameter
 Future<void> iInvokeTestWithParameterAndParameterAndParameter(WidgetTester tester, num param1, dynamic param2, bool param3, String param4) async {
   throw UnimplementedError();
 }
@@ -67,9 +69,10 @@ Feature: Testing feature
         When !  I@ #invoke$%   ^'`~  &*+=) test ?   &&/| \ ;:
     ''';
 
-    const expectedSteps = '''
+    const expectedSteps = r'''
 import 'package:flutter_test/flutter_test.dart';
 
+/// Usage: !  I@ #invoke$%   ^'`~  &*+=) test ?   &&/| \ ;:
 Future<void> iInvokeTest(WidgetTester tester) async {
   throw UnimplementedError();
 }

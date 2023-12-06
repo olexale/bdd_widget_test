@@ -20,6 +20,7 @@ class GenericStep implements BddStep {
   String get content => '''
 import 'package:flutter_test/flutter_test.dart';
 
+/// Usage: $rawLine
 Future<void> $methodName($testerType $customTesterName${_getMethodParameters(rawLine)}) async {
   throw UnimplementedError();
 }
