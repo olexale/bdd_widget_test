@@ -1,3 +1,7 @@
+## [1.6.3] - Generic step usage comment (by @lsaudon)
+
+* Add a comment to the generated step implementation to show how to use the generated step
+
 ## [1.6.2] - Generic step generation improvement (by @lsaudon)
 
 * Automatically detect parameter names in scenario outlines
