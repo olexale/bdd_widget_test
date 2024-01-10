@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/data_table_parser.dart';
+import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/scenario_generator.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
@@ -13,6 +14,7 @@ String generateFeatureDart(
   String testerType,
   String testerName,
   bool isIntegrationTest,
+  HookFile? hookFile,
 ) {
   final sb = StringBuffer();
   sb.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
@@ -55,6 +57,10 @@ String generateFeatureDart(
   }
 
   sb.writeln();
+  if (hookFile != null) {
+    sb.writeln("import '${hookFile.import}';");
+  }
+
   for (final step in steps.map((e) => e.import).toSet()) {
     sb.writeln("import '$step';");
   }
@@ -63,6 +69,22 @@ String generateFeatureDart(
   sb.writeln('void main() {');
   if (isIntegrationTest) {
     sb.writeln('  IntegrationTestWidgetsFlutterBinding.ensureInitialized();');
+    sb.writeln();
+  }
+
+  if (hookFile != null) {
+    _parseSetupAllHook(
+      sb,
+      hookClass,
+      setUpAllHookName,
+      setUpAllCallbackName,
+    );
+    _parseSetupAllHook(
+      sb,
+      hookClass,
+      tearDownAllHookName,
+      tearDownAllCallbackName,
+    );
     sb.writeln();
   }
 
@@ -80,20 +102,85 @@ String generateFeatureDart(
       testerTypeOverride,
       testerNameOverride,
     );
-    final hasAfter =
-        _parseAfter(sb, feature, testerTypeOverride, testerNameOverride);
+    final hasAfter = _parseAfter(
+      sb,
+      feature,
+      testerTypeOverride,
+      testerNameOverride,
+    );
+
+    if (hookFile != null) {
+      _parseBeforeHook(
+        sb,
+        hookClass,
+        testerTypeOverride,
+        testerNameOverride,
+      );
+      _parseAfterHook(
+        sb,
+        hookClass,
+        testerTypeOverride,
+        testerNameOverride,
+      );
+    }
 
     _parseFeature(
       sb,
       feature,
       hasBackground,
       hasAfter,
+      hookFile != null,
       featureTestMethodNameOverride,
       testerNameOverride,
     );
   }
   sb.writeln('}');
   return sb.toString();
+}
+
+void _parseAfterHook(
+  StringBuffer sb,
+  String hookClass,
+  String testerType,
+  String testerName,
+) {
+  sb.writeln(
+    '    Future<void> $tearDownHookName(String title, bool $testSuccessVariableName, [List<String>? tags]) async {',
+  );
+  sb.writeln(
+    '      await $hookClass.$tearDownHookName(title, $testSuccessVariableName, tags);',
+  );
+  sb.writeln('    }');
+}
+
+void _parseBeforeHook(
+  StringBuffer sb,
+  String hookClass,
+  String testerType,
+  String testerName,
+) {
+  sb.writeln(
+    '    Future<void> $setUpHookName(String title, [List<String>? tags]) async {',
+  );
+  sb.writeln(
+    '      await $hookClass.$setUpHookName(title, tags);',
+  );
+  sb.writeln('    }');
+}
+
+void _parseSetupAllHook(
+  StringBuffer sb,
+  String hookClass,
+  String hookClassMethod,
+  String callbackName,
+) {
+  sb.writeln(
+    '  $callbackName(() async {',
+  );
+  sb.writeln(
+    '    await $hookClass.$hookClassMethod();',
+  );
+  sb.writeln('  });');
 }
 
 bool _parseBackground(
@@ -154,6 +241,7 @@ void _parseFeature(
   List<BddLine> feature,
   bool hasSetUp,
   bool hasTearDown,
+  bool hasHooks,
   String testMethodName,
   String testerName,
 ) {
@@ -189,6 +277,7 @@ void _parseFeature(
         s.where((e) => e.type == LineType.step).toList(),
         hasSetUp,
         hasTearDown,
+        hasHooks,
         scenarioTestMethodName,
         testerName,
         scenarioTagLines

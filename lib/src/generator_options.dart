@@ -6,6 +6,7 @@ const _defaultTestMethodName = 'testWidgets';
 const _defaultTesterType = 'WidgetTester';
 const _defaultTesterName = 'tester';
 const _stepFolderName = './step';
+const _hookFolderName = './hook';
 
 class GeneratorOptions {
   const GeneratorOptions({
@@ -14,11 +15,15 @@ class GeneratorOptions {
     String? stepFolderName,
     String? testerType,
     String? testerName,
+    bool? enableHooks,
+    String? hookFolderName,
     this.include,
   })  : stepFolder = stepFolderName ?? _stepFolderName,
         testMethodName = testMethodName ?? _defaultTestMethodName,
         testerType = testerType ?? _defaultTesterType,
         testerName = testerName ?? _defaultTesterName,
+        enableHooks = enableHooks ?? false,
+        hookFolderName = hookFolderName ?? _hookFolderName,
         externalSteps = externalSteps ?? const [];
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
@@ -28,6 +33,7 @@ class GeneratorOptions {
         testerName: json['testerName'] as String?,
         externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
         stepFolderName: json['stepFolderName'] as String?,
+        enableHooks: json['enableHooks'] as bool?,
         include: json['include'] is String
             ? [(json['include'] as String)]
             : (json['include'] as List?)?.cast<String>(),
@@ -37,6 +43,8 @@ class GeneratorOptions {
   final String testMethodName;
   final String testerType;
   final String testerName;
+  final bool enableHooks;
+  final String hookFolderName;
   final List<String>? include;
   final List<String> externalSteps;
 }
@@ -74,6 +82,7 @@ GeneratorOptions readFromUri(Uri uri) {
     testerName: doc['testerName'] as String?,
     externalSteps: (doc['externalSteps'] as List?)?.cast<String>(),
     stepFolderName: doc['stepFolderName'] as String?,
+    enableHooks: doc['hookImportLine'] as bool?,
     include: doc['include'] is String
         ? [(doc['include'] as String)]
         : (doc['include'] as YamlList?)?.value.cast<String>(),
@@ -92,5 +101,6 @@ GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
       stepFolderName:
           a.stepFolder != _stepFolderName ? a.stepFolder : b.stepFolder,
       externalSteps: [...a.externalSteps, ...b.externalSteps],
+      enableHooks: a.enableHooks != false ? a.enableHooks : b.enableHooks,
       include: b.include,
     );

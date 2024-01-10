@@ -1,10 +1,10 @@
 import 'package:bdd_widget_test/src/existing_steps.dart';
 import 'package:bdd_widget_test/src/feature_file.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
+import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:build/build.dart';
-
 import 'package:path/path.dart' as p;
 
 Builder featureBuilder(BuilderOptions options) => FeatureBuilder(
@@ -41,6 +41,11 @@ class FeatureBuilder implements Builder {
         .whereType<NewStepFile>()
         .map((e) => createFileRecursively(e.filename, e.dartContent));
     await Future.wait(steps);
+
+    final hookFile = feature.hookFile;
+    if (hookFile != null) {
+      await createFileRecursively(hookFile.fileName, hookFileContent);
+    }
   }
 
   Future<GeneratorOptions> prepareOptions() async {

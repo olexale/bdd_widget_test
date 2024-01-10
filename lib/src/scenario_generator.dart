@@ -8,6 +8,7 @@ void parseScenario(
   List<BddLine> scenario,
   bool hasSetUp,
   bool hasTearDown,
+  bool hasHooks,
   String testMethodName,
   String testerName,
   List<String> tags,
@@ -16,10 +17,18 @@ void parseScenario(
   sb.writeln(
     "    $testMethodName('''$scenarioTitle''', ($testerName) async {",
   );
-  if (hasTearDown) {
+  if (hasHooks) {
+    sb.writeln('      var $testSuccessVariableName = true;');
+  }
+  if (hasTearDown || hasHooks) {
     sb.writeln('      try {');
   }
   final spaces = hasTearDown ? '        ' : '      ';
+  if (hasHooks) {
+    sb.writeln(
+      '${spaces}await $setUpHookName("$scenarioTitle" ${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});',
+    );
+  }
   if (hasSetUp) {
     sb.writeln('${spaces}await $setUpMethodName($testerName);');
   }
@@ -28,13 +37,31 @@ void parseScenario(
     sb.writeln('${spaces}await ${getStepMethodCall(step.value, testerName)};');
   }
 
-  if (hasTearDown) {
+  if (hasHooks) {
+    sb.writeln('      } on TestFailure {');
+    sb.writeln('        $testSuccessVariableName = false;');
+    sb.writeln('        rethrow;');
+  }
+
+  if (hasTearDown | hasHooks) {
     sb.writeln('      } finally {');
-    sb.writeln('        await $tearDownMethodName($testerName);');
+    if (hasTearDown) {
+      sb.writeln('        await $tearDownMethodName($testerName);');
+    }
+    if (hasHooks) {
+      sb.writeln('        await $tearDownHookName(');
+      sb.writeln('        "$scenarioTitle",');
+      sb.writeln('        $testSuccessVariableName,');
+      if (tags.isNotEmpty) {
+        sb.writeln('        ${tagsToString(tags)},');
+      }
+      sb.writeln('        );');
+    }
     sb.writeln('      }');
   }
+
   sb.writeln(
-    '    }${tags.isNotEmpty ? ", tags: ['${tags.join("', '")}']" : ''}${scenarioParams.isNotEmpty ? ',' : ');'}',
+    '    }${tags.isNotEmpty ? ", tags: ${tagsToString(tags)}" : ''}${scenarioParams.isNotEmpty ? ',' : ');'}',
   );
   if (scenarioParams.isNotEmpty) {
     for (final param in scenarioParams.split(', ')) {
@@ -44,6 +71,10 @@ void parseScenario(
       '     );',
     );
   }
+}
+
+String tagsToString(List<String> tags) {
+  return "['${tags.join("', '")}']";
 }
 
 List<List<BddLine>> generateScenariosFromScenaioOutline(

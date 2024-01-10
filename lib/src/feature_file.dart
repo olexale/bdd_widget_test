@@ -1,6 +1,7 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/feature_generator.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
+import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/util/common.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
@@ -62,9 +63,18 @@ class FeatureFile {
         _testerType,
         _testerName,
         isIntegrationTest,
+        hookFile,
       );
 
   List<StepFile> getStepFiles() => _stepFiles;
+
+  HookFile? get hookFile => generatorOptions.enableHooks
+      ? HookFile.create(
+          featureDir: featureDir,
+          package: package,
+          generatorOptions: generatorOptions,
+        )
+      : null;
 
   static List<BddLine> _prepareLines(Iterable<BddLine> input) {
     final headers = input.takeWhile((value) => value.type == LineType.unknown);
