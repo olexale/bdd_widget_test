@@ -10,6 +10,10 @@ class BddLine {
   final LineType type;
 }
 
+class DataTableBddLine extends BddLine {
+  DataTableBddLine(super.rawLine);
+}
+
 enum LineType {
   feature,
   background,

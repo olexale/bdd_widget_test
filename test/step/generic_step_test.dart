@@ -89,4 +89,37 @@ Future<void> iInvokeTest(WidgetTester tester) async {
       expectedSteps,
     );
   });
+
+  test('Generic step with cucumber data table', () {
+    const path = 'test';
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given the following songs
+    | artist           | title                |
+    | 'The Beatles'    | 'Let It Be'          |
+    | 'Camel'          | 'Slow yourself down' |
+    ''';
+
+    const expectedSteps = '''
+import 'package:bdd_widget_test/src/data_table.dart' as bdd;
+import 'package:flutter_test/flutter_test.dart';
+
+/// Usage: the following songs
+Future<void> theFollowingSongs(WidgetTester tester, bdd.DataTable dataTable) async {
+  throw UnimplementedError();
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: '$path.feature',
+      package: path,
+      input: featureFile,
+    );
+
+    expect(
+      feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
+      expectedSteps,
+    );
+  });
 }

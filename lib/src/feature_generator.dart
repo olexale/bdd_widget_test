@@ -48,6 +48,9 @@ String generateFeatureDart(
   if (tags.isNotEmpty) {
     sb.writeln("@Tags(['${tags.join("', '")}'])");
   }
+  if (DataTableParser.hasBddDataTable(lines)) {
+    sb.writeln("import 'package:bdd_widget_test/src/data_table.dart' as bdd;");
+  }
   sb.writeln("import 'package:flutter/material.dart';");
   sb.writeln("import 'package:flutter_test/flutter_test.dart';");
   if (isIntegrationTest) {
@@ -175,7 +178,7 @@ void _parseFeature(
       scenarioParamsTag,
     );
 
-    final flattenDataTables = replaceDataTables(
+    final flattenDataTables = DataTableParser.replaceDataTables(
       scenario.skipWhile((line) => line.type == LineType.tag).toList(),
     ).toList();
     final scenariosToParse = flattenDataTables.first.type == LineType.scenario

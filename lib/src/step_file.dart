@@ -15,6 +15,7 @@ abstract class StepFile {
     GeneratorOptions generatorOptions,
     String testerTypeTagValue,
     String testerNameTagValue,
+    bool hadDataTable,
   ) {
     final file = '${getStepFilename(line)}.dart';
 
@@ -42,6 +43,7 @@ abstract class StepFile {
         line,
         testerTypeTagValue,
         testerNameTagValue,
+        hadDataTable,
       );
     }
 
@@ -57,6 +59,7 @@ abstract class StepFile {
       line,
       testerTypeTagValue,
       testerNameTagValue,
+      hadDataTable,
     );
   }
 }
@@ -69,6 +72,7 @@ class NewStepFile extends StepFile {
     this.line,
     this.testerType,
     this.testerName,
+    this.isDataTable,
   ) : super._();
 
   final String package;
@@ -76,9 +80,14 @@ class NewStepFile extends StepFile {
   final String filename;
   final String testerType;
   final String testerName;
-
-  String get dartContent =>
-      generateStepDart(package, line, testerType, testerName);
+  final bool isDataTable;
+  String get dartContent => generateStepDart(
+        package,
+        line,
+        testerType,
+        testerName,
+        isDataTable,
+      );
 }
 
 class ExistingStepFile extends StepFile {
