@@ -27,4 +27,21 @@ void main() {
 
     expect(result, data.skip(1));
   });
+
+  test('asMaps', () {
+    final data = [
+      ['id', 'isValid'],
+      [1, false],
+      [2, true],
+    ];
+    final expected = [
+      {'id': 1, 'isValid': false},
+      {'id': 2, 'isValid': true},
+    ];
+    final dataTable = DataTable(data);
+
+    final result = dataTable.asMaps();
+
+    expect(result, expected);
+  });
 }
