@@ -3,14 +3,14 @@ import 'package:bdd_widget_test/src/util/constants.dart';
 import 'package:path/path.dart' as p;
 
 class HookFile {
-  HookFile._create({
+  const HookFile._create({
     required this.featureDir,
     required this.package,
     required this.fileName,
     required this.import,
   });
 
-  static HookFile create({
+  factory HookFile.create({
     required String featureDir,
     required String package,
     required GeneratorOptions generatorOptions,
