@@ -25,7 +25,7 @@ import '../../../custom_hooks/hooks.dart';
       package: 'test',
       input: featureFile,
       generatorOptions: const GeneratorOptions(
-        enableHooks: true,
+        addHooks: true,
         hookFolderName: '../../../custom_hooks',
       ),
     );
@@ -54,7 +54,7 @@ import '../../custom_hooks/hooks.dart';
       package: 'test',
       input: featureFile,
       generatorOptions: const GeneratorOptions(
-        enableHooks: true,
+        addHooks: true,
         hookFolderName: 'custom_hooks',
       ),
     );

@@ -26,7 +26,7 @@ void parseScenario(
   final spaces = hasTearDown ? '        ' : '      ';
   if (hasHooks) {
     sb.writeln(
-      '${spaces}await $setUpHookName("$scenarioTitle" ${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});',
+      "${spaces}await $setUpHookName('''$scenarioTitle''' ${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});",
     );
   }
   if (hasSetUp) {
@@ -50,10 +50,10 @@ void parseScenario(
     }
     if (hasHooks) {
       sb.writeln('        await $tearDownHookName(');
-      sb.writeln('        "$scenarioTitle",');
-      sb.writeln('        $testSuccessVariableName,');
+      sb.writeln("          '''$scenarioTitle''',");
+      sb.writeln('          $testSuccessVariableName,');
       if (tags.isNotEmpty) {
-        sb.writeln('        ${tagsToString(tags)},');
+        sb.writeln('          ${tagsToString(tags)},');
       }
       sb.writeln('        );');
     }

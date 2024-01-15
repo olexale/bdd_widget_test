@@ -48,22 +48,29 @@ class HookFile {
 }
 
 const String hookFileContent = '''
-class Hooks {
-  static Function beforeEach = (String title, [List<String>? tags]) {
+import 'dart:async';
+
+abstract class Hooks {
+  const Hooks._();
+  
+  static FutureOr<void> beforeEach(String title, [List<String>? tags]) {
     // Add logic for beforeEach
-  };
-  static Function beforeAll = () {
+  }
+  
+  static FutureOr<void> beforeAll() {
     // Add logic for beforeAll
-  };
-  static Function afterEach = (
+  }
+  
+  static FutureOr<void> afterEach(
     String title,
     bool success, [
     List<String>? tags,
   ]) {
     // Add logic for afterEach
-  };
-  static Function afterAll = () {
+  }
+  
+  static FutureOr<void> afterAll() {
     // Add logic for afterAll
-  };
+  }
 }
 ''';

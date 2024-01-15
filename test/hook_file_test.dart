@@ -9,7 +9,7 @@ void main() {
       package: 'bdd_feature',
       input: '',
       generatorOptions: const GeneratorOptions(
-        enableHooks: true,
+        addHooks: true,
       ),
     );
     expect(feature.hookFile, isNotNull);

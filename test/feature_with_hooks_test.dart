@@ -34,15 +34,15 @@ void main() {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       var success = true;
       try {
-      await beforeEach("Testing scenario" );
+      await beforeEach(\'\'\'Testing scenario\'\'\' );
       await theAppIsRunning(tester);
       } on TestFailure {
         success = false;
         rethrow;
       } finally {
         await afterEach(
-        "Testing scenario",
-        success,
+          \'\'\'Testing scenario\'\'\',
+          success,
         );
       }
     });
@@ -54,7 +54,7 @@ void main() {
       featureDir: 'test/subdir/feature',
       package: 'test',
       input: minimalFeatureFile,
-      generatorOptions: const GeneratorOptions(enableHooks: true),
+      generatorOptions: const GeneratorOptions(addHooks: true),
     );
     expect(feature.dartContent, expectedFeatureDart);
   });
