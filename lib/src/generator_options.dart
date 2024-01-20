@@ -103,7 +103,7 @@ GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
       stepFolderName:
           a.stepFolder != _stepFolderName ? a.stepFolder : b.stepFolder,
       externalSteps: [...a.externalSteps, ...b.externalSteps],
-      addHooks: a.addHooks != false ? a.addHooks : b.addHooks,
+      addHooks: a.addHooks || b.addHooks,
       hookFolderName: a.hookFolderName != _hookFolderName
           ? a.hookFolderName
           : b.hookFolderName,
