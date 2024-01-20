@@ -19,13 +19,11 @@ class GenericStep implements BddStep {
   final bool hadDataTable;
 
   @override
-  String get content {
-    var result = '';
-    if (hadDataTable) {
-      result +=
-          "import 'package:bdd_widget_test/src/data_table.dart' as bdd;\n";
-    }
-    return result += '''
+  @override
+  String get content =>
+      '${hadDataTable ? "import 'package:bdd_widget_test/src/data_table.dart' as bdd;\n" : ''}'
+      '''
+import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Usage: $rawLine
