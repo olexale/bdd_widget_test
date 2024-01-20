@@ -23,7 +23,7 @@ abstract class DataTableParser {
         if (!hasExamplesFormat(bddLine: lines[index])) {
           // Cucumber data table
           final text = lines[index].value;
-          final table = List<List<String>>.empty(growable: true);
+          final table = <List<String>>[];
           do {
             table.add(_createRow(bddLine: lines[++index]));
           } while (isNextTable(lines: lines, index: index + 1));
