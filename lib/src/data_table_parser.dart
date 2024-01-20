@@ -20,32 +20,9 @@ Iterable<BddLine> replaceDataTables(List<BddLine> lines) sync* {
     final isNextLineTable = isNextTable(lines: lines, index: index + 1);
     if (isStep && isNextLineTable) {
       if (!hasExamplesFormat(bddLine: lines[index])) {
-// Cucumber data table
-        final text = lines[index].value;
-        final table = List<List<String>>.empty(growable: true);
-        do {
-          table.add(_createRow(bddLine: lines[++index]));
-        } while (isNextTable(lines: lines, index: index + 1));
-        yield BddLine.fromValue(
-          LineType.step,
-          '$text {const bdd.DataTable($table)}',
-        );
+        yield* _createCucumberDataTable(lines: lines, index: index);
       } else {
-// Data table formatted as examples
-        final dataTable = [lines[index]];
-        do {
-          dataTable.add(lines[++index]);
-        } while (index + 1 < lines.length &&
-            lines[index + 1].type == LineType.examples);
-        final data = generateScenariosFromScenaioOutline([
-// pretend to be an Example section to re-use some logic
-          BddLine.fromValue(LineType.exampleTitle, ''),
-          ...dataTable,
-        ]);
-
-        for (final item in data) {
-          yield item[1];
-        }
+        yield* _createDataTableFromExamples(lines: lines, index: index);
       }
     } else {
       yield lines[index];
@@ -74,3 +51,38 @@ List<String> _createRow({
           .takeWhile((value) => value.isNotEmpty)
           .toList(),
     );
+
+Iterable<BddLine> _createCucumberDataTable({
+  required List<BddLine> lines,
+  required int index,
+}) sync* {
+  final text = lines[index].value;
+  final table = List<List<String>>.empty(growable: true);
+  do {
+    table.add(_createRow(bddLine: lines[++index]));
+  } while (isNextTable(lines: lines, index: index + 1));
+  yield BddLine.fromValue(
+    LineType.step,
+    '$text {const bdd.DataTable($table)}',
+  );
+}
+
+Iterable<BddLine> _createDataTableFromExamples({
+  required List<BddLine> lines,
+  required int index,
+}) sync* {
+  final dataTable = [lines[index]];
+  do {
+    dataTable.add(lines[++index]);
+  } while (
+      index + 1 < lines.length && lines[index + 1].type == LineType.examples);
+  final data = generateScenariosFromScenaioOutline([
+    // pretend to be an Example section to re-use some logic
+    BddLine.fromValue(LineType.exampleTitle, ''),
+    ...dataTable,
+  ]);
+
+  for (final item in data) {
+    yield item[1];
+  }
+}
