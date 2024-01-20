@@ -44,20 +44,18 @@ bool hasExamplesFormat({required BddLine bddLine}) =>
 List<String> _createRow({
   required BddLine bddLine,
 }) =>
-    List<String>.unmodifiable(
-      bddLine.value
-          .split('|')
-          .map((example) => example.trim())
-          .takeWhile((value) => value.isNotEmpty)
-          .toList(),
-    );
+    bddLine.value
+        .split('|')
+        .map((example) => example.trim())
+        .takeWhile((value) => value.isNotEmpty)
+        .toList();
 
 Iterable<BddLine> _createCucumberDataTable({
   required List<BddLine> lines,
   required int index,
 }) sync* {
   final text = lines[index].value;
-  final table = List<List<String>>.empty(growable: true);
+  final table = <List<String>>[];
   do {
     table.add(_createRow(bddLine: lines[++index]));
   } while (isNextTable(lines: lines, index: index + 1));
