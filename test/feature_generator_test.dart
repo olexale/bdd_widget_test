@@ -60,22 +60,51 @@ void main() {
     const bddOptions = '''
 stepFolderName: ./scenarios
 testMethodName: customName
+addHooks: true
+hookFolderName: hooksFolder
 ''';
     fs.file('bdd_options.yaml')
       ..createSync()
       ..writeAsStringSync(bddOptions);
+
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: unused_import, directives_ordering\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
+        "import '../../hooksFolder/hooks.dart';\n"
         "import './scenarios/the_app_is_running.dart';\n"
         '\n'
         'void main() {\n'
+        '  setUpAll(() async {\n'
+        '    await Hooks.beforeAll();\n'
+        '  });\n'
+        '  tearDownAll(() async {\n'
+        '    await Hooks.afterAll();\n'
+        '  });\n'
+        '\n'
         "  group('''Testing feature''', () {\n"
+        '    Future<void> beforeEach(String title, [List<String>? tags]) async {\n'
+        '      await Hooks.beforeEach(title, tags);\n'
+        '    }\n'
+        '    Future<void> afterEach(String title, bool success, [List<String>? tags]) async {\n'
+        '      await Hooks.afterEach(title, success, tags);\n'
+        '    }\n'
         "    customName('''Testing scenario''', (tester) async {\n"
+        '      var success = true;\n'
+        '      try {\n'
+        "      await beforeEach('''Testing scenario''' );\n"
         '      await theAppIsRunning(tester);\n'
+        '      } on TestFailure {\n'
+        '        success = false;\n'
+        '        rethrow;\n'
+        '      } finally {\n'
+        '        await afterEach(\n'
+        "          '''Testing scenario''',\n"
+        '          success,\n'
+        '        );\n'
+        '      }\n'
         '    });\n'
         '  });\n'
         '}\n';
@@ -156,6 +185,7 @@ include:
       ..createSync()
       ..writeAsStringSync('''
 testMethodName: customName
+hookFolderName: hooksFolder
 ''');
 
     fs.file(externalYaml2)

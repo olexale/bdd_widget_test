@@ -1,6 +1,7 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/feature_generator.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
+import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/util/common.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
@@ -13,9 +14,16 @@ class FeatureFile {
     this.isIntegrationTest = false,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
-  }) : _lines = _prepareLines(
+  })  : _lines = _prepareLines(
           input.split('\n').map((line) => line.trim()).map(BddLine.new),
-        ) {
+        ),
+        hookFile = generatorOptions.addHooks
+            ? HookFile.create(
+                featureDir: featureDir,
+                package: package,
+                generatorOptions: generatorOptions,
+              )
+            : null {
     _testerType = parseCustomTagFromFeatureTagLine(
       _lines,
       generatorOptions.testerType,
@@ -54,6 +62,7 @@ class FeatureFile {
   final List<BddLine> _lines;
   final Map<String, String> existingSteps;
   final GeneratorOptions generatorOptions;
+  final HookFile? hookFile;
 
   String get dartContent => generateFeatureDart(
         _lines,
@@ -62,6 +71,7 @@ class FeatureFile {
         _testerType,
         _testerName,
         isIntegrationTest,
+        hookFile,
       );
 
   List<StepFile> getStepFiles() => _stepFiles;

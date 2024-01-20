@@ -1,5 +1,19 @@
 const setUpMethodName = 'bddSetUp';
 const tearDownMethodName = 'bddTearDown';
+const testSuccessVariableName = 'success';
+
+const hookClass = 'Hooks';
+const hookFileName = 'hooks';
+const setUpHookName = 'beforeEach';
+const tearDownHookName = 'afterEach';
+const setUpAllHookName = 'beforeAll';
+const tearDownAllHookName = 'afterAll';
+
+//https://api.flutter.dev/flutter/flutter_test/setUpAll.html
+const setUpAllCallbackName = 'setUpAll';
+
+//https://api.flutter.dev/flutter/flutter_test/tearDownAll.html
+const tearDownAllCallbackName = 'tearDownAll';
 
 const testMethodNameTag = '@testMethodName:';
 

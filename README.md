@@ -201,6 +201,22 @@ targets:
 ```
 That will tell the plugin to reuse steps from the plugin itself and do not put them into your code.
 
+## Hooks
+If you want to add hooks, you need to add the addHooks flag to the `build.yaml`. This will generate a file that allows you to handle a beforeAll, afterAll, beforeEach and afterEach call.
+These hooks will be generated per directory, just like the steps. Also like with the steps, you can define a directory in the build.yaml to define one set location for the hooks. These hooks will then be used everywhere.
+
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          addHooks: true
+          hookFolderName: bdd_hooks
+```
+
+The beforeAll and afterAll do not take any properties, but the beforeEach and afterEach both provide the name and the tags of the feature. On top of this, the afterEach provides whether or not the test was successful. 
+
 ## FAQ
 
 ### How to pass a parameter?
