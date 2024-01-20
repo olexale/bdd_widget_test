@@ -19,11 +19,9 @@ class GenericStep implements BddStep {
   final bool hadDataTable;
 
   @override
-  @override
   String get content =>
       '${hadDataTable ? "import 'package:bdd_widget_test/src/data_table.dart' as bdd;\n" : ''}'
       '''
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Usage: $rawLine
@@ -31,7 +29,6 @@ Future<void> $methodName($testerType $customTesterName${_getMethodParameters(raw
   throw UnimplementedError();
 }
 ''';
-  }
 
   String _getMethodParameters(String stepLine, bool hadDataTable) {
     if (hadDataTable) {
