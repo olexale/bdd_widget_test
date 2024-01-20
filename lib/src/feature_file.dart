@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
-import 'package:bdd_widget_test/src/data_table_parser.dart';
+import 'package:bdd_widget_test/src/data_table_parser.dart'
+    as data_table_parser;
 import 'package:bdd_widget_test/src/feature_generator.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
@@ -73,10 +74,10 @@ class FeatureFile {
     final lines = input.mapIndexed(
       (index, bddLine) {
         final isStep = bddLine.type == LineType.step;
-        final hasExamplesFormat = DataTableParser.hasExamplesFormat(
+        final hasExamplesFormat = data_table_parser.hasExamplesFormat(
           bddLine: bddLine,
         );
-        final isNextTable = DataTableParser.isNextTable(
+        final isNextTable = data_table_parser.isNextTable(
           lines: input.toList(),
           index: index + 1,
         );
