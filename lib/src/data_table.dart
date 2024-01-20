@@ -9,15 +9,13 @@ class DataTable {
       _data.sublist(ignoreFirstRow ? 1 : 0);
 
   List<Map<dynamic, dynamic>> asMaps() {
-    final result = <Map<dynamic, dynamic>>[];
     final headers = _data.first;
-    _data.skip(1).forEach((row) {
+    return _data.skip(1).map((row) {
       final map = <dynamic, dynamic>{};
       headers.forEachIndexed((index, header) {
         map[header] = row[index];
       });
-      result.add(map);
-    });
-    return result;
+      return map;
+    }).toList();
   }
 }
