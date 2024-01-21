@@ -34,9 +34,7 @@ bool isTable({
   required List<BddLine> lines,
   required int index,
 }) =>
-    index < lines.length && _isTable(bddLine: lines[index]);
-
-bool _isTable({required BddLine bddLine}) => bddLine.type == LineType.examples;
+    index < lines.length && lines[index].type == LineType.examples;
 
 bool hasExamplesFormat({required BddLine bddLine}) =>
     examplesRegExp.firstMatch(bddLine.rawLine) != null;
