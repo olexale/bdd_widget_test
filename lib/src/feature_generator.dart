@@ -49,7 +49,7 @@ String generateFeatureDart(
     sb.writeln("@Tags(['${tags.join("', '")}'])");
   }
   if (hasBddDataTable(lines)) {
-    sb.writeln("import 'package:bdd_widget_test/src/data_table.dart' as bdd;");
+    sb.writeln("import 'package:bdd_widget_test/data_table.dart' as bdd;");
   }
   sb.writeln("import 'package:flutter/material.dart';");
   sb.writeln("import 'package:flutter_test/flutter_test.dart';");

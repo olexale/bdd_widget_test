@@ -76,7 +76,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
-import 'package:bdd_widget_test/src/data_table.dart' as bdd;
+import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -124,7 +124,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
-import 'package:bdd_widget_test/src/data_table.dart' as bdd;
+import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -172,7 +172,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
-import 'package:bdd_widget_test/src/data_table.dart' as bdd;
+import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -224,7 +224,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
-import 'package:bdd_widget_test/src/data_table.dart' as bdd;
+import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -280,7 +280,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
-import 'package:bdd_widget_test/src/data_table.dart' as bdd;
+import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

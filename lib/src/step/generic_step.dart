@@ -20,7 +20,7 @@ class GenericStep implements BddStep {
 
   @override
   String get content =>
-      '${hadDataTable ? "import 'package:bdd_widget_test/src/data_table.dart' as bdd;\n" : ''}'
+      '${hadDataTable ? "import 'package:bdd_widget_test/data_table.dart' as bdd;\n" : ''}'
       '''
 import 'package:flutter_test/flutter_test.dart';
 

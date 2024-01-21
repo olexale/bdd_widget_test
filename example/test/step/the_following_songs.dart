@@ -1,4 +1,4 @@
-import 'package:bdd_widget_test/src/data_table.dart' as bdd;
+import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter_test/flutter_test.dart';
 
 /// Usage: the following songs
