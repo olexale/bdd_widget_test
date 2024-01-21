@@ -39,7 +39,7 @@ bool isTable({
 bool _isTable({required BddLine bddLine}) => bddLine.type == LineType.examples;
 
 bool hasExamplesFormat({required BddLine bddLine}) =>
-    examplesRegExp.allMatches(bddLine.rawLine).isNotEmpty;
+    examplesRegExp.firstMatch(bddLine.rawLine) != null;
 
 List<String> _createRow({
   required BddLine bddLine,
