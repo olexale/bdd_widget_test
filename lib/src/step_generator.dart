@@ -51,7 +51,7 @@ String generateStepDart(
   String line,
   String testerType,
   String customTesterName,
-  bool hadDataTable,
+  bool hasDataTable,
 ) {
   final methodName = getStepMethodName(line);
 
@@ -61,7 +61,7 @@ String generateStepDart(
     line,
     testerType,
     customTesterName,
-    hadDataTable,
+    hasDataTable,
   );
   return bddStep.content;
 }
@@ -72,7 +72,7 @@ BddStep _getStep(
   String line,
   String testerType,
   String testerName,
-  bool hadDataTable,
+  bool hasDataTable,
 ) {
   //for now, predefined steps don't support testerType
   final factory = predefinedSteps[methodName] ??
@@ -81,7 +81,7 @@ BddStep _getStep(
             line,
             testerType,
             testerName,
-            hadDataTable,
+            hasDataTable,
           );
   return factory(package, line);
 }
