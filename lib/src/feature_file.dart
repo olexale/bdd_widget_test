@@ -77,7 +77,7 @@ class FeatureFile {
         final hasExamplesFormat = data_table_parser.hasExamplesFormat(
           bddLine: bddLine,
         );
-        final isNextTable = data_table_parser.isNextTable(
+        final isNextTable = data_table_parser.isTable(
           lines: input.toList(),
           index: index + 1,
         );
