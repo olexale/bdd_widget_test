@@ -4,7 +4,8 @@ import 'package:bdd_widget_test/src/scenario_generator.dart';
 
 bool hasBddDataTable(List<BddLine> lines) {
   for (var index = 0; index < lines.length; index++) {
-    final isStep = lines[index].type == LineType.step;
+    final isStep = lines[index].type == LineType.step ||
+        lines[index].type == LineType.dataTableStep;
     final isNextLineTable = isTable(lines: lines, index: index + 1);
     final isExamplesFormatted = hasExamplesFormat(bddLine: lines[index]);
     if (isStep && isNextLineTable && !isExamplesFormatted) {
@@ -16,7 +17,8 @@ bool hasBddDataTable(List<BddLine> lines) {
 
 Iterable<BddLine> replaceDataTables(List<BddLine> lines) sync* {
   for (var index = 0; index < lines.length; index++) {
-    final isStep = lines[index].type == LineType.step;
+    final isStep = lines[index].type == LineType.step ||
+        lines[index].type == LineType.dataTableStep;
     final isNextLineTable = isTable(lines: lines, index: index + 1);
     if (isStep && isNextLineTable) {
       if (!hasExamplesFormat(bddLine: lines[index])) {
@@ -58,7 +60,7 @@ Iterable<BddLine> _createCucumberDataTable({
     table.add(_createRow(bddLine: lines[++index]));
   } while (isTable(lines: lines, index: index + 1));
   yield BddLine.fromValue(
-    LineType.step,
+    LineType.dataTableStep,
     '$text {const bdd.DataTable($table)}',
   );
 }

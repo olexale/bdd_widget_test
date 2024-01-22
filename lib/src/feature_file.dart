@@ -32,17 +32,19 @@ class FeatureFile {
     );
 
     _stepFiles = _lines
-        .where((line) => line.type == LineType.step)
+        .where(
+          (line) =>
+              line.type == LineType.step || line.type == LineType.dataTableStep,
+        )
         .map(
-          (e) => StepFile.create(
+          (bddLine) => StepFile.create(
             featureDir,
             package,
-            e.value,
+            bddLine,
             existingSteps,
             generatorOptions,
             _testerType,
             _testerName,
-            e is DataTableBddLine,
           ),
         )
         .toList();
@@ -82,7 +84,7 @@ class FeatureFile {
           index: index + 1,
         );
         if (isStep && !hasExamplesFormat && isNextTable) {
-          return DataTableBddLine(bddLine.rawLine);
+          return BddLine.fromRawValue(LineType.dataTableStep, bddLine.rawLine);
         } else {
           return bddLine;
         }

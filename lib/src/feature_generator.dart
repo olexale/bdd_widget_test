@@ -141,7 +141,8 @@ bool _parseSetup(
   if (offset != -1) {
     sb.writeln('    Future<void> $title($testerType $testerName) async {');
     offset++;
-    while (lines[offset].type == LineType.step) {
+    while (lines[offset].type == LineType.step ||
+        lines[offset].type == LineType.dataTableStep) {
       sb.writeln(
         '      await ${getStepMethodCall(lines[offset].value, testerName)};',
       );
@@ -189,7 +190,12 @@ void _parseFeature(
       parseScenario(
         sb,
         s.first.value,
-        s.where((e) => e.type == LineType.step).toList(),
+        s
+            .where(
+              (e) =>
+                  e.type == LineType.step || e.type == LineType.dataTableStep,
+            )
+            .toList(),
         hasSetUp,
         hasTearDown,
         scenarioTestMethodName,
@@ -239,7 +245,7 @@ Iterable<List<BddLine>> _splitScenarios(List<BddLine> lines) sync* {
 Iterable<BddLine> _parseScenario(List<BddLine> lines) sync* {
   var isNewScenario = true;
   for (final line in lines) {
-    if (line.type == LineType.step) {
+    if (line.type == LineType.step || line.type == LineType.dataTableStep) {
       isNewScenario = false;
     }
     if (!isNewScenario && _isNewScenario(line.type)) {
