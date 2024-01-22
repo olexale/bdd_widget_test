@@ -5,8 +5,7 @@ class DataTable {
 
   final List<List<dynamic>> _data;
 
-  List<List<dynamic>> asLists({bool ignoreFirstRow = false}) =>
-      _data.sublist(ignoreFirstRow ? 1 : 0);
+  List<List<dynamic>> asLists() => _data;
 
   List<Map<dynamic, dynamic>> asMaps() {
     final headers = _data.first;
