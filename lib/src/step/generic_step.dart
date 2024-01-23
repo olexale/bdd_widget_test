@@ -9,24 +9,32 @@ class GenericStep implements BddStep {
     this.rawLine,
     this.testerType,
     this.customTesterName,
+    this.hasDataTable,
   );
 
   final String rawLine;
   final String methodName;
   final String testerType;
   final String customTesterName;
+  final bool hasDataTable;
 
   @override
-  String get content => '''
+  String get content =>
+      '${hasDataTable ? "import 'package:bdd_widget_test/data_table.dart' as bdd;\n" : ''}'
+      '''
 import 'package:flutter_test/flutter_test.dart';
 
 /// Usage: $rawLine
-Future<void> $methodName($testerType $customTesterName${_getMethodParameters(rawLine)}) async {
+Future<void> $methodName($testerType $customTesterName${_getMethodParameters(rawLine, hasDataTable)}) async {
   throw UnimplementedError();
 }
 ''';
 
-  String _getMethodParameters(String stepLine) {
+  String _getMethodParameters(String stepLine, bool hadDataTable) {
+    if (hadDataTable) {
+      return ', bdd.DataTable dataTable';
+    }
+
     final params = parseRawStepLine(stepLine).skip(1);
     if (params.isNotEmpty) {
       return params

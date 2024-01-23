@@ -51,11 +51,18 @@ String generateStepDart(
   String line,
   String testerType,
   String customTesterName,
+  bool hasDataTable,
 ) {
   final methodName = getStepMethodName(line);
 
-  final bddStep =
-      _getStep(methodName, package, line, testerType, customTesterName);
+  final bddStep = _getStep(
+    methodName,
+    package,
+    line,
+    testerType,
+    customTesterName,
+    hasDataTable,
+  );
   return bddStep.content;
 }
 
@@ -65,10 +72,17 @@ BddStep _getStep(
   String line,
   String testerType,
   String testerName,
+  bool hasDataTable,
 ) {
   //for now, predefined steps don't support testerType
   final factory = predefinedSteps[methodName] ??
-      (_, __) => GenericStep(methodName, line, testerType, testerName);
+      (_, __) => GenericStep(
+            methodName,
+            line,
+            testerType,
+            testerName,
+            hasDataTable,
+          );
   return factory(package, line);
 }
 

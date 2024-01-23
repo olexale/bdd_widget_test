@@ -1,10 +1,13 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
+import 'package:bdd_widget_test/src/data_table_parser.dart'
+    as data_table_parser;
 import 'package:bdd_widget_test/src/feature_generator.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/util/common.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
+import 'package:collection/collection.dart';
 
 class FeatureFile {
   FeatureFile({
@@ -37,12 +40,15 @@ class FeatureFile {
     );
 
     _stepFiles = _lines
-        .where((line) => line.type == LineType.step)
+        .where(
+          (line) =>
+              line.type == LineType.step || line.type == LineType.dataTableStep,
+        )
         .map(
-          (e) => StepFile.create(
+          (bddLine) => StepFile.create(
             featureDir,
             package,
-            e.value,
+            bddLine,
             existingSteps,
             generatorOptions,
             _testerType,
@@ -77,10 +83,28 @@ class FeatureFile {
   List<StepFile> getStepFiles() => _stepFiles;
 
   static List<BddLine> _prepareLines(Iterable<BddLine> input) {
-    final headers = input.takeWhile((value) => value.type == LineType.unknown);
-    final lines = input
+    final lines = input.mapIndexed(
+      (index, bddLine) {
+        final isStep = bddLine.type == LineType.step;
+        final hasExamplesFormat = data_table_parser.hasExamplesFormat(
+          bddLine: bddLine,
+        );
+        final isNextTable = data_table_parser.isTable(
+          lines: input.toList(),
+          index: index + 1,
+        );
+        if (isStep && !hasExamplesFormat && isNextTable) {
+          return BddLine.fromRawValue(LineType.dataTableStep, bddLine.rawLine);
+        } else {
+          return bddLine;
+        }
+      },
+    );
+
+    final headers = lines.takeWhile((value) => value.type == LineType.unknown);
+    final steps = lines
         .skip(headers.length)
         .where((value) => value.type != LineType.unknown);
-    return [...headers, ...lines];
+    return [...headers, ...steps];
   }
 }

@@ -4,6 +4,8 @@ class BddLine {
         value = _removeLinePrefix(rawLine);
 
   BddLine.fromValue(this.type, this.value) : rawLine = '';
+  BddLine.fromRawValue(this.type, this.rawLine)
+      : value = _removeLinePrefix(rawLine);
 
   final String rawLine;
   final String value;
@@ -17,6 +19,7 @@ enum LineType {
   scenario,
   scenarioOutline,
   step,
+  dataTableStep,
   after,
   examples,
   exampleTitle,

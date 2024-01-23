@@ -1,3 +1,4 @@
+import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
@@ -10,13 +11,13 @@ abstract class StepFile {
   static StepFile create(
     String featureDir,
     String package,
-    String line,
+    BddLine bddLine,
     Map<String, String> existingSteps,
     GeneratorOptions generatorOptions,
     String testerTypeTagValue,
     String testerNameTagValue,
   ) {
-    final file = '${getStepFilename(line)}.dart';
+    final file = '${getStepFilename(bddLine.value)}.dart';
 
     if (existingSteps.containsKey(file)) {
       final import =
@@ -39,9 +40,10 @@ abstract class StepFile {
         import,
         filename,
         package,
-        line,
+        bddLine.value,
         testerTypeTagValue,
         testerNameTagValue,
+        bddLine.type == LineType.dataTableStep,
       );
     }
 
@@ -54,9 +56,10 @@ abstract class StepFile {
       import,
       filename,
       package,
-      line,
+      bddLine.value,
       testerTypeTagValue,
       testerNameTagValue,
+      bddLine.type == LineType.dataTableStep,
     );
   }
 }
@@ -69,6 +72,7 @@ class NewStepFile extends StepFile {
     this.line,
     this.testerType,
     this.testerName,
+    this.hasDataTable,
   ) : super._();
 
   final String package;
@@ -76,9 +80,14 @@ class NewStepFile extends StepFile {
   final String filename;
   final String testerType;
   final String testerName;
-
-  String get dartContent =>
-      generateStepDart(package, line, testerType, testerName);
+  final bool hasDataTable;
+  String get dartContent => generateStepDart(
+        package,
+        line,
+        testerType,
+        testerName,
+        hasDataTable,
+      );
 }
 
 class ExistingStepFile extends StepFile {
