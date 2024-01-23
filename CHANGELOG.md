@@ -1,3 +1,8 @@
+## [1.6.4] - Gherkin compliance
+
+* Add hooks (by @daniel-deboeverie-lemon)
+* Add Cucumber data table support (by @ron-brosh)
+
 ## [1.6.3] - Generic step usage comment (by @lsaudon)
 
 * Add a comment to the generated step implementation to show how to use the generated step
