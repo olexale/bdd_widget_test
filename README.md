@@ -133,8 +133,8 @@ Feature: Search songs
   Scenario: Searched text matches a song's details
     Given available songs
     | 'artist'      | 'name'                      |
-    | 'The doors'   | 'Riders on the storm'       |
-    | 'Bob dylan'   | "Knockin' On Heaven's Door" |
+    | 'The Doors'   | 'Riders on the storm'       |
+    | 'Bob Dylan'   | "Knockin' On Heaven's Door" |
     | 'The Beatles' | 'Here Comes the Sun'        |
     When I search for text {'door'}
     Then I see songs
