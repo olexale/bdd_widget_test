@@ -152,29 +152,10 @@ Future<void> availableSongs(WidgetTester tester, bdd.DataTable dataTable) async 
   throw UnimplementedError();
 }
 ```
-This object can be used to retrieve the table's data.
-Use the DataTable's **asLists** function to get the data as list of lists.
-We can then iterate that list and extract data from each "column" in the current "row":
+Use the `DataTable` parameter to get access to the data:
 ```dart
-
-dataTable.asLists().forEach((row) {
-    final artist = row[0] as String;
-    final name = row[1] as String;
-});
-```
-**Keep in mind that if the first "row" is used for heading, you'll have to skip that first "row".**
-
-While a list of lists provides a foundational mechanism for extracting elements from a data table, the step implementation can be cryptic. The DataTable provides a list of maps mechanism as a more readable alternative by using the DataTable's **asMaps** function.
-We can then iterate that list and extract data from each map using the "column" header as key.
-For the above example, the asMaps function returns:
-```dart
-[
-    {'artist': 'The doors', 'name': 'Riders on the storm'},
-    {'artist': 'Bob dylan', 'name': "Knockin' On Heaven's Door"},
-    {'artist': 'The Beatles', 'name': 'Here Comes the Sun'},
-]
-```
-**In this case, we must provide a heading for our table.**
+final dataAsList = dataTable.asLists(); // [['artist', 'name'], ['The Doors', 'Riders on the storm'], ...]
+final dataAsMaps = dataTable.asMaps(); // [{'artist: 'The Doors', 'name: 'Riders on the storm'}, ...]
 
 ## Tags
 
