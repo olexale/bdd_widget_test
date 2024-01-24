@@ -139,8 +139,8 @@ Feature: Search songs
     When I search for text {'door'}
     Then I see songs
     | 'artist'      | 'name'                      |
-    | 'The doors'   | 'Riders on the storm'       |
-    | 'Bob dylan'   | "Knockin' On Heaven's Door" |
+    | 'The Doors'   | 'Riders on the storm'       |
+    | 'Bob Dylan'   | "Knockin' On Heaven's Door" |
 ```
 For each of the above step lines that are followed by a table, in the related generate step file, the created function will have an object parameter of type `DataTable`:
 ```dart
