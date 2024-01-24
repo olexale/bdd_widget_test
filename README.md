@@ -147,7 +147,7 @@ For each of the above step lines that are followed by a table, in the related ge
 import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter_test/flutter_test.dart';
 
-/// Usage: the following songs
+/// Usage: Given available songs
 Future<void> availableSongs(WidgetTester tester, bdd.DataTable dataTable) async {
   throw UnimplementedError();
 }
