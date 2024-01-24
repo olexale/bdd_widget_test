@@ -125,6 +125,57 @@ Feature: Sample
     Then I see {'Do not forget your towel!'} text
 ```
 
+While the `DataTable`-like syntax is a good practice for scenarios that require repeated steps, for example, entering text in different fields, sometimes we want to prepare test data in a readable way and mock our scneario's prerequisites and assert the expected result in an explicit domain driven way.
+To handle this, we create a data table:
+```ruby
+Feature: Search songs
+
+  Scenario: Searched text matches a song's details
+    Given available songs
+    | 'artist'      | 'name'                      |
+    | 'The doors'   | 'Riders on the storm'       |
+    | 'Bob dylan'   | "Knockin' On Heaven's Door" |
+    | 'The Beatles' | 'Here Comes the Sun'        |
+    When I search for text {'door'}
+    Then I see songs
+    | 'artist'      | 'name'                      |
+    | 'The doors'   | 'Riders on the storm'       |
+    | 'Bob dylan'   | "Knockin' On Heaven's Door" |
+```
+For each of the above step lines that are followed by a table, in the related generate step file, the created function will have an object parameter of type `DataTable`:
+```dart
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter_test/flutter_test.dart';
+
+/// Usage: the following songs
+Future<void> availableSongs(WidgetTester tester, bdd.DataTable dataTable) async {
+  throw UnimplementedError();
+}
+```
+This object can be used to retrieve the table's data.
+Use the DataTable's **asLists** function to get the data as list of lists.
+We can then iterate that list and extract data from each "column" in the current "row":
+```dart
+
+dataTable.asLists().forEach((row) {
+    final artist = row[0] as String;
+    final name = row[1] as String;
+});
+```
+**Keep in mind that if the first "row" is used for heading, you'll have to skip that first "row".**
+
+While a list of lists provides a foundational mechanism for extracting elements from a data table, the step implementation can be cryptic. The DataTable provides a list of maps mechanism as a more readable alternative by using the DataTable's **asMaps** function.
+We can then iterate that list and extract data from each map using the "column" header as key.
+For the above example, the asMaps function returns:
+```dart
+[
+    {'artist': 'The doors', 'name': 'Riders on the storm'},
+    {'artist': 'Bob dylan', 'name': "Knockin' On Heaven's Door"},
+    {'artist': 'The Beatles', 'name': 'Here Comes the Sun'},
+]
+```
+**In this case, we must provide a heading for our table.**
+
 ## Tags
 
 Tags are used to filter scenarios in the test runner. Here are some examples:
