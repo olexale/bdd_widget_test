@@ -125,6 +125,38 @@ Feature: Sample
     Then I see {'Do not forget your towel!'} text
 ```
 
+While the `DataTable`-like syntax is a good practice for scenarios that require repeated steps, for example, entering text in different fields, sometimes we want to prepare test data in a readable way and mock our scneario's prerequisites and assert the expected result in an explicit domain driven way.
+To handle this, we create a data table:
+```ruby
+Feature: Search songs
+
+  Scenario: Searched text matches a song's details
+    Given available songs
+    | 'artist'      | 'name'                      |
+    | 'The Doors'   | 'Riders on the storm'       |
+    | 'Bob Dylan'   | "Knockin' On Heaven's Door" |
+    | 'The Beatles' | 'Here Comes the Sun'        |
+    When I search for text {'door'}
+    Then I see songs
+    | 'artist'      | 'name'                      |
+    | 'The Doors'   | 'Riders on the storm'       |
+    | 'Bob Dylan'   | "Knockin' On Heaven's Door" |
+```
+For each of the above step lines that are followed by a table, in the related generate step file, the created function will have an object parameter of type `DataTable`:
+```dart
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter_test/flutter_test.dart';
+
+/// Usage: Given available songs
+Future<void> availableSongs(WidgetTester tester, bdd.DataTable dataTable) async {
+  throw UnimplementedError();
+}
+```
+Use the `DataTable` parameter to get access to the data:
+```dart
+final dataAsList = dataTable.asLists(); // [['artist', 'name'], ['The Doors', 'Riders on the storm'], ...]
+final dataAsMaps = dataTable.asMaps(); // [{'artist: 'The Doors', 'name: 'Riders on the storm'}, ...]
+```
 ## Tags
 
 Tags are used to filter scenarios in the test runner. Here are some examples:
