@@ -156,7 +156,7 @@ Use the `DataTable` parameter to get access to the data:
 ```dart
 final dataAsList = dataTable.asLists(); // [['artist', 'name'], ['The Doors', 'Riders on the storm'], ...]
 final dataAsMaps = dataTable.asMaps(); // [{'artist: 'The Doors', 'name: 'Riders on the storm'}, ...]
-
+```
 ## Tags
 
 Tags are used to filter scenarios in the test runner. Here are some examples:
