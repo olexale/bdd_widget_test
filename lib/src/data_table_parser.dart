@@ -74,7 +74,7 @@ Iterable<BddLine> _createDataTableFromExamples({
     dataTable.add(lines[++index]);
   } while (
       index + 1 < lines.length && lines[index + 1].type == LineType.examples);
-  final data = generateScenariosFromScenaioOutline([
+  final data = generateScenariosFromScenarioOutline([
     // pretend to be an Example section to re-use some logic
     BddLine.fromValue(LineType.exampleTitle, ''),
     ...dataTable,

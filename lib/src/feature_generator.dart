@@ -224,14 +224,18 @@ bool _parseSetup(
   String testerType,
   String testerName,
 ) {
-  var offset = lines.indexWhere((element) => element.type == elementType);
+  final flattenDataTables = replaceDataTables(
+    lines.skipWhile((line) => line.type == LineType.tag).toList(),
+  ).toList();
+  var offset =
+      flattenDataTables.indexWhere((element) => element.type == elementType);
   if (offset != -1) {
     sb.writeln('    Future<void> $title($testerType $testerName) async {');
     offset++;
-    while (lines[offset].type == LineType.step ||
-        lines[offset].type == LineType.dataTableStep) {
+    while (flattenDataTables[offset].type == LineType.step ||
+        flattenDataTables[offset].type == LineType.dataTableStep) {
       sb.writeln(
-        '      await ${getStepMethodCall(lines[offset].value, testerName)};',
+        '      await ${getStepMethodCall(flattenDataTables[offset].value, testerName)};',
       );
       offset++;
     }
@@ -272,7 +276,7 @@ void _parseFeature(
     ).toList();
     final scenariosToParse = flattenDataTables.first.type == LineType.scenario
         ? [flattenDataTables]
-        : generateScenariosFromScenaioOutline(flattenDataTables);
+        : generateScenariosFromScenarioOutline(flattenDataTables);
 
     for (final s in scenariosToParse) {
       parseScenario(
