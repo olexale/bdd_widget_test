@@ -48,28 +48,26 @@ class HookFile {
 }
 
 const String hookFileContent = '''
-import 'dart:async';
-
 abstract class Hooks {
   const Hooks._();
   
-  static FutureOr<void> beforeEach(String title, [List<String>? tags]) {
+  static Future<void> beforeEach(String title, [List<String>? tags]) async {
     // Add logic for beforeEach
   }
   
-  static FutureOr<void> beforeAll() {
+  static Future<void> beforeAll() async {
     // Add logic for beforeAll
   }
   
-  static FutureOr<void> afterEach(
+  static Future<void> afterEach(
     String title,
     bool success, [
     List<String>? tags,
-  ]) {
+  ]) async {
     // Add logic for afterEach
   }
   
-  static FutureOr<void> afterAll() {
+  static Future<void> afterAll() async {
     // Add logic for afterAll
   }
 }
