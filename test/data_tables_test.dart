@@ -351,13 +351,71 @@ import './step/the_following_users_exist.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     Future<void> bddSetUp(WidgetTester tester) async {
-      await theServerAlwaysReturnErrors(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
     }
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await bddSetUp(tester);
       await iWait(tester);
       await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
       await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
+    });
+  });
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+
+    expect(feature.dartContent, expectedFeatureDart);
+  });
+
+  test('Cucumber data table in after', () {
+    const featureFile = '''
+Feature: Testing feature
+  
+  After:
+    Given I wait
+    And the following users exist <name> <twitter>
+    | name            | twitter       |
+    | 'Oleksandr'     | '@olexale'    |
+    | 'Flutter'       | '@FlutterDev' |
+
+  Scenario: Testing scenario
+    Given the following songs
+    | artist           | title                |
+    | 'The Beatles'    | 'Let It Be'          |
+    | 'Camel'          | 'Slow yourself down' |
+   
+''';
+
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: unused_import, directives_ordering
+
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_wait.dart';
+import './step/the_following_users_exist.dart';
+import './step/the_following_songs.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    Future<void> bddTearDown(WidgetTester tester) async {
+      await iWait(tester);
+      await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
+      await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
+    }
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
+      try {
+        await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      } finally {
+        await bddTearDown(tester);
+      }
     });
   });
 }
