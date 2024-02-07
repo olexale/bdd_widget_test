@@ -9,6 +9,11 @@ const tearDownHookName = 'afterEach';
 const setUpAllHookName = 'beforeAll';
 const tearDownAllHookName = 'afterAll';
 
+const worldVarName = 'world';
+const worldTypeName = 'World';
+
+const worldParameter = '$worldTypeName $worldVarName';
+
 //https://api.flutter.dev/flutter/flutter_test/setUpAll.html
 const setUpAllCallbackName = 'setUpAll';
 

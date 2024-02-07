@@ -13,28 +13,36 @@ void parseScenario(
   String testerName,
   List<String> tags,
   String scenarioParams,
+  bool addWorld,
 ) {
   sb.writeln(
     "    $testMethodName('''$scenarioTitle''', ($testerName) async {",
   );
+  if (addWorld) {
+    sb.writeln('      final $worldParameter = $worldTypeName.empty();');
+  }
   if (hasHooks) {
-    sb.writeln('      var $testSuccessVariableName = true;');
+    sb.writeln('      bool $testSuccessVariableName = true;');
   }
   if (hasTearDown || hasHooks) {
     sb.writeln('      try {');
   }
-  final spaces = hasTearDown ? '        ' : '      ';
+  final spaces = hasTearDown || hasHooks ? '        ' : '      ';
   if (hasHooks) {
     sb.writeln(
-      "${spaces}await $setUpHookName('''$scenarioTitle''' ${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});",
+      "${spaces}await $setUpHookName('''$scenarioTitle'''${addWorld ? ', $worldVarName' : ''}${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});",
     );
   }
   if (hasSetUp) {
-    sb.writeln('${spaces}await $setUpMethodName($testerName);');
+    sb.writeln(
+      '${spaces}await $setUpMethodName($testerName${addWorld ? ', $worldVarName' : ''});',
+    );
   }
 
   for (final step in scenario) {
-    sb.writeln('${spaces}await ${getStepMethodCall(step.value, testerName)};');
+    sb.writeln(
+      '${spaces}await ${getStepMethodCall(step.value, testerName, addWorld)};',
+    );
   }
 
   if (hasHooks) {
@@ -46,12 +54,16 @@ void parseScenario(
   if (hasTearDown | hasHooks) {
     sb.writeln('      } finally {');
     if (hasTearDown) {
-      sb.writeln('        await $tearDownMethodName($testerName);');
+      sb.writeln(
+          '        await $tearDownMethodName($testerName${addWorld ? ', $worldVarName' : ''});');
     }
     if (hasHooks) {
       sb.writeln('        await $tearDownHookName(');
       sb.writeln("          '''$scenarioTitle''',");
       sb.writeln('          $testSuccessVariableName,');
+      if (addWorld) {
+        sb.writeln('          $worldVarName,');
+      }
       if (tags.isNotEmpty) {
         sb.writeln('          ${tagsToString(tags)},');
       }

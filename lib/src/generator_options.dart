@@ -17,6 +17,7 @@ class GeneratorOptions {
     String? testerName,
     bool? addHooks,
     String? hookFolderName,
+    bool? addWorld,
     this.include,
   })  : stepFolder = stepFolderName ?? _stepFolderName,
         testMethodName = testMethodName ?? _defaultTestMethodName,
@@ -24,6 +25,7 @@ class GeneratorOptions {
         testerName = testerName ?? _defaultTesterName,
         addHooks = addHooks ?? false,
         hookFolderName = hookFolderName ?? _hookFolderName,
+        addWorld = addWorld ?? false,
         externalSteps = externalSteps ?? const [];
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
@@ -35,6 +37,7 @@ class GeneratorOptions {
         stepFolderName: json['stepFolderName'] as String?,
         addHooks: json['addHooks'] as bool?,
         hookFolderName: json['hookFolderName'] as String?,
+        addWorld: json['addWorld'] as bool?,
         include: json['include'] is String
             ? [(json['include'] as String)]
             : (json['include'] as List?)?.cast<String>(),
@@ -46,6 +49,7 @@ class GeneratorOptions {
   final String testerName;
   final bool addHooks;
   final String hookFolderName;
+  final bool addWorld;
   final List<String>? include;
   final List<String> externalSteps;
 }
@@ -85,6 +89,7 @@ GeneratorOptions readFromUri(Uri uri) {
     stepFolderName: doc['stepFolderName'] as String?,
     addHooks: doc['addHooks'] as bool?,
     hookFolderName: doc['hookFolderName'] as String?,
+    addWorld: doc['addWorld'] as bool?,
     include: doc['include'] is String
         ? [(doc['include'] as String)]
         : (doc['include'] as YamlList?)?.value.cast<String>(),
@@ -107,5 +112,6 @@ GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
       hookFolderName: a.hookFolderName != _hookFolderName
           ? a.hookFolderName
           : b.hookFolderName,
+      addWorld: a.addWorld || b.addWorld,
       include: b.include,
     );

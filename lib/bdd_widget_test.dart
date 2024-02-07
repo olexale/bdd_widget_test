@@ -44,7 +44,10 @@ class FeatureBuilder implements Builder {
 
     final hookFile = feature.hookFile;
     if (hookFile != null) {
-      await createFileRecursively(hookFile.fileName, hookFileContent);
+      await createFileRecursively(
+        hookFile.fileName,
+        createHooksFileContent(options.addWorld),
+      );
     }
   }
 

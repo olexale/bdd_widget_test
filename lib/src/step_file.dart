@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 
 abstract class StepFile {
   const StepFile._(this.import);
+
   final String import;
 
   static StepFile create(
@@ -44,6 +45,7 @@ abstract class StepFile {
         testerTypeTagValue,
         testerNameTagValue,
         bddLine.type == LineType.dataTableStep,
+        generatorOptions.addWorld,
       );
     }
 
@@ -60,6 +62,7 @@ abstract class StepFile {
       testerTypeTagValue,
       testerNameTagValue,
       bddLine.type == LineType.dataTableStep,
+      generatorOptions.addWorld,
     );
   }
 }
@@ -73,6 +76,7 @@ class NewStepFile extends StepFile {
     this.testerType,
     this.testerName,
     this.hasDataTable,
+    this.addWorld,
   ) : super._();
 
   final String package;
@@ -81,12 +85,15 @@ class NewStepFile extends StepFile {
   final String testerType;
   final String testerName;
   final bool hasDataTable;
+  final bool addWorld;
+
   String get dartContent => generateStepDart(
         package,
         line,
         testerType,
         testerName,
         hasDataTable,
+        addWorld,
       );
 }
 

@@ -20,6 +20,7 @@ import 'package:bdd_widget_test/src/step/i_tap_icon.dart';
 import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
+import 'package:bdd_widget_test/src/util/constants.dart';
 import 'package:bdd_widget_test/src/util/string_utils.dart';
 import 'package:diacritic/diacritic.dart';
 
@@ -35,13 +36,15 @@ String getStepMethodName(String stepText) {
 
 String getStepMethodCall(
   String stepLine,
-  String customTesterName, {
+  String customTesterName,
+  bool addWorld, {
   List<String>? forceParams,
 }) {
   final step = parseRawStepLine(stepLine);
   final parameters = [
     customTesterName,
     if (forceParams != null) ...forceParams else ...step.skip(1),
+    if (addWorld) worldVarName,
   ].join(', ');
   return '${_camelizedString(step[0])}($parameters)';
 }
@@ -52,17 +55,12 @@ String generateStepDart(
   String testerType,
   String customTesterName,
   bool hasDataTable,
+  bool addWorld,
 ) {
   final methodName = getStepMethodName(line);
 
-  final bddStep = _getStep(
-    methodName,
-    package,
-    line,
-    testerType,
-    customTesterName,
-    hasDataTable,
-  );
+  final bddStep = _getStep(methodName, package, line, testerType,
+      customTesterName, hasDataTable, addWorld);
   return bddStep.content;
 }
 
@@ -73,6 +71,7 @@ BddStep _getStep(
   String testerType,
   String testerName,
   bool hasDataTable,
+  bool addWorld,
 ) {
   //for now, predefined steps don't support testerType
   final factory = predefinedSteps[methodName] ??
@@ -82,6 +81,7 @@ BddStep _getStep(
             testerType,
             testerName,
             hasDataTable,
+            addWorld,
           );
   return factory(package, line);
 }

@@ -47,30 +47,35 @@ class HookFile {
   final String import;
 }
 
-const String hookFileContent = '''
+String createHooksFileContent(bool addWorld) {
+  return '''
 import 'dart:async';
-
+${addWorld ? "\nimport 'package:bdd_widget_test/world.dart';\n" : ''}
 abstract class Hooks {
   const Hooks._();
   
-  static FutureOr<void> beforeEach(String title, [List<String>? tags]) {
-    // Add logic for beforeEach
+  static FutureOr<void> $setUpHookName(
+    String title,${addWorld ? "\n    $worldParameter," : ""} [
+    List<String>? tags,
+    ]) {
+    // Add logic for $setUpHookName
   }
   
-  static FutureOr<void> beforeAll() {
-    // Add logic for beforeAll
+  static FutureOr<void> $setUpAllHookName() {
+    // Add logic for $setUpAllHookName
   }
   
-  static FutureOr<void> afterEach(
+  static FutureOr<void> $tearDownHookName(
     String title,
-    bool success, [
+    bool success,${addWorld ? "\n    $worldParameter," : ""} [
     List<String>? tags,
   ]) {
-    // Add logic for afterEach
+    // Add logic for $tearDownHookName
   }
   
-  static FutureOr<void> afterAll() {
-    // Add logic for afterAll
+  static FutureOr<void> $tearDownAllHookName() {
+    // Add logic for $tearDownAllHookName
   }
 }
 ''';
+}

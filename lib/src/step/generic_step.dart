@@ -1,6 +1,7 @@
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
+import 'package:bdd_widget_test/src/util/constants.dart';
 import 'package:collection/collection.dart';
 
 class GenericStep implements BddStep {
@@ -10,6 +11,7 @@ class GenericStep implements BddStep {
     this.testerType,
     this.customTesterName,
     this.hasDataTable,
+    this.addWorld,
   );
 
   final String rawLine;
@@ -17,15 +19,17 @@ class GenericStep implements BddStep {
   final String testerType;
   final String customTesterName;
   final bool hasDataTable;
+  final bool addWorld;
 
   @override
   String get content =>
       '${hasDataTable ? "import 'package:bdd_widget_test/data_table.dart' as bdd;\n" : ''}'
+      '${addWorld ? "import 'package:bdd_widget_test/world.dart';\n" : ''}'
       '''
 import 'package:flutter_test/flutter_test.dart';
 
 /// Usage: $rawLine
-Future<void> $methodName($testerType $customTesterName${_getMethodParameters(rawLine, hasDataTable)}) async {
+Future<void> $methodName($testerType $customTesterName${_getMethodParameters(rawLine, hasDataTable)}${addWorld ? ", $worldParameter" : ""}) async {
   throw UnimplementedError();
 }
 ''';

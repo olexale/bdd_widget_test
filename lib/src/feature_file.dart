@@ -78,6 +78,7 @@ class FeatureFile {
         _testerName,
         isIntegrationTest,
         hookFile,
+        generatorOptions.addWorld,
       );
 
   List<StepFile> getStepFiles() => _stepFiles;

@@ -15,6 +15,7 @@ String generateFeatureDart(
   String testerName,
   bool isIntegrationTest,
   HookFile? hookFile,
+  bool addWorld,
 ) {
   final sb = StringBuffer();
   sb.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
@@ -52,6 +53,9 @@ String generateFeatureDart(
   }
   if (hasBddDataTable(lines)) {
     sb.writeln("import 'package:bdd_widget_test/data_table.dart' as bdd;");
+  }
+  if (addWorld) {
+    sb.writeln("import 'package:bdd_widget_test/world.dart';");
   }
   sb.writeln("import 'package:flutter/material.dart';");
   sb.writeln("import 'package:flutter_test/flutter_test.dart';");
@@ -104,12 +108,14 @@ String generateFeatureDart(
       feature,
       testerTypeOverride,
       testerNameOverride,
+      addWorld,
     );
     final hasAfter = _parseAfter(
       sb,
       feature,
       testerTypeOverride,
       testerNameOverride,
+      addWorld,
     );
 
     if (hookFile != null) {
@@ -118,12 +124,14 @@ String generateFeatureDart(
         hookClass,
         testerTypeOverride,
         testerNameOverride,
+        addWorld,
       );
       _parseAfterHook(
         sb,
         hookClass,
         testerTypeOverride,
         testerNameOverride,
+        addWorld,
       );
     }
 
@@ -135,6 +143,7 @@ String generateFeatureDart(
       hookFile != null,
       featureTestMethodNameOverride,
       testerNameOverride,
+      addWorld,
     );
   }
   sb.writeln('}');
@@ -146,12 +155,13 @@ void _parseAfterHook(
   String hookClass,
   String testerType,
   String testerName,
+  bool addWorld,
 ) {
   sb.writeln(
-    '    Future<void> $tearDownHookName(String title, bool $testSuccessVariableName, [List<String>? tags]) async {',
+    '    Future<void> $tearDownHookName(String title, bool $testSuccessVariableName,${addWorld ? '$worldParameter, ' : ''} [List<String>? tags]) async {',
   );
   sb.writeln(
-    '      await $hookClass.$tearDownHookName(title, $testSuccessVariableName, tags);',
+    '      await $hookClass.$tearDownHookName(title, $testSuccessVariableName, ${addWorld ? '$worldVarName, ' : ''}tags);',
   );
   sb.writeln('    }');
 }
@@ -161,12 +171,13 @@ void _parseBeforeHook(
   String hookClass,
   String testerType,
   String testerName,
+  bool addWorld,
 ) {
   sb.writeln(
-    '    Future<void> $setUpHookName(String title, [List<String>? tags]) async {',
+    '    Future<void> $setUpHookName(String title, ${addWorld ? '$worldParameter, ' : ''}[List<String>? tags]) async {',
   );
   sb.writeln(
-    '      await $hookClass.$setUpHookName(title, tags);',
+    '      await $hookClass.$setUpHookName(title, ${addWorld ? '$worldVarName, ' : ''}tags);',
   );
   sb.writeln('    }');
 }
@@ -191,6 +202,7 @@ bool _parseBackground(
   List<BddLine> lines,
   String testerType,
   String testerName,
+  bool addWorld,
 ) =>
     _parseSetup(
       sb,
@@ -199,6 +211,7 @@ bool _parseBackground(
       setUpMethodName,
       testerType,
       testerName,
+      addWorld,
     );
 
 bool _parseAfter(
@@ -206,6 +219,7 @@ bool _parseAfter(
   List<BddLine> lines,
   String testerType,
   String testerName,
+  bool addWorld,
 ) =>
     _parseSetup(
       sb,
@@ -214,6 +228,7 @@ bool _parseAfter(
       tearDownMethodName,
       testerType,
       testerName,
+      addWorld,
     );
 
 bool _parseSetup(
@@ -223,6 +238,7 @@ bool _parseSetup(
   String title,
   String testerType,
   String testerName,
+  bool addWorld,
 ) {
   final flattenDataTables = replaceDataTables(
     lines.skipWhile((line) => line.type == LineType.tag).toList(),
@@ -230,12 +246,14 @@ bool _parseSetup(
   var offset =
       flattenDataTables.indexWhere((element) => element.type == elementType);
   if (offset != -1) {
-    sb.writeln('    Future<void> $title($testerType $testerName) async {');
+    sb.writeln(
+      '    Future<void> $title($testerType $testerName${addWorld ? ', $worldParameter' : ''}) async {',
+    );
     offset++;
     while (flattenDataTables[offset].type == LineType.step ||
         flattenDataTables[offset].type == LineType.dataTableStep) {
       sb.writeln(
-        '      await ${getStepMethodCall(flattenDataTables[offset].value, testerName)};',
+        '      await ${getStepMethodCall(flattenDataTables[offset].value, testerName, addWorld)};',
       );
       offset++;
     }
@@ -252,6 +270,7 @@ void _parseFeature(
   bool hasHooks,
   String testMethodName,
   String testerName,
+  bool addWorld,
 ) {
   final scenarios = _splitScenarios(
     feature.skipWhile((value) => !_isNewScenario(value.type)).toList(),
@@ -302,6 +321,7 @@ void _parseFeature(
             .map((line) => line.rawLine.substring('@'.length))
             .toList(),
         scenarioParams,
+        addWorld,
       );
     }
   }
