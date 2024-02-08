@@ -59,8 +59,15 @@ String generateStepDart(
 ) {
   final methodName = getStepMethodName(line);
 
-  final bddStep = _getStep(methodName, package, line, testerType,
-      customTesterName, hasDataTable, addWorld);
+  final bddStep = _getStep(
+    methodName,
+    package,
+    line,
+    testerType,
+    customTesterName,
+    hasDataTable,
+    addWorld,
+  );
   return bddStep.content;
 }
 

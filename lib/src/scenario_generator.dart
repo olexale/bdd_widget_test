@@ -55,7 +55,8 @@ void parseScenario(
     sb.writeln('      } finally {');
     if (hasTearDown) {
       sb.writeln(
-          '        await $tearDownMethodName($testerName${addWorld ? ', $worldVarName' : ''});');
+        '        await $tearDownMethodName($testerName${addWorld ? ', $worldVarName' : ''});',
+      );
     }
     if (hasHooks) {
       sb.writeln('        await $tearDownHookName(');
