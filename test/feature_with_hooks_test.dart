@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'util/testing_data.dart';
 
 void main() {
-  test('integration-related lines are added', () {
+  test('Hook related lines are added', () {
     const expectedFeatureDart = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
@@ -32,10 +32,10 @@ void main() {
       await Hooks.afterEach(title, success, tags);
     }
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      var success = true;
+      bool success = true;
       try {
-      await beforeEach(\'\'\'Testing scenario\'\'\' );
-      await theAppIsRunning(tester);
+        await beforeEach(\'\'\'Testing scenario\'\'\');
+        await theAppIsRunning(tester);
       } on TestFailure {
         success = false;
         rethrow;

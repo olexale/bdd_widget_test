@@ -50,7 +50,7 @@ class HookFile {
 String createHooksFileContent(bool addWorld) {
   return '''
 import 'dart:async';
-${addWorld ? "\nimport 'package:bdd_widget_test/world.dart';\n" : ''}
+${addWorld ? "import 'package:bdd_widget_test/world.dart';\n" : ''}
 abstract class Hooks {
   const Hooks._();
   

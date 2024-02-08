@@ -158,7 +158,7 @@ void _parseAfterHook(
   bool addWorld,
 ) {
   sb.writeln(
-    '    Future<void> $tearDownHookName(String title, bool $testSuccessVariableName,${addWorld ? '$worldParameter, ' : ''} [List<String>? tags]) async {',
+    '    Future<void> $tearDownHookName(String title, bool $testSuccessVariableName, ${addWorld ? '$worldParameter, ' : ''}[List<String>? tags]) async {',
   );
   sb.writeln(
     '      await $hookClass.$tearDownHookName(title, $testSuccessVariableName, ${addWorld ? '$worldVarName, ' : ''}tags);',

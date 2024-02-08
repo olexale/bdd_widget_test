@@ -92,10 +92,10 @@ hookFolderName: hooksFolder
         '      await Hooks.afterEach(title, success, tags);\n'
         '    }\n'
         "    customName('''Testing scenario''', (tester) async {\n"
-        '      var success = true;\n'
+        '      bool success = true;\n'
         '      try {\n'
-        "      await beforeEach('''Testing scenario''' );\n"
-        '      await theAppIsRunning(tester);\n'
+        "        await beforeEach('''Testing scenario''');\n"
+        '        await theAppIsRunning(tester);\n'
         '      } on TestFailure {\n'
         '        success = false;\n'
         '        rethrow;\n'

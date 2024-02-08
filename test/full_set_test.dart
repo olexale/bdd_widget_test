@@ -29,6 +29,7 @@ Feature: Counter 2
 // ignore_for_file: unused_import, directives_ordering
 
 @Tags(['customFeatureTag'])
+import 'package:bdd_widget_test/world.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -47,55 +48,58 @@ void main() {
   });
 
   group(\'\'\'Counter\'\'\', () {
-    Future<void> bddSetUp(WidgetTester tester) async {
-      await theAppIsRunning(tester);
+    Future<void> bddSetUp(WidgetTester tester, World world) async {
+      await theAppIsRunning(tester, world);
     }
-    Future<void> bddTearDown(WidgetTester tester) async {
-      await _iDoNotSeeText(tester, '42');
+    Future<void> bddTearDown(WidgetTester tester, World world) async {
+      await _iDoNotSeeText(tester, '42', world);
     }
-    Future<void> beforeEach(String title, [List<String>? tags]) async {
-      await Hooks.beforeEach(title, tags);
+    Future<void> beforeEach(String title, World world, [List<String>? tags]) async {
+      await Hooks.beforeEach(title, world, tags);
     }
-    Future<void> afterEach(String title, bool success, [List<String>? tags]) async {
-      await Hooks.afterEach(title, success, tags);
+    Future<void> afterEach(String title, bool success, World world, [List<String>? tags]) async {
+      await Hooks.afterEach(title, success, world, tags);
     }
     customTestWidgets(\'\'\'Initial counter value is 0\'\'\', (tester) async {
-      var success = true;
+      final World world = World.empty();
+      bool success = true;
       try {
-        await beforeEach(\'\'\'Initial counter value is 0\'\'\' , ['customScenarioTag']);
-        await bddSetUp(tester);
-        await theAppIsRunning(tester);
-        await iRunCode(tester, 'func foo() {}; func bar() { print("hey!"); };');
-        await iSeeText(tester, '0');
+        await beforeEach(\'\'\'Initial counter value is 0\'\'\', world, ['customScenarioTag']);
+        await bddSetUp(tester, world);
+        await theAppIsRunning(tester, world);
+        await iRunCode(tester, 'func foo() {}; func bar() { print("hey!"); };', world);
+        await iSeeText(tester, '0', world);
       } on TestFailure {
         success = false;
         rethrow;
       } finally {
-        await bddTearDown(tester);
+        await bddTearDown(tester, world);
         await afterEach(
           \'\'\'Initial counter value is 0\'\'\',
           success,
+          world,
           ['customScenarioTag'],
         );
       }
     }, tags: ['customScenarioTag']);
   });
   group(\'\'\'Counter 2\'\'\', () {
-    Future<void> bddSetUp(WidgetTester tester) async {
-      await theAppIsRunning(tester);
+    Future<void> bddSetUp(WidgetTester tester, World world) async {
+      await theAppIsRunning(tester, world);
     }
-    Future<void> beforeEach(String title, [List<String>? tags]) async {
-      await Hooks.beforeEach(title, tags);
+    Future<void> beforeEach(String title, World world, [List<String>? tags]) async {
+      await Hooks.beforeEach(title, world, tags);
     }
-    Future<void> afterEach(String title, bool success, [List<String>? tags]) async {
-      await Hooks.afterEach(title, success, tags);
+    Future<void> afterEach(String title, bool success, World world, [List<String>? tags]) async {
+      await Hooks.afterEach(title, success, world, tags);
     }
     customTestWidgets(\'\'\'Initial counter value is 0\'\'\', (tester) async {
-      var success = true;
+      final World world = World.empty();
+      bool success = true;
       try {
-      await beforeEach(\'\'\'Initial counter value is 0\'\'\' );
-      await bddSetUp(tester);
-      await theAppIsRunning(tester);
+        await beforeEach(\'\'\'Initial counter value is 0\'\'\', world);
+        await bddSetUp(tester, world);
+        await theAppIsRunning(tester, world);
       } on TestFailure {
         success = false;
         rethrow;
@@ -103,6 +107,7 @@ void main() {
         await afterEach(
           \'\'\'Initial counter value is 0\'\'\',
           success,
+          world,
         );
       }
     });
@@ -124,6 +129,7 @@ void main() {
         ],
         addHooks: true,
         hookFolderName: './hooksFolder',
+        addWorld: true,
       ),
     );
     expect(feature.dartContent, expectedFeatureDart);
