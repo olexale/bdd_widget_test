@@ -426,6 +426,47 @@ targets:
           testerType: PatrolIntegrationTester
 ```
 
+### How to pass a state between steps?
+
+You may use the world functionality. To activate it add the `addWorld` parameter to the yaml:
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          addWorld: true
+```
+This will add a world object to the generated feature files, step files and hook files. Do note that it will not regenerate the step files you already have, so you might need to add the world parameter there manually.
+The world parameter holds a key value map that you can store state in that travels through the scenario. This means you could translate the following feature file in these steps:
+```gherkin
+ Scenario: Input login screen
+        Given I have a user {'Tom'} {'password'}
+        When When I enter {'Tom'} into {1} input field
+        Then Input {1} should contain my user's username
+```
+
+```dart
+/// Usage: I have a user {"Tom"} {"password"}
+Future<void> iHaveAUser(WidgetTester tester, String param1, String param2, World world) async {
+  world.parameters.putIfAbsent("userName", () => param1);
+  world.parameters.putIfAbsent("password", () => param2);
+}
+```
+
+```dart
+/// Usage: Input {1} should contain my user's username
+Future<void> inputShouldContainMyUsersUsername(WidgetTester tester, int index, World world) async {
+  final textField = find.byType(TextField).at(index);
+  final widget = tester.firstWidget<TextField>(textField);
+
+  final userName = world.parameters["userName"];
+
+  expect(widget.controller?.text, equals(userName));
+}
+```
+
+
 ## Contributing
 
 If you find a bug or would like to request a new feature, just [open an issue](https://github.com/olexale/bdd_widget_test/issues/new). Your contributions are always welcome!
