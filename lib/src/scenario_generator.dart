@@ -77,7 +77,7 @@ String tagsToString(List<String> tags) {
   return "['${tags.join("', '")}']";
 }
 
-List<List<BddLine>> generateScenariosFromScenaioOutline(
+List<List<BddLine>> generateScenariosFromScenarioOutline(
   List<BddLine> scenario,
 ) {
   final examples = _getExamples(scenario);
