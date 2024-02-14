@@ -15,6 +15,7 @@ class FeatureFile {
     required this.package,
     required String input,
     this.isIntegrationTest = false,
+    this.includeIntegrationTestBinding = true,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
   })  : _lines = _prepareLines(
@@ -65,19 +66,22 @@ class FeatureFile {
   final String featureDir;
   final String package;
   final bool isIntegrationTest;
+  /// Whether to include the integration test binding in the generated test for integration tests. Defaults to true.
+  final bool includeIntegrationTestBinding;
   final List<BddLine> _lines;
   final Map<String, String> existingSteps;
   final GeneratorOptions generatorOptions;
   final HookFile? hookFile;
 
   String get dartContent => generateFeatureDart(
-        _lines,
-        getStepFiles(),
-        generatorOptions.testMethodName,
-        _testerType,
-        _testerName,
-        isIntegrationTest,
-        hookFile,
+        lines: _lines,
+        steps: getStepFiles(),
+        testMethodName: generatorOptions.testMethodName,
+        testerType: _testerType,
+        testerName: _testerName,
+        isIntegrationTest: isIntegrationTest,
+        includeIntegrationTestBinding: includeIntegrationTestBinding,
+        hookFile: hookFile,
       );
 
   List<StepFile> getStepFiles() => _stepFiles;
