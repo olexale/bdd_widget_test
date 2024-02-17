@@ -2,6 +2,7 @@
 
 * Update dependencies (by @lsaudon)
 * Add includeIntegrationTestBinding option to control `IntegrationTestWidgetsFlutterBinding.ensureInitialized();` (by @eikebartels)
+* Fix data tables in background/after
 
 ## [1.6.4] - Gherkin compliance
 
