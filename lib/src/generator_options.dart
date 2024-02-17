@@ -18,13 +18,15 @@ class GeneratorOptions {
     bool? addHooks,
     String? hookFolderName,
     this.include,
+    bool? includeIntegrationTestBinding,
   })  : stepFolder = stepFolderName ?? _stepFolderName,
         testMethodName = testMethodName ?? _defaultTestMethodName,
         testerType = testerType ?? _defaultTesterType,
         testerName = testerName ?? _defaultTesterName,
         addHooks = addHooks ?? false,
         hookFolderName = hookFolderName ?? _hookFolderName,
-        externalSteps = externalSteps ?? const [];
+        externalSteps = externalSteps ?? const [],
+        includeIntegrationTestBinding = includeIntegrationTestBinding ?? true;
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
       GeneratorOptions(
@@ -38,6 +40,8 @@ class GeneratorOptions {
         include: json['include'] is String
             ? [(json['include'] as String)]
             : (json['include'] as List?)?.cast<String>(),
+        includeIntegrationTestBinding:
+            json['includeIntegrationTestBinding'] as bool?,
       );
 
   final String stepFolder;
@@ -48,6 +52,7 @@ class GeneratorOptions {
   final String hookFolderName;
   final List<String>? include;
   final List<String> externalSteps;
+  final bool includeIntegrationTestBinding;
 }
 
 Future<GeneratorOptions> flattenOptions(GeneratorOptions options) async {
@@ -77,18 +82,7 @@ Future<GeneratorOptions> _readFromPackage(String packageUri) async {
 GeneratorOptions readFromUri(Uri uri) {
   final rawYaml = fs.file(uri).readAsStringSync();
   final doc = loadYamlNode(rawYaml) as YamlMap;
-  return GeneratorOptions(
-    testMethodName: doc['testMethodName'] as String?,
-    testerType: doc['testerType'] as String?,
-    testerName: doc['testerName'] as String?,
-    externalSteps: (doc['externalSteps'] as List?)?.cast<String>(),
-    stepFolderName: doc['stepFolderName'] as String?,
-    addHooks: doc['addHooks'] as bool?,
-    hookFolderName: doc['hookFolderName'] as String?,
-    include: doc['include'] is String
-        ? [(doc['include'] as String)]
-        : (doc['include'] as YamlList?)?.value.cast<String>(),
-  );
+  return GeneratorOptions.fromMap(doc.value.cast());
 }
 
 GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
@@ -108,4 +102,6 @@ GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
           ? a.hookFolderName
           : b.hookFolderName,
       include: b.include,
+      includeIntegrationTestBinding:
+          a.includeIntegrationTestBinding || b.includeIntegrationTestBinding,
     );

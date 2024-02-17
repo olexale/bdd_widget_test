@@ -15,6 +15,7 @@ class FeatureFile {
     required this.package,
     required String input,
     this.isIntegrationTest = false,
+    this.includeIntegrationTestBinding = true,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
   })  : _lines = _prepareLines(
@@ -65,6 +66,8 @@ class FeatureFile {
   final String featureDir;
   final String package;
   final bool isIntegrationTest;
+
+  final bool includeIntegrationTestBinding;
   final List<BddLine> _lines;
   final Map<String, String> existingSteps;
   final GeneratorOptions generatorOptions;
@@ -77,6 +80,7 @@ class FeatureFile {
         _testerType,
         _testerName,
         isIntegrationTest,
+        includeIntegrationTestBinding,
         hookFile,
       );
 

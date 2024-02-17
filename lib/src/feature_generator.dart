@@ -14,6 +14,7 @@ String generateFeatureDart(
   String testerType,
   String testerName,
   bool isIntegrationTest,
+  bool includeIntegrationTestBinding,
   HookFile? hookFile,
 ) {
   final sb = StringBuffer();
@@ -70,7 +71,7 @@ String generateFeatureDart(
 
   sb.writeln();
   sb.writeln('void main() {');
-  if (isIntegrationTest) {
+  if (isIntegrationTest && includeIntegrationTestBinding) {
     sb.writeln('  IntegrationTestWidgetsFlutterBinding.ensureInitialized();');
     sb.writeln();
   }

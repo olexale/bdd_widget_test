@@ -424,7 +424,10 @@ targets:
           testMethodName: patrolTest
           testerName: $
           testerType: PatrolIntegrationTester
+          includeIntegrationTestBinding: false
 ```
+
+Since Patrol version 3.0.0, `IntegrationTestWidgetsFlutterBinding.ensureInitialized` must not be called. Set `includeIntegrationTestBinding` to `false`.
 
 ## Contributing
 
