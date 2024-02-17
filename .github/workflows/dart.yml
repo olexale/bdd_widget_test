@@ -21,7 +21,7 @@ jobs:
       - name: 🐦 Setup Flutter SDK
         uses: flutter-actions/setup-flutter@v1
         with:
-          version: '3.16.8'
+          version: '3.19.0'
 
       - name: 🛠 Install dependencies
         run: flutter pub get
