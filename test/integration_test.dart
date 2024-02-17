@@ -35,7 +35,9 @@ void main() {
     expect(feature.dartContent, expectedFeatureDart);
   });
 
-    test('integration-related lines are not added if includeIntegrationTestBinding is false', () {
+  test(
+      'integration-related lines are not added if includeIntegrationTestBinding is false',
+      () {
     const expectedFeatureDart = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering

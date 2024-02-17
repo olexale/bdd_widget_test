@@ -31,7 +31,8 @@ class FeatureBuilder implements Builder {
       existingSteps: getExistingStepSubfolders(featureDir, options.stepFolder),
       input: contents,
       generatorOptions: options,
-      includeIntegrationTestBinding: generatorOptions.includeIntegrationTestBinding,
+      includeIntegrationTestBinding:
+          generatorOptions.includeIntegrationTestBinding,
     );
 
     final featureDart = inputId.changeExtension('_test.dart');
