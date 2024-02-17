@@ -82,20 +82,7 @@ Future<GeneratorOptions> _readFromPackage(String packageUri) async {
 GeneratorOptions readFromUri(Uri uri) {
   final rawYaml = fs.file(uri).readAsStringSync();
   final doc = loadYamlNode(rawYaml) as YamlMap;
-  return GeneratorOptions(
-    testMethodName: doc['testMethodName'] as String?,
-    testerType: doc['testerType'] as String?,
-    testerName: doc['testerName'] as String?,
-    externalSteps: (doc['externalSteps'] as List?)?.cast<String>(),
-    stepFolderName: doc['stepFolderName'] as String?,
-    addHooks: doc['addHooks'] as bool?,
-    hookFolderName: doc['hookFolderName'] as String?,
-    include: doc['include'] is String
-        ? [(doc['include'] as String)]
-        : (doc['include'] as YamlList?)?.value.cast<String>(),
-    includeIntegrationTestBinding:
-        doc['includeIntegrationTestBinding'] as bool?,
-  );
+  return GeneratorOptions.fromMap(doc.value.cast());
 }
 
 GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
