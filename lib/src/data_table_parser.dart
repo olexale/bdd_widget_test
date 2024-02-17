@@ -21,10 +21,13 @@ Iterable<BddLine> replaceDataTables(List<BddLine> lines) sync* {
         lines[index].type == LineType.dataTableStep;
     final isNextLineTable = isTable(lines: lines, index: index + 1);
     if (isStep && isNextLineTable) {
-      if (!hasExamplesFormat(bddLine: lines[index])) {
-        yield* _createCucumberDataTable(lines: lines, index: index);
-      } else {
-        yield* _createDataTableFromExamples(lines: lines, index: index);
+      final table = !hasExamplesFormat(bddLine: lines[index])
+          ? _createCucumberDataTable(lines: lines, index: index)
+          : _createDataTableFromExamples(lines: lines, index: index);
+      yield* table;
+      // skip the parsed table
+      while (isTable(lines: lines, index: index + 1)) {
+        index++;
       }
     } else {
       yield lines[index];

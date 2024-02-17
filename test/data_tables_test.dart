@@ -323,10 +323,12 @@ void main() {
 Feature: Testing feature
   
   Background:
-    Given the following songs
+    Given I wait
+    And the following songs
     | artist           | title                |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
+    And I wait
 
   Scenario: Testing scenario
     Given I wait
@@ -344,14 +346,16 @@ import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import './step/the_following_songs.dart';
 import './step/i_wait.dart';
+import './step/the_following_songs.dart';
 import './step/the_following_users_exist.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     Future<void> bddSetUp(WidgetTester tester) async {
+      await iWait(tester);
       await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await iWait(tester);
     }
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await bddSetUp(tester);
@@ -382,6 +386,7 @@ Feature: Testing feature
     | name            | twitter       |
     | 'Oleksandr'     | '@olexale'    |
     | 'Flutter'       | '@FlutterDev' |
+    And I wait
 
   Scenario: Testing scenario
     Given the following songs
@@ -409,6 +414,7 @@ void main() {
       await iWait(tester);
       await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
       await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
+      await iWait(tester);
     }
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       try {
