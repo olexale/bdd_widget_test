@@ -1,5 +1,6 @@
-## [1.6.5] - Option to disable IntegrationTestBinding inclusion
+## [1.7.0] - Option to disable IntegrationTestBinding inclusion
 
+* Update dependencies (by @lsaudon)
 * Add includeIntegrationTestBinding option to control `IntegrationTestWidgetsFlutterBinding.ensureInitialized();` (by @eikebartels)
 
 ## [1.6.4] - Gherkin compliance
