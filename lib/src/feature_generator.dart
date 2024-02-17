@@ -7,29 +7,15 @@ import 'package:bdd_widget_test/src/step_generator.dart';
 import 'package:bdd_widget_test/src/util/common.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
 
-
-/// Generates a Dart code for a feature based on the provided parameters.
-///
-/// The [lines] parameter is a list of [BddLine] objects representing the lines of the feature file.
-/// The [steps] parameter is a list of [StepFile] objects representing the step definitions.
-/// The [testMethodName] parameter is a string representing the name of the test method.
-/// The [testerType] parameter is a string representing the type of the tester.
-/// The [testerName] parameter is a string representing the name of the tester.
-/// The [isIntegrationTest] parameter is a boolean indicating whether the test is an integration test.
-/// The [includeIntegrationTestBinding] parameter is a boolean indicating whether to include the integration test binding.
-/// The [hookFile] parameter is an optional [HookFile] object representing the hook definitions.
-///
-/// Returns a string containing the generated Dart code for the feature.
-String generateFeatureDart({
-  required List<BddLine> lines,
-  required List<StepFile> steps,
-  required String testMethodName,
-  required String testerType,
-  required String testerName,
-  required bool isIntegrationTest,
-  required bool includeIntegrationTestBinding,
+String generateFeatureDart(
+  List<BddLine> lines,
+  List<StepFile> steps,
+  String testMethodName,
+  String testerType,
+  String testerName,
+  bool isIntegrationTest,
+  bool includeIntegrationTestBinding,
   HookFile? hookFile,
-  }
 ) {
   final sb = StringBuffer();
   sb.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');

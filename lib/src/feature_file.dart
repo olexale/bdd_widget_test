@@ -66,7 +66,7 @@ class FeatureFile {
   final String featureDir;
   final String package;
   final bool isIntegrationTest;
-  /// Whether to include the integration test binding in the generated test for integration tests. Defaults to true.
+
   final bool includeIntegrationTestBinding;
   final List<BddLine> _lines;
   final Map<String, String> existingSteps;
@@ -74,14 +74,14 @@ class FeatureFile {
   final HookFile? hookFile;
 
   String get dartContent => generateFeatureDart(
-        lines: _lines,
-        steps: getStepFiles(),
-        testMethodName: generatorOptions.testMethodName,
-        testerType: _testerType,
-        testerName: _testerName,
-        isIntegrationTest: isIntegrationTest,
-        includeIntegrationTestBinding: includeIntegrationTestBinding,
-        hookFile: hookFile,
+        _lines,
+        getStepFiles(),
+        generatorOptions.testMethodName,
+        _testerType,
+        _testerName,
+        isIntegrationTest,
+        includeIntegrationTestBinding,
+        hookFile,
       );
 
   List<StepFile> getStepFiles() => _stepFiles;
