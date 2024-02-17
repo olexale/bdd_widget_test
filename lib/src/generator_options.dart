@@ -25,7 +25,7 @@ class GeneratorOptions {
         testerName = testerName ?? _defaultTesterName,
         addHooks = addHooks ?? false,
         hookFolderName = hookFolderName ?? _hookFolderName,
-        externalSteps = externalSteps ?? const [], 
+        externalSteps = externalSteps ?? const [],
         includeIntegrationTestBinding = includeIntegrationTestBinding ?? true;
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
@@ -40,7 +40,8 @@ class GeneratorOptions {
         include: json['include'] is String
             ? [(json['include'] as String)]
             : (json['include'] as List?)?.cast<String>(),
-        includeIntegrationTestBinding: json['includeIntegrationTestBinding'] as bool?,
+        includeIntegrationTestBinding:
+            json['includeIntegrationTestBinding'] as bool?,
       );
 
   final String stepFolder;
@@ -92,7 +93,8 @@ GeneratorOptions readFromUri(Uri uri) {
     include: doc['include'] is String
         ? [(doc['include'] as String)]
         : (doc['include'] as YamlList?)?.value.cast<String>(),
-    includeIntegrationTestBinding: doc['includeIntegrationTestBinding'] as bool?,
+    includeIntegrationTestBinding:
+        doc['includeIntegrationTestBinding'] as bool?,
   );
 }
 
@@ -113,5 +115,6 @@ GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
           ? a.hookFolderName
           : b.hookFolderName,
       include: b.include,
-      includeIntegrationTestBinding: a.includeIntegrationTestBinding,
+      includeIntegrationTestBinding:
+          a.includeIntegrationTestBinding || b.includeIntegrationTestBinding,
     );
