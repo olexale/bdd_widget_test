@@ -25,32 +25,37 @@ String generateFeatureDart(
   var featureTestMethodNameOverride = testMethodName;
   var testerTypeOverride = testerType;
   var testerNameOverride = testerName;
+
+  final linesBeforeFeature =
+      lines.takeWhile((value) => value.type != LineType.feature).toList();
+
+  final tagLines =
+      linesBeforeFeature.where((line) => line.type == LineType.tag);
   final tags = <String>[];
+  for (final line in tagLines) {
+    final methodName = parseCustomTag(line.rawLine, testMethodNameTag);
+    final parsedTesterType = parseCustomTag(line.rawLine, testerTypeTag);
+    final parsedTesterName = parseCustomTag(line.rawLine, testerNameTag);
 
-  for (final line
-      in lines.takeWhile((value) => value.type != LineType.feature)) {
-    if (line.type == LineType.tag) {
-      final methodName = parseCustomTag(line.rawLine, testMethodNameTag);
-      final parsedTesterType = parseCustomTag(line.rawLine, testerTypeTag);
-      final parsedTesterName = parseCustomTag(line.rawLine, testerNameTag);
-
-      if (methodName.isNotEmpty ||
-          parsedTesterType.isNotEmpty ||
-          parsedTesterName.isNotEmpty) {
-        if (methodName.isNotEmpty) featureTestMethodNameOverride = methodName;
-        if (parsedTesterType.isNotEmpty) testerTypeOverride = parsedTesterType;
-        if (parsedTesterName.isNotEmpty) testerNameOverride = parsedTesterName;
-      } else {
-        tags.add(line.rawLine.substring('@'.length));
-      }
+    if (methodName.isNotEmpty ||
+        parsedTesterType.isNotEmpty ||
+        parsedTesterName.isNotEmpty) {
+      if (methodName.isNotEmpty) featureTestMethodNameOverride = methodName;
+      if (parsedTesterType.isNotEmpty) testerTypeOverride = parsedTesterType;
+      if (parsedTesterName.isNotEmpty) testerNameOverride = parsedTesterName;
     } else {
-      sb.writeln(line.rawLine);
+      tags.add(line.rawLine.substring('@'.length));
     }
   }
-
   if (tags.isNotEmpty) {
     sb.writeln("@Tags(['${tags.join("', '")}'])");
   }
+
+  for (final line
+      in linesBeforeFeature.where((line) => line.type != LineType.tag)) {
+    sb.writeln(line.rawLine);
+  }
+
   if (hasBddDataTable(lines)) {
     sb.writeln("import 'package:bdd_widget_test/data_table.dart' as bdd;");
   }
