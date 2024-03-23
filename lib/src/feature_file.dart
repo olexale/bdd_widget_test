@@ -103,12 +103,23 @@ class FeatureFile {
           return bddLine;
         }
       },
-    );
+    ).toList(growable: false);
 
-    final headers = lines.takeWhile((value) => value.type == LineType.unknown);
-    final steps = lines
-        .skip(headers.length)
-        .where((value) => value.type != LineType.unknown);
+    final headers = lines
+        .where((value) => value.type == LineType.unknown)
+        .takeWhile((value) => value.type != LineType.feature)
+        .foldIndexed(
+      // this removes empty line dupicates
+      <BddLine>[],
+      (index, headers, line) => [
+        ...headers,
+        if (index == 0 && line.rawLine != '\n' && line.rawLine.isNotEmpty)
+          line
+        else if (headers.isNotEmpty && headers.last.rawLine != line.rawLine)
+          line,
+      ],
+    );
+    final steps = lines.where((value) => value.type != LineType.unknown);
     return [...headers, ...steps];
   }
 }

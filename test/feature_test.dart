@@ -18,8 +18,7 @@ import 'package:flutter_test/flutter_test.dart';
 
   test('Empty feature file', () {
     const expectedFeatureDart = '''
-$expectedComment
-$expectedImports
+$expectedComment$expectedImports
 void main() {
 }
 ''';
