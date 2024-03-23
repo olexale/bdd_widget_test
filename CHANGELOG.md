@@ -1,3 +1,8 @@
+## [1.7.1] - Fix tags
+
+* Fix tags when specified in the header
+* Skip duplicated empty lines in the header
+
 ## [1.7.0] - Option to disable IntegrationTestBinding inclusion
 
 * Update dependencies (by @lsaudon)
