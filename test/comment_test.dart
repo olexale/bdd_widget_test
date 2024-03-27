@@ -2,10 +2,10 @@ import 'package:bdd_widget_test/src/feature_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('Feature Tags ', () {
+  test('Comments above features copy-paste into the target file', () {
     const featureFile = '''
-@integration
-@slow
+// This is a comment
+
 Feature: Testing feature
   Scenario: Testing scenario
     Given the app is running
@@ -15,46 +15,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: unused_import, directives_ordering
 
-@Tags(['integration', 'slow'])
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import './step/the_app_is_running.dart';
-
-void main() {
-  group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theAppIsRunning(tester);
-    });
-  });
-}
-''';
-
-    final feature = FeatureFile(
-      featureDir: 'test.feature',
-      package: 'test',
-      input: featureFile,
-    );
-    expect(feature.dartContent, expectedFeatureDart);
-  });
-
-  test('Feature Tags with custom imports', () {
-    const featureFile = '''
-@integration
-import 'package:my_package/my_package.dart';
-
-@slow
-Feature: Testing feature
-  Scenario: Testing scenario
-    Given the app is running
-''';
-
-    const expectedFeatureDart = '''
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import, directives_ordering
-
-@Tags(['integration', 'slow'])
-import 'package:my_package/my_package.dart';
+// This is a comment
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,13 +39,19 @@ void main() {
     expect(feature.dartContent, expectedFeatureDart);
   });
 
-  test('Scenario Tags ', () {
+  test('Comments after first feature are ignored', () {
     const featureFile = '''
 Feature: Testing feature
-  @integration
-  @slow
+  This is a comment
   Scenario: Testing scenario
     Given the app is running
+
+This is another comment
+Feature: Testing feature 2
+  This is a comment
+  Scenario: Testing scenario
+    Given the app is running
+    This is a comment too
 ''';
 
     const expectedFeatureDart = '''
@@ -100,7 +67,12 @@ void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       await theAppIsRunning(tester);
-    }, tags: ['integration', 'slow']);
+    });
+  });
+  group(\'\'\'Testing feature 2\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
+      await theAppIsRunning(tester);
+    });
   });
 }
 ''';
