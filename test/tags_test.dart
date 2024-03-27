@@ -42,6 +42,7 @@ void main() {
     const featureFile = '''
 @integration
 import 'package:my_package/my_package.dart';
+
 @slow
 Feature: Testing feature
   Scenario: Testing scenario
