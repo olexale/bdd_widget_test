@@ -1,3 +1,7 @@
+## [1.7.2] - Hotfix release for broken comments
+
+* In the previous release, comments were broken. This release fixes the issue.
+
 ## [1.7.1] - Fix tags
 
 * Fix tags when specified in the header
