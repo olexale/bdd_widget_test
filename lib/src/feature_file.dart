@@ -106,8 +106,8 @@ class FeatureFile {
     ).toList(growable: false);
 
     final headers = lines
-        .where((value) => value.type == LineType.unknown)
         .takeWhile((value) => value.type != LineType.feature)
+        .where((value) => value.type == LineType.unknown)
         .foldIndexed(
       // this removes empty line dupicates
       <BddLine>[],
