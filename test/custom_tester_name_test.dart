@@ -18,13 +18,10 @@ Feature: Testing feature
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 import './step/the_app_is_running_with_patrol.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (helloTester) async {
       await theAppIsRunningWithPatrol(helloTester);
@@ -37,7 +34,6 @@ void main() {
       featureDir: 'test.feature',
       package: 'test',
       input: featureFile,
-      isIntegrationTest: true,
     );
     expect(feature.dartContent, expectedFeatureDart);
   });
@@ -55,13 +51,10 @@ Feature: Testing feature
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 import './step/the_app_is_running_with_patrol.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (helloTester) async {
       await theAppIsRunningWithPatrol(helloTester);
@@ -74,7 +67,6 @@ void main() {
       featureDir: 'test.feature',
       package: 'test',
       input: featureFile,
-      isIntegrationTest: true,
       generatorOptions: const GeneratorOptions(testerName: 'helloTester'),
     );
     expect(feature.dartContent, expectedFeatureDart);
