@@ -1,3 +1,8 @@
+## [1.7.3] - Integration test improvements
+
+* Integration test imports will not be added if `integration_test` package is not added to `dev_dependencies`
+* `IntegrationTestWidgetsFlutterBinding.ensureInitialized();` will not be added if `integration_test` package is not added to `dev_dependencies`
+
 ## [1.7.2] - Hotfix release for broken comments
 
 * In the previous release, comments were broken. This release fixes the issue.
