@@ -13,8 +13,8 @@ String generateFeatureDart(
   String testMethodName,
   String testerType,
   String testerName,
-  bool isIntegrationTest,
   bool includeIntegrationTestBinding,
+  bool includeIntegrationTestImport,
   HookFile? hookFile,
 ) {
   final sb = StringBuffer();
@@ -61,7 +61,7 @@ String generateFeatureDart(
   }
   sb.writeln("import 'package:flutter/material.dart';");
   sb.writeln("import 'package:flutter_test/flutter_test.dart';");
-  if (isIntegrationTest) {
+  if (includeIntegrationTestImport) {
     sb.writeln("import 'package:integration_test/integration_test.dart';");
   }
 
@@ -76,7 +76,7 @@ String generateFeatureDart(
 
   sb.writeln();
   sb.writeln('void main() {');
-  if (isIntegrationTest && includeIntegrationTestBinding) {
+  if (includeIntegrationTestBinding) {
     sb.writeln('  IntegrationTestWidgetsFlutterBinding.ensureInitialized();');
     sb.writeln();
   }

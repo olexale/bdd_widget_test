@@ -6,6 +6,7 @@ import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:build/build.dart';
 import 'package:path/path.dart' as p;
+import 'package:yaml/yaml.dart';
 
 Builder featureBuilder(BuilderOptions options) => FeatureBuilder(
       GeneratorOptions.fromMap(options.config),
@@ -18,21 +19,25 @@ class FeatureBuilder implements Builder {
 
   @override
   Future<void> build(BuildStep buildStep) async {
-    final options = await prepareOptions();
+    final options = await _prepareOptions();
 
     final inputId = buildStep.inputId;
     final contents = await buildStep.readAsString(inputId);
 
     final featureDir = p.dirname(inputId.path);
+    final isIntegrationTest =
+        inputId.pathSegments.contains('integration_test') &&
+            _hasIntegrationTestDevDependency();
+
     final feature = FeatureFile(
       featureDir: featureDir,
       package: inputId.package,
-      isIntegrationTest: inputId.pathSegments.contains('integration_test'),
       existingSteps: getExistingStepSubfolders(featureDir, options.stepFolder),
       input: contents,
       generatorOptions: options,
+      includeIntegrationTestImport: isIntegrationTest,
       includeIntegrationTestBinding:
-          generatorOptions.includeIntegrationTestBinding,
+          isIntegrationTest && generatorOptions.includeIntegrationTestBinding,
     );
 
     final featureDart = inputId.changeExtension('_test.dart');
@@ -41,16 +46,16 @@ class FeatureBuilder implements Builder {
     final steps = feature
         .getStepFiles()
         .whereType<NewStepFile>()
-        .map((e) => createFileRecursively(e.filename, e.dartContent));
+        .map((e) => _createFileRecursively(e.filename, e.dartContent));
     await Future.wait(steps);
 
     final hookFile = feature.hookFile;
     if (hookFile != null) {
-      await createFileRecursively(hookFile.fileName, hookFileContent);
+      await _createFileRecursively(hookFile.fileName, hookFileContent);
     }
   }
 
-  Future<GeneratorOptions> prepareOptions() async {
+  Future<GeneratorOptions> _prepareOptions() async {
     final fileOptions = fs.file('bdd_options.yaml').existsSync()
         ? readFromUri(Uri.file('bdd_options.yaml'))
         : null;
@@ -61,13 +66,23 @@ class FeatureBuilder implements Builder {
     return options;
   }
 
-  Future<void> createFileRecursively(String filename, String content) async {
+  Future<void> _createFileRecursively(String filename, String content) async {
     final f = fs.file(filename);
     if (f.existsSync()) {
       return;
     }
     final file = await f.create(recursive: true);
     await file.writeAsString(content);
+  }
+
+  bool _hasIntegrationTestDevDependency() {
+    if (fs.file('pubspec.yaml').existsSync()) {
+      final fileContent = fs.file('pubspec.yaml').readAsStringSync();
+      final pubspec = loadYaml(fileContent) as YamlMap;
+      final devDependencies = pubspec['dev_dependencies'] as YamlMap?;
+      return devDependencies?.containsKey('integration_test') ?? false;
+    }
+    return false;
   }
 
   @override

@@ -115,8 +115,6 @@ hookFolderName: hooksFolder
   });
 
   test('non-valid include', () async {
-    // resolvePackageUriFactory = (_) => Future.value();
-
     const bddOptions = 'include: non-existing-file';
     fs.file('bdd_options.yaml')
       ..createSync()
@@ -225,13 +223,78 @@ stepFolderName: ./scenarios
     );
     expect(content, expected);
   });
+
+  test('Integration test with integration_test dependency', () async {
+    fs.file('pubspec.yaml')
+      ..createSync()
+      ..writeAsStringSync('''
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+''');
+
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+        '// ignore_for_file: unused_import, directives_ordering\n'
+        '\n'
+        "import 'package:flutter/material.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
+        "import 'package:integration_test/integration_test.dart';\n"
+        '\n'
+        "import './step/the_app_is_running.dart';\n"
+        '\n'
+        'void main() {\n'
+        '  IntegrationTestWidgetsFlutterBinding.ensureInitialized();\n'
+        '\n'
+        "  group('''Testing feature''', () {\n"
+        "    testWidgets('''Testing scenario''', (tester) async {\n"
+        '      await theAppIsRunning(tester);\n'
+        '    });\n'
+        '  });\n'
+        '}\n';
+
+    const scenario = 'integration';
+    final content = await generate(scenario, null, 'integration_test');
+    expect(content, expected);
+  });
+
+  test('Integration test without integration_test dependency', () async {
+    fs.file('pubspec.yaml')
+      ..createSync()
+      ..writeAsStringSync('''
+dev_dependencies:
+''');
+
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+        '// ignore_for_file: unused_import, directives_ordering\n'
+        '\n'
+        "import 'package:flutter/material.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
+        '\n'
+        "import './step/the_app_is_running.dart';\n"
+        '\n'
+        'void main() {\n'
+        "  group('''Testing feature''', () {\n"
+        "    testWidgets('''Testing scenario''', (tester) async {\n"
+        '      await theAppIsRunning(tester);\n'
+        '    });\n'
+        '  });\n'
+        '}\n';
+
+    const scenario = 'integration';
+    final content = await generate(scenario, null, 'integration_test');
+    expect(content, expected);
+  });
 }
 
 // ----------------------------------------------------------------------------
 const pkgName = 'pkg';
 
-Future<String> generate(String scenario, [BuilderOptions? options]) async {
-  final path = 'test/builder_scenarios/$scenario';
+Future<String> generate(
+  String scenario, [
+  BuilderOptions? options,
+  String testFolderName = 'test',
+]) async {
+  final path = '$testFolderName/builder_scenarios/$scenario';
 
   final srcs = <String, String>{
     '$pkgName|$path/sample.feature': minimalFeatureFile,
