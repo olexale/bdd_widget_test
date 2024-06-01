@@ -8,7 +8,7 @@ Feature: Counter
 
 Run
 ```
-flutter packages pub run build_runner watch --delete-conflicting-outputs
+dart run run build_runner watch --delete-conflicting-outputs
 ```
 
 The output Dart file would be:
