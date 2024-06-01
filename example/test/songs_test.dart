@@ -10,7 +10,13 @@ import './step/the_following_songs.dart';
 void main() {
   group('''Songs''', () {
     testWidgets('''Available songs''', (tester) async {
-      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(
+          tester,
+          const bdd.DataTable([
+            ['artist', 'title'],
+            ['The Beatles', 'Let It Be'],
+            ['Camel', 'Slow yourself down']
+          ]));
     });
   });
 }

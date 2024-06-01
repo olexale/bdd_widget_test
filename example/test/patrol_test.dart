@@ -14,11 +14,14 @@ void main() {
     Future<void> bddSetUp(PatrolIntegrationTester $) async {
       await thePatrolAppIsRunning($);
     }
-    patrolTest('''Initial counter value is 0''', ($) async {
-      await bddSetUp($);
-      await iSeeLabel($, '0');
-    },
-     nativeAutomation: true,
-     );
+
+    patrolTest(
+      '''Initial counter value is 0''',
+      ($) async {
+        await bddSetUp($);
+        await iSeeLabel($, '0');
+      },
+      semanticsEnabled: false,
+    );
   });
 }

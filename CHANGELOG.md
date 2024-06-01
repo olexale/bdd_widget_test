@@ -1,3 +1,7 @@
+## [1.7.4] - Code formatting
+
+* Generated code is now properly formatted
+
 ## [1.7.3] - Integration test improvements
 
 * Integration test imports will not be added if `integration_test` package is not added to `dev_dependencies`

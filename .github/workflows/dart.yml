@@ -16,12 +16,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: 🐦 Setup Flutter SDK
-        uses: flutter-actions/setup-flutter@v1
+        uses: flutter-actions/setup-flutter@v3
         with:
-          version: '3.19.4'
+          channel: stable
+          version: '3.22.1'
 
       - name: 🛠 Install dependencies
         run: flutter pub get
@@ -37,9 +38,17 @@ jobs:
 
       - name: 🎯 Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v1
-        
+
       - name: 🥇 Update coverage badge
         if: github.event_name != 'pull_request'
         uses: coverallsapp/github-action@1.1.3
         with:
           github-token: ${{ secrets.github_token }}
+
+      - name: 📈 Check pana
+        run: | 
+          flutter pub global activate pana
+          PANA=$(pana . --no-warning); PANA_SCORE=$(echo $PANA | sed -n "s/.*Points: \([0-9]*\)\/\([0-9]*\)./\1\/\2/p")
+          echo "score: $PANA_SCORE"
+          IFS='/'; read -a SCORE_ARR <<< "$PANA_SCORE"; SCORE=SCORE_ARR[0]; TOTAL=SCORE_ARR[1]
+          if (( $SCORE < $TOTAL )); then echo "minimum score not met!"; exit 1; fi

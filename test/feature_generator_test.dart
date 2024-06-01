@@ -88,14 +88,17 @@ hookFolderName: hooksFolder
         '    Future<void> beforeEach(String title, [List<String>? tags]) async {\n'
         '      await Hooks.beforeEach(title, tags);\n'
         '    }\n'
-        '    Future<void> afterEach(String title, bool success, [List<String>? tags]) async {\n'
+        '\n'
+        '    Future<void> afterEach(String title, bool success,\n'
+        '        [List<String>? tags]) async {\n'
         '      await Hooks.afterEach(title, success, tags);\n'
         '    }\n'
+        '\n'
         "    customName('''Testing scenario''', (tester) async {\n"
         '      var success = true;\n'
         '      try {\n'
-        "      await beforeEach('''Testing scenario''' );\n"
-        '      await theAppIsRunning(tester);\n'
+        "        await beforeEach('''Testing scenario''');\n"
+        '        await theAppIsRunning(tester);\n'
         '      } on TestFailure {\n'
         '        success = false;\n'
         '        rethrow;\n'

@@ -3,6 +3,7 @@ import 'package:bdd_widget_test/src/feature_file.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
+import 'package:bdd_widget_test/src/util/dart_formatter.dart';
 import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:build/build.dart';
 import 'package:path/path.dart' as p;
@@ -41,12 +42,15 @@ class FeatureBuilder implements Builder {
     );
 
     final featureDart = inputId.changeExtension('_test.dart');
-    await buildStep.writeAsString(featureDart, feature.dartContent);
+    await buildStep.writeAsString(
+      featureDart,
+      formatDartCode(feature.dartContent),
+    );
 
-    final steps = feature
-        .getStepFiles()
-        .whereType<NewStepFile>()
-        .map((e) => _createFileRecursively(e.filename, e.dartContent));
+    final steps = feature.getStepFiles().whereType<NewStepFile>().map(
+          (e) =>
+              _createFileRecursively(e.filename, formatDartCode(e.dartContent)),
+        );
     await Future.wait(steps);
 
     final hookFile = feature.hookFile;
