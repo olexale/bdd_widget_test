@@ -14,6 +14,7 @@ void main() {
     Future<void> bddSetUp(WidgetTester tester) async {
       await theAppIsRunning(tester);
     }
+
     testWidgets('''Initial counter value is 0''', (tester) async {
       await bddSetUp(tester);
       await iSeeText(tester, '0');
