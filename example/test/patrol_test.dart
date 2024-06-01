@@ -18,7 +18,7 @@ void main() {
       await bddSetUp($);
       await iSeeLabel($, '0');
     },
-     nativeAutomation: true,
+     semanticsEnabled: false,
      );
   });
 }
