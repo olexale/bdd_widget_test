@@ -1,16 +1,18 @@
-import 'package:bdd_widget_test/src/util/constants.dart';
+import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/util/fs.dart';
+import 'package:bdd_widget_test/src/util/get_test_folder_name.dart';
 import 'package:path/path.dart' as p;
 
 /// key - step filename, value - path for import (ex: {'i_have_a_step.dart': 'step/common'})
 Map<String, String> getExistingStepSubfolders(
   String featureDir,
   String stepFolderName,
+  GeneratorOptions options,
 ) {
   final stepFolder = p.join(
     stepFolderName.startsWith('./') || stepFolderName.startsWith('../')
         ? featureDir
-        : testFolderName,
+        : getPathToStepFolder(options),
     stepFolderName,
   );
 

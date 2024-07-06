@@ -30,5 +30,3 @@ const testerNameTag = '@testerName:';
 /// scenario functions for example: @scenarioParams: skip: false, timeout: Timeout(Duration(seconds: 1))
 /// because some test packaages like `patrol` support this.
 const scenarioParamsTag = '@scenarioParams:';
-
-const testFolderName = 'test';
