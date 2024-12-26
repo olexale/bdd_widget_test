@@ -34,7 +34,7 @@ Feature: Counter
 
 Now ask `built_value` to generate Dart files for you. You may do this with the command:
 ```
-flutter packages pub run build_runner watch --delete-conflicting-outputs
+dart run build_runner watch --delete-conflicting-outputs
 ```
 After that, the corresponding `dart` file will be generated for each of your `feature` files. Do not change the code inside these `dart` files as **they will be recreated** each time you change something in feature files.
 
