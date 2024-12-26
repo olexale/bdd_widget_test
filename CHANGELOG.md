@@ -1,3 +1,7 @@
+## [1.7.5] - Generic step generation fix
+
+* Fix generic step generation when parameters combined with data tables
+
 ## [1.7.4] - Code formatting
 
 * Generated code is now properly formatted
