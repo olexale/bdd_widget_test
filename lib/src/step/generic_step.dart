@@ -31,25 +31,16 @@ Future<void> $methodName($testerType $customTesterName${_getMethodParameters(raw
 ''';
 
   String _getMethodParameters(String stepLine, bool hadDataTable) {
-    if (hadDataTable) {
-      return ', bdd.DataTable dataTable';
-    }
-
     final params = parseRawStepLine(stepLine).skip(1);
-    if (params.isNotEmpty) {
-      return params
-          .mapIndexed(
-            (index, p) => ', ${_getGenericParameterType(p)} param${index + 1}',
-          )
-          .join();
-    }
-
     final examples = examplesRegExp.allMatches(stepLine);
-    if (examples.isNotEmpty) {
-      return examples.map((p) => ', dynamic ${p.group(1)}').join();
-    }
 
-    return '';
+    return [
+      ...params.mapIndexed(
+        (index, p) => ', ${_getGenericParameterType(p)} param${index + 1}',
+      ),
+      ...examples.map((p) => ', dynamic ${p.group(1)}'),
+      if (hasDataTable) ', bdd.DataTable dataTable',
+    ].join();
   }
 
   String _getGenericParameterType(String parameter) {

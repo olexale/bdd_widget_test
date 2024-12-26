@@ -1,4 +1,5 @@
 import 'package:bdd_widget_test/src/feature_file.dart';
+import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -434,5 +435,54 @@ void main() {
     );
 
     expect(feature.dartContent, expectedFeatureDart);
+  });
+  test('Data table with parameters', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given the following {'Good'} songs
+    | artist           | title                |
+    | 'The Beatles'    | 'Let It Be'          |
+    | 'Camel'          | 'Slow yourself down' |
+''';
+
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: unused_import, directives_ordering
+
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/the_following_songs.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
+      await theFollowingSongs(tester, 'Good', const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+    });
+  });
+}
+''';
+    const expectedStep = '''
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter_test/flutter_test.dart';
+
+/// Usage: the following {'Good'} songs
+Future<void> theFollowingSongs(WidgetTester tester, String param1, bdd.DataTable dataTable) async {
+  throw UnimplementedError();
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+    expect(
+      (feature.getStepFiles().first as NewStepFile).dartContent,
+      expectedStep,
+    );
   });
 }
