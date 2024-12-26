@@ -12,6 +12,7 @@ void main() {
     testWidgets('''Available songs''', (tester) async {
       await theFollowingSongs(
           tester,
+          'Good',
           const bdd.DataTable([
             ['artist', 'title'],
             ['The Beatles', 'Let It Be'],
