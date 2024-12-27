@@ -429,6 +429,15 @@ targets:
 
 Since Patrol version 3.0.0, `IntegrationTestWidgetsFlutterBinding.ensureInitialized` must not be called. Set `includeIntegrationTestBinding` to `false`.
 
+### I don't like that the plugin creates steps under `test` folder. How to change that?
+
+You may set a relative path in the `build.yaml` file (see the `example` folder):
+```yaml
+relativeToTestFolder: false
+stepFolderName: integration_test/steps # if you want to have steps in the integration_test folder
+hookFolderName: integration_test/bdd_hooks # if you want to have hooks in the integration_test folder
+```
+
 ## Contributing
 
 If you find a bug or would like to request a new feature, just [open an issue](https://github.com/olexale/bdd_widget_test/issues/new). Your contributions are always welcome!

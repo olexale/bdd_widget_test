@@ -102,7 +102,7 @@ void main() {
       input: featureFile,
       generatorOptions: const GeneratorOptions(
         stepFolderName: 'custom_steps',
-        stepFolderIsUnderTestFolder: false,
+        relativeToTestFolder: false,
       ),
     );
     expect(feature.dartContent, expectedFeatureDart);

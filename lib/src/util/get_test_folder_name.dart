@@ -5,7 +5,7 @@ const _testFolderName = 'test';
 
 /// Returns the folder where step folder is located.
 String getPathToStepFolder(GeneratorOptions options) {
-  if (options.stepFolderIsUnderTestFolder) {
+  if (options.relativeToTestFolder) {
     return _testFolderName;
   }
   return fs.currentDirectory.path;

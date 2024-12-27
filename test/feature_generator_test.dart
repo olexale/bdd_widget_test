@@ -59,7 +59,7 @@ void main() {
   test('existing step outside test folder should be found', () async {
     const bddOptions = '''
 stepFolderName: my_steps
-stepFolderIsUnderTestFolder: false
+relativeToTestFolder: false
 ''';
     fs.file('bdd_options.yaml')
       ..createSync()

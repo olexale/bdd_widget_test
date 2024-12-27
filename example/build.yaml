@@ -10,7 +10,7 @@ targets:
         options:
           includeIntegrationTestBinding: false # if false, integration test will not include binding; default is true
           stepFolderName: step # this trick is required to share steps between widget and integration tests
-          # stepFolderIsUnderTestFolder: false # if false, steps will be generated in the root of the package; default is true
+          # relativeToTestFolder: false # if false, steps will be generated in the root of the package; default is true
           # testMethodName: customTestMethodName
           include: package:bdd_widget_test/bdd_options.yaml # you may add defaul external steps with this line
           externalSteps:                                    # or list only steps that you need
