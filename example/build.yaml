@@ -12,6 +12,8 @@ targets:
           stepFolderName: step # this trick is required to share steps between widget and integration tests
           # relativeToTestFolder: false # if false, steps will be generated in the root of the package; default is true
           # testMethodName: customTestMethodName
+          # addHooks: true # if true, hooks will be added to the test; default is false
+          # hookFolderName: bdd_hooks
           include: package:bdd_widget_test/bdd_options.yaml # you may add defaul external steps with this line
           externalSteps:                                    # or list only steps that you need
             - package:bdd_widget_test/step/i_see_text.dart
