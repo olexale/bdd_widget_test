@@ -1,3 +1,7 @@
+## [1.7.6] - Add relativeToTestFolder
+
+* Add `relativeToTestFolder` option to control the generated step file location
+
 ## [1.7.5] - Generic step generation fix
 
 * Fix generic step generation when parameters combined with data tables
