@@ -13,6 +13,7 @@ class GeneratorOptions {
     String? testMethodName,
     List<String>? externalSteps,
     String? stepFolderName,
+    bool? relativeToTestFolder,
     String? testerType,
     String? testerName,
     bool? addHooks,
@@ -20,6 +21,7 @@ class GeneratorOptions {
     this.include,
     bool? includeIntegrationTestBinding,
   })  : stepFolder = stepFolderName ?? _stepFolderName,
+        relativeToTestFolder = relativeToTestFolder ?? true,
         testMethodName = testMethodName ?? _defaultTestMethodName,
         testerType = testerType ?? _defaultTesterType,
         testerName = testerName ?? _defaultTesterName,
@@ -35,6 +37,7 @@ class GeneratorOptions {
         testerName: json['testerName'] as String?,
         externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
         stepFolderName: json['stepFolderName'] as String?,
+        relativeToTestFolder: json['relativeToTestFolder'] as bool?,
         addHooks: json['addHooks'] as bool?,
         hookFolderName: json['hookFolderName'] as String?,
         include: json['include'] is String
@@ -45,6 +48,7 @@ class GeneratorOptions {
       );
 
   final String stepFolder;
+  final bool relativeToTestFolder;
   final String testMethodName;
   final String testerType;
   final String testerName;
@@ -96,6 +100,7 @@ GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
           a.testerName != _defaultTesterName ? a.testerName : b.testerName,
       stepFolderName:
           a.stepFolder != _stepFolderName ? a.stepFolder : b.stepFolder,
+      relativeToTestFolder: a.relativeToTestFolder && b.relativeToTestFolder,
       externalSteps: [...a.externalSteps, ...b.externalSteps],
       addHooks: a.addHooks || b.addHooks,
       hookFolderName: a.hookFolderName != _hookFolderName

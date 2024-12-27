@@ -56,6 +56,46 @@ void main() {
     expect(content, expectedFileContent);
   });
 
+  test('existing step outside test folder should be found', () async {
+    const bddOptions = '''
+stepFolderName: my_steps
+relativeToTestFolder: false
+''';
+    fs.file('bdd_options.yaml')
+      ..createSync()
+      ..writeAsStringSync(bddOptions);
+
+    const scenario = 'existing_step_outside_test_folder';
+    final dummyStepPath =
+        p.join(fs.currentDirectory.path, 'my_steps', 'the_app_is_running.dart');
+    fs.file(dummyStepPath)
+      ..createSync(recursive: true)
+      ..writeAsStringSync('dummy');
+
+    // note: the import is so weird because p.relative() can not
+    // find intersection between two paths (however, somehow it works)
+    // not a problem in the real world
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+        '// ignore_for_file: unused_import, directives_ordering\n'
+        '\n'
+        "import 'package:flutter/material.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
+        '\n'
+        "import './../../../../../../../../my_steps/the_app_is_running.dart';\n"
+        '\n'
+        'void main() {\n'
+        "  group('''Testing feature''', () {\n"
+        "    testWidgets('''Testing scenario''', (tester) async {\n"
+        '      await theAppIsRunning(tester);\n'
+        '    });\n'
+        '  });\n'
+        '}\n';
+
+    final content = await generate(scenario);
+
+    expect(content, expected);
+  });
+
   test('custom bdd_options', () async {
     const bddOptions = '''
 stepFolderName: ./scenarios

@@ -33,7 +33,7 @@ class FeatureBuilder implements Builder {
     final feature = FeatureFile(
       featureDir: featureDir,
       package: inputId.package,
-      existingSteps: getExistingStepSubfolders(featureDir, options.stepFolder),
+      existingSteps: getExistingStepSubfolders(featureDir, options),
       input: contents,
       generatorOptions: options,
       includeIntegrationTestImport: isIntegrationTest,

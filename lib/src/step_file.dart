@@ -1,7 +1,7 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
-import 'package:bdd_widget_test/src/util/constants.dart';
+import 'package:bdd_widget_test/src/util/get_test_folder_name.dart';
 import 'package:path/path.dart' as p;
 
 abstract class StepFile {
@@ -33,6 +33,7 @@ abstract class StepFile {
 
     if (generatorOptions.stepFolder.startsWith('./') ||
         generatorOptions.stepFolder.startsWith('../')) {
+      // step folder is relative to feature file
       final import =
           p.join(generatorOptions.stepFolder, file).replaceAll(r'\', '/');
       final filename = p.join(featureDir, generatorOptions.stepFolder, file);
@@ -47,11 +48,17 @@ abstract class StepFile {
       );
     }
 
-    final pathToTestFolder = p.relative(testFolderName, from: featureDir);
+    // step folder is relative to test folder
+    final pathToTestFolder =
+        p.relative(getPathToStepFolder(generatorOptions), from: featureDir);
     final import = p
         .join(pathToTestFolder, generatorOptions.stepFolder, file)
         .replaceAll(r'\', '/');
-    final filename = p.join(testFolderName, generatorOptions.stepFolder, file);
+    final filename = p.join(
+      getPathToStepFolder(generatorOptions),
+      generatorOptions.stepFolder,
+      file,
+    );
     return NewStepFile._(
       import,
       filename,

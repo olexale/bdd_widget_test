@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
+import 'package:bdd_widget_test/src/util/get_test_folder_name.dart';
 import 'package:path/path.dart' as p;
 
 class HookFile {
@@ -31,10 +32,13 @@ class HookFile {
     return HookFile._create(
       featureDir: featureDir,
       package: package,
-      fileName:
-          p.join(testFolderName, generatorOptions.hookFolderName, fileName),
+      fileName: p.join(
+        getPathToStepFolder(generatorOptions),
+        generatorOptions.hookFolderName,
+        fileName,
+      ),
       import: p.join(
-        p.relative(testFolderName, from: featureDir),
+        p.relative(getPathToStepFolder(generatorOptions), from: featureDir),
         generatorOptions.hookFolderName,
         fileName,
       ),
