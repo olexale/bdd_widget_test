@@ -1,3 +1,7 @@
+## [1.8.0] - Dependency updates
+
+* Update `dart_style` constraint to `^3.0.0`
+
 ## [1.7.6] - Add relativeToTestFolder
 
 * Add `relativeToTestFolder` option to control the generated step file location
