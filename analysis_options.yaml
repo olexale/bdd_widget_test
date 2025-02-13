@@ -1,5 +1,8 @@
 include: package:very_good_analysis/analysis_options.yaml
 
+analyzer:
+  exclude: [test/**_test.dart, example/test/**_test.dart]
+  
 linter:
   rules:
     avoid_positional_boolean_parameters: false
