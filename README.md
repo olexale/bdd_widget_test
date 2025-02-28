@@ -25,7 +25,7 @@ You may get the actual version from [installation instructions](https://pub.dart
 ### Write features
 
 Create `*.feature` file inside `test` folder. Let's say you're testing the default Flutter counter app, the content might be:
-```ruby
+```gherkin
 Feature: Counter
     Scenario: Initial counter value is 0
         Given the app is running
@@ -50,7 +50,7 @@ flutter test
 ## Feature file syntax
 
 Feature file sample:
-```ruby
+```gherkin
 # comment here
 
 Feature: Counter
@@ -87,7 +87,7 @@ A Scenario Outline must contain an `Examples` (or `Scenarios`) section. Its step
 The steps can use `<>` delimited parameters that reference headers in the examples table. The plugin will replace these parameters with values from the table before it tries to match the step against a step definition.
 
 Scenario Outline example:
-```ruby
+```gherkin
 Feature: Sample
 
   Scenario Outline: Plus button increases the counter
@@ -103,19 +103,19 @@ Feature: Sample
 ```
 
 If you need to have the same step but with different parameters, you may use a `DataTable`-like syntax:
-```ruby
+```gherkin
 Feature: Sample
 
   Scenario: An answer
     Given the app is running
     When I enter <input> text into <field> text field
     | input      | field |
-    | '42'       |   0  |
-    | 'question' |   1  |
+    | '42'       |   0   |
+    | 'question' |   1   |
     Then I see {'Do not forget your towel!'} text
 ```
 The above is equivalent to:
-```ruby
+```gherkin
 Feature: Sample
 
   Scenario: An answer
@@ -127,7 +127,7 @@ Feature: Sample
 
 While the `DataTable`-like syntax is a good practice for scenarios that require repeated steps, for example, entering text in different fields, sometimes we want to prepare test data in a readable way and mock our scneario's prerequisites and assert the expected result in an explicit domain driven way.
 To handle this, we create a data table:
-```ruby
+```gherkin
 Feature: Search songs
 
   Scenario: Searched text matches a song's details
@@ -160,7 +160,7 @@ final dataAsMaps = dataTable.asMaps(); // [{'artist: 'The Doors', 'name: 'Riders
 ## Tags
 
 Tags are used to filter scenarios in the test runner. Here are some examples:
-```ruby
+```gherkin
 @slow
 @integration
 Feature: Sample
@@ -254,7 +254,7 @@ The beforeAll and afterAll do not take any properties, but the beforeEach and af
 ### How to pass a parameter?
 
 You may use curly brackets to pass the parameter into a `step`. The syntax is following:
-```ruby
+```gherkin
   When I see {42} number
   And I see {Icons.add} icon
 ```
@@ -265,7 +265,7 @@ You may call methods in step parameters, but most probably it's not what you wan
 ### How to add additional imports to test files?
 
 Most of the time you shouldn't do that, as the BDD tests simulate user's behavior and it's just not possible for users to know the implementation details. Nevertheless, sometimes it might be in hand, i.e. when you have custom domain models or components. For example, if you need to check Cupertino icons in the test, you may have:
-```ruby
+```gherkin
 import 'package:flutter/cupertino.dart';
 
 Feature: ...
@@ -275,7 +275,7 @@ Feature: ...
 ### How to adjust linter for auto-generated tests?
 
 Use the same trick as above, just write linter rules you wish to ignore at the beginning of the feature file:
-```ruby
+```gherkin
 // ignore_for_file: avoid_as, prefer_is_not_empty
 
 Feature: ...
@@ -292,12 +292,12 @@ BDD is UI agnostic, the main focus is on the requirements. If you need to test c
 Everything will stay pretty much the same, but you'll need to tell the plugin to name test methods `testGoldens` instead of `testWidgets`.
 There are three ways on how you can do that:
 1. If you have only few golden test scenarios per feature, you may mark them with the `testMethodName` tag like that:
-```dart
+```gherkin
 @testMethodName: testGoldens
 Scenario: My golden scenario
 ```
 2. For features full of golden tests you may move the `testMethodName` tag above the `Feature` declaration like that:
-```dart
+```gherkin
 @testMethodName: testGoldens
 Feature: My golden feature
 ```
@@ -392,7 +392,7 @@ stepFolderName: step
 [Patrol](https://pub.dev/packages/patrol) is a popular testing framework for Flutter. It provides a possibility to control native UI from the Dart code, and also provides a new custom finder that simplifies the development process of the widget tests. You may use Patrol together with bdd_widget_test to get the best from both worlds.
 
 Here is an example of a BDD scenario with Patrol framework:
-```dart
+```gherkin
 import 'package:patrol/patrol.dart';
 
 @testMethodName: patrolTest
