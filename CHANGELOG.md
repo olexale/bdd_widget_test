@@ -1,3 +1,7 @@
+## [1.8.1] - Fix hook path on windows
+
+* Fix hook path on windows
+
 ## [1.8.0] - Dependency updates
 
 * Update `dart_style` constraint to `^3.0.0`
