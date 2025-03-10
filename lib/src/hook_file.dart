@@ -37,11 +37,13 @@ class HookFile {
         generatorOptions.hookFolderName,
         fileName,
       ),
-      import: p.join(
-        p.relative(getPathToStepFolder(generatorOptions), from: featureDir),
-        generatorOptions.hookFolderName,
-        fileName,
-      ),
+      import: p
+          .join(
+            p.relative(getPathToStepFolder(generatorOptions), from: featureDir),
+            generatorOptions.hookFolderName,
+            fileName,
+          )
+          .replaceAll(r'\', '/'),
     );
   }
 
