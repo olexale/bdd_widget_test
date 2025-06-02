@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import, directives_ordering
+// ignore_for_file: type=lint, type=warning
 
 @Tags(['slow', 'ui'])
 import 'package:flutter/material.dart';

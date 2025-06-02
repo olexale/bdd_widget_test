@@ -19,7 +19,7 @@ String generateFeatureDart(
 ) {
   final sb = StringBuffer();
   sb.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
-  sb.writeln('// ignore_for_file: unused_import, directives_ordering');
+  sb.writeln('// ignore_for_file: type=lint, type=warning');
 
   sb.writeln();
   var featureTestMethodNameOverride = testMethodName;

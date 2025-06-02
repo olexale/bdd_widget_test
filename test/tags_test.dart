@@ -13,7 +13,7 @@ Feature: Testing feature
 
     const expectedFeatureDart = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import, directives_ordering
+// ignore_for_file: type=lint, type=warning
 
 @Tags(['integration', 'slow'])
 import 'package:flutter/material.dart';
@@ -51,7 +51,7 @@ Feature: Testing feature
 
     const expectedFeatureDart = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import, directives_ordering
+// ignore_for_file: type=lint, type=warning
 
 @Tags(['integration', 'slow'])
 import 'package:my_package/my_package.dart';
@@ -89,7 +89,7 @@ Feature: Testing feature
 
     const expectedFeatureDart = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import, directives_ordering
+// ignore_for_file: type=lint, type=warning
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

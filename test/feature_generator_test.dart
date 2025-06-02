@@ -22,7 +22,7 @@ void main() {
 
   test('no customization', () async {
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-        '// ignore_for_file: unused_import, directives_ordering\n'
+        '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
@@ -76,7 +76,7 @@ relativeToTestFolder: false
     // find intersection between two paths (however, somehow it works)
     // not a problem in the real world
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-        '// ignore_for_file: unused_import, directives_ordering\n'
+        '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
@@ -108,7 +108,7 @@ hookFolderName: hooksFolder
       ..writeAsStringSync(bddOptions);
 
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-        '// ignore_for_file: unused_import, directives_ordering\n'
+        '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
@@ -188,7 +188,7 @@ stepFolderName: ./scenarios
 ''');
 
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-        '// ignore_for_file: unused_import, directives_ordering\n'
+        '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
@@ -242,7 +242,7 @@ stepFolderName: ./scenarios
 ''');
 
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-        '// ignore_for_file: unused_import, directives_ordering\n'
+        '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
@@ -277,7 +277,7 @@ dev_dependencies:
 ''');
 
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-        '// ignore_for_file: unused_import, directives_ordering\n'
+        '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
@@ -308,7 +308,7 @@ dev_dependencies:
 ''');
 
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
-        '// ignore_for_file: unused_import, directives_ordering\n'
+        '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
