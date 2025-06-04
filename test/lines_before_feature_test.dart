@@ -7,7 +7,7 @@ void main() {
   test('lines before feature are copied to dart test', () {
     const expectedHeader = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import, directives_ordering
+// ignore_for_file: type=lint, type=warning
 
 ''';
     const expectedImports = '''

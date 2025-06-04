@@ -1,4 +1,5 @@
 Create a `*.feature` file in the `test` folder. The minimal file might be:
+
 ```
 Feature: Counter
     Scenario: Initial counter value is 0
@@ -7,6 +8,7 @@ Feature: Counter
 ```
 
 Run
+
 ```
 dart run run build_runner watch --delete-conflicting-outputs
 ```
@@ -15,7 +17,7 @@ The output Dart file would be:
 
 ```dart
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import
+// ignore_for_file: type=lint, type=warning
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

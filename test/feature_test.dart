@@ -6,7 +6,7 @@ import 'util/testing_data.dart';
 void main() {
   const expectedComment = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_import, directives_ordering
+// ignore_for_file: type=lint, type=warning
 
 ''';
   const expectedImports = '''
