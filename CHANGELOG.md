@@ -1,3 +1,7 @@
+## [1.8.2] - Ignore linter warnings
+
+* Ignore all lint or warning rules in generated code by (@lsaudon)
+
 ## [1.8.1] - Fix hook path on windows
 
 * Fix hook path on windows
