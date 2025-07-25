@@ -343,16 +343,21 @@ Future<String> generate(
     '$pkgName|$path/sample.feature': minimalFeatureFile,
   };
 
-  final writer = InMemoryAssetWriter();
+  final readerWriter = TestReaderWriter();
   await testBuilder(
     featureBuilder(options ?? BuilderOptions.empty),
     srcs,
     rootPackage: pkgName,
-    writer: writer,
+    readerWriter: readerWriter,
   );
-  return String.fromCharCodes(
-    writer.assets[AssetId(pkgName, '$path/sample_test.dart')] ?? [],
+  final map = srcs.map(
+    (key, value) => MapEntry(
+      AssetId.parse(key),
+      value,
+    ),
   );
+  addAssets(map, readerWriter);
+  return readerWriter.readAsString(map.keys.first);
 }
 
 String getStepFolderName(String scenario) => p.joinAll([
