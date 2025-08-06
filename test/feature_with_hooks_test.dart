@@ -36,7 +36,7 @@ void main() {
       try {
       await beforeEach(\'\'\'Testing scenario\'\'\' );
       await theAppIsRunning(tester);
-      } on TestFailure {
+      } catch (_) {
         success = false;
         rethrow;
       } finally {

@@ -14,9 +14,7 @@ void parseScenario(
   List<String> tags,
   String scenarioParams,
 ) {
-  sb.writeln(
-    "    $testMethodName('''$scenarioTitle''', ($testerName) async {",
-  );
+  sb.writeln("    $testMethodName('''$scenarioTitle''', ($testerName) async {");
   if (hasHooks) {
     sb.writeln('      var $testSuccessVariableName = true;');
   }
@@ -38,7 +36,7 @@ void parseScenario(
   }
 
   if (hasHooks) {
-    sb.writeln('      } on TestFailure {');
+    sb.writeln('      } catch (_) {');
     sb.writeln('        $testSuccessVariableName = false;');
     sb.writeln('        rethrow;');
   }
@@ -67,9 +65,7 @@ void parseScenario(
     for (final param in scenarioParams.split(', ')) {
       sb.writeln('     $param,');
     }
-    sb.writeln(
-      '     );',
-    );
+    sb.writeln('     );');
   }
 }
 
@@ -86,9 +82,7 @@ List<List<BddLine>> generateScenariosFromScenarioOutline(
       .toList();
 }
 
-List<Map<String, String>> _getExamples(
-  List<BddLine> scenario,
-) {
+List<Map<String, String>> _getExamples(List<BddLine> scenario) {
   final exampleLines = scenario
       .skipWhile((l) => l.type != LineType.exampleTitle)
       .where((l) => l.type == LineType.examples)
