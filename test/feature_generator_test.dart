@@ -21,8 +21,7 @@ void main() {
   });
 
   test('no customization', () async {
-    const expected =
-        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -81,8 +80,7 @@ relativeToTestFolder: false
     // note: the import is so weird because p.relative() can not
     // find intersection between two paths (however, somehow it works)
     // not a problem in the real world
-    const expected =
-        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -114,8 +112,7 @@ hookFolderName: hooksFolder
       ..createSync()
       ..writeAsStringSync(bddOptions);
 
-    const expected =
-        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -192,8 +189,7 @@ testMethodName: customName
 stepFolderName: ./scenarios
 ''');
 
-    const expected =
-        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -247,8 +243,7 @@ include: $externalYaml3
 stepFolderName: ./scenarios
 ''');
 
-    const expected =
-        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -281,8 +276,7 @@ dev_dependencies:
     sdk: flutter
 ''');
 
-    const expected =
-        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -313,8 +307,7 @@ dev_dependencies:
 dev_dependencies:
 ''');
 
-    const expected =
-        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -363,9 +356,9 @@ Future<String> generate(
 }
 
 String getStepFolderName(String scenario) => p.joinAll([
-  fs.currentDirectory.path,
-  'test',
-  'builder_scenarios',
-  scenario,
-  'step',
-]);
+      fs.currentDirectory.path,
+      'test',
+      'builder_scenarios',
+      scenario,
+      'step',
+    ]);
