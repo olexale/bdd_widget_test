@@ -20,6 +20,7 @@ class GeneratorOptions {
     String? hookFolderName,
     this.include,
     bool? includeIntegrationTestBinding,
+    List<String>? customHeaders,
   })  : stepFolder = stepFolderName ?? _stepFolderName,
         relativeToTestFolder = relativeToTestFolder ?? true,
         testMethodName = testMethodName ?? _defaultTestMethodName,
@@ -28,24 +29,26 @@ class GeneratorOptions {
         addHooks = addHooks ?? false,
         hookFolderName = hookFolderName ?? _hookFolderName,
         externalSteps = externalSteps ?? const [],
-        includeIntegrationTestBinding = includeIntegrationTestBinding ?? true;
+        includeIntegrationTestBinding = includeIntegrationTestBinding ?? true,
+        customHeaders = customHeaders ?? const [];
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
       GeneratorOptions(
-        testMethodName: json['testMethodName'] as String?,
-        testerType: json['testerType'] as String?,
-        testerName: json['testerName'] as String?,
-        externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
-        stepFolderName: json['stepFolderName'] as String?,
-        relativeToTestFolder: json['relativeToTestFolder'] as bool?,
-        addHooks: json['addHooks'] as bool?,
-        hookFolderName: json['hookFolderName'] as String?,
-        include: json['include'] is String
-            ? [(json['include'] as String)]
-            : (json['include'] as List?)?.cast<String>(),
-        includeIntegrationTestBinding:
-            json['includeIntegrationTestBinding'] as bool?,
-      );
+          testMethodName: json['testMethodName'] as String?,
+          testerType: json['testerType'] as String?,
+          testerName: json['testerName'] as String?,
+          externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
+          stepFolderName: json['stepFolderName'] as String?,
+          relativeToTestFolder: json['relativeToTestFolder'] as bool?,
+          addHooks: json['addHooks'] as bool?,
+          hookFolderName: json['hookFolderName'] as String?,
+          include: json['include'] is String
+              ? [(json['include'] as String)]
+              : (json['include'] as List?)?.cast<String>(),
+          includeIntegrationTestBinding:
+              json['includeIntegrationTestBinding'] as bool?,
+          customHeaders:
+              (json['customHeaders'] as List?)?.cast<String>() ?? []);
 
   final String stepFolder;
   final bool relativeToTestFolder;
@@ -57,6 +60,7 @@ class GeneratorOptions {
   final List<String>? include;
   final List<String> externalSteps;
   final bool includeIntegrationTestBinding;
+  final List<String> customHeaders;
 }
 
 Future<GeneratorOptions> flattenOptions(GeneratorOptions options) async {
@@ -109,4 +113,5 @@ GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
       include: b.include,
       includeIntegrationTestBinding:
           a.includeIntegrationTestBinding || b.includeIntegrationTestBinding,
+      customHeaders: [...a.customHeaders, ...b.customHeaders],
     );

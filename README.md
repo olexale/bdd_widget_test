@@ -315,6 +315,34 @@ targets:
           include: package:<your_package>/bdd_options.yaml
 ```
 
+### How to add custom headers to generated files?
+
+You can add custom header lines (imports, comments, etc.) to all generated step files **and feature files** using the `customHeaders` option in the `build.yaml` file:
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          customHeaders:
+            - "import 'package:flutter_test/flutter_test.dart';"
+            - "// Custom test utilities"
+            - "import 'package:my_custom_package/my_helper.dart';"
+```
+
+This is useful when you need to:
+- Use custom test frameworks (like Patrol) instead of the default flutter_test
+- Import custom helper classes or utilities in all your generated files
+- Add specific packages that your tests will commonly use
+- Include custom test utilities, mocks, or constants
+- Add custom comments or documentation to generated files
+
+**Important**: When `customHeaders` are provided, the default imports (`import 'package:flutter/material.dart';` and `import 'package:flutter_test/flutter_test.dart';`) are **not** automatically included in feature files, and the default `import 'package:flutter_test/flutter_test.dart';` is not included in step files. You have full control over what imports and content are added to your generated files.
+
+The custom headers will be added to:
+- **Feature files**: After any data table imports, replacing the default flutter/material and flutter_test imports
+- **Step files**: After any data table imports, replacing the default flutter_test import
+
 ### How to group steps in a single project?
 
 You may create sub-folders (like `common`, `login`, `home`, etc.) in the `step` folder and move generated steps there. The plugin is smart enough to find them (see the `example` folder).

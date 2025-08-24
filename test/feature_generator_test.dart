@@ -99,6 +99,9 @@ stepFolderName: ./scenarios
 testMethodName: customName
 addHooks: true
 hookFolderName: hooksFolder
+customHeaders:
+  - "import 'package:flutter_test/flutter_test.dart';"
+  - "import 'package:my_project/test_helpers.dart';"
 ''';
     fs.file('bdd_options.yaml')
       ..createSync()
@@ -107,8 +110,8 @@ hookFolderName: hooksFolder
     const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
-        "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
+        "import 'package:my_project/test_helpers.dart';\n"
         '\n'
         "import '../../hooksFolder/hooks.dart';\n"
         "import './scenarios/the_app_is_running.dart';\n"

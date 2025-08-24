@@ -15,6 +15,9 @@ targets:
           # addHooks: true # if true, hooks will be added to the test; default is false
           # hookFolderName: bdd_hooks
           # include: package:<package1>/bdd_options.yaml # you may add defaul external steps with this line
+          # customHeaders:                                 # add custom header lines to all generated step files
+          #   - "import 'package:flutter_test/flutter_test.dart';"
+          #   - "import 'package:my_project/test_helpers.dart';"
           externalSteps:                                    # or list only steps that you need
             # - package:<package2>/step/i_see_text.dart
             # - package:<package2>/step/i_dont_see_text.dart

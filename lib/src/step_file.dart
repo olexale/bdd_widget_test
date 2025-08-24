@@ -45,6 +45,7 @@ abstract class StepFile {
         testerTypeTagValue,
         testerNameTagValue,
         bddLine.type == LineType.dataTableStep,
+        generatorOptions,
       );
     }
 
@@ -67,6 +68,7 @@ abstract class StepFile {
       testerTypeTagValue,
       testerNameTagValue,
       bddLine.type == LineType.dataTableStep,
+      generatorOptions,
     );
   }
 }
@@ -80,6 +82,7 @@ class NewStepFile extends StepFile {
     this.testerType,
     this.testerName,
     this.hasDataTable,
+    this.generatorOptions,
   ) : super._();
 
   final String package;
@@ -88,12 +91,14 @@ class NewStepFile extends StepFile {
   final String testerType;
   final String testerName;
   final bool hasDataTable;
+  final GeneratorOptions generatorOptions;
   String get dartContent => generateStepDart(
         package,
         line,
         testerType,
         testerName,
         hasDataTable,
+        generatorOptions,
       );
 }
 

@@ -1,0 +1,14 @@
+# Example bdd_options.yaml file showing how to use customHeaders
+# This file can be referenced from build.yaml using the include option
+
+# Add custom header lines that will be added to all generated step files
+customHeaders:
+  - "import 'package:flutter_test/flutter_test.dart';"
+  - "import 'package:mockito/mockito.dart';"
+  - "import 'package:my_project/test_helpers.dart';"
+  - "import 'package:my_project/mocks/database_mock.dart';"
+
+# You can also include external steps from other packages
+externalSteps:
+  - package:common_bdd_steps/step/i_wait.dart
+  - package:common_bdd_steps/step/i_see_loading.dart

@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/data_table_parser.dart';
+import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/scenario_generator.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
@@ -16,6 +17,7 @@ String generateFeatureDart(
   bool includeIntegrationTestBinding,
   bool includeIntegrationTestImport,
   HookFile? hookFile,
+  GeneratorOptions generatorOptions,
 ) {
   final sb = StringBuffer();
   sb.writeln('// GENERATED CODE - DO NOT MODIFY BY HAND');
@@ -59,8 +61,17 @@ String generateFeatureDart(
   if (hasBddDataTable(lines)) {
     sb.writeln("import 'package:bdd_widget_test/data_table.dart' as bdd;");
   }
-  sb.writeln("import 'package:flutter/material.dart';");
-  sb.writeln("import 'package:flutter_test/flutter_test.dart';");
+
+  // Use custom headers if provided, otherwise use default imports
+  if (generatorOptions.customHeaders.isNotEmpty) {
+    for (final header in generatorOptions.customHeaders) {
+      sb.writeln(header);
+    }
+  } else {
+    sb.writeln("import 'package:flutter/material.dart';");
+    sb.writeln("import 'package:flutter_test/flutter_test.dart';");
+  }
+
   if (includeIntegrationTestImport) {
     sb.writeln("import 'package:integration_test/integration_test.dart';");
   }
