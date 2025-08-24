@@ -18,23 +18,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🐦 Setup Flutter SDK
-        uses: flutter-actions/setup-flutter@v3
-        with:
-          channel: stable
-          version: '3.29.0'
+      - name: 🎯 Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
 
       - name: 🛠 Install dependencies
-        run: flutter pub get
+        run: dart pub get
 
       - name: 👨‍🎨 Validate formatting
         run: dart format --set-exit-if-changed lib test
 
       - name: 🕵️‍♀️ Analyze project source
-        run: flutter analyze . --fatal-infos
+        run: dart analyze . --fatal-infos
+
+      - name: 🤖 Install coverage
+        run: dart pub global activate coverage
 
       - name: 🧪 Run tests
-        run: flutter test --coverage
+        run: dart pub global run coverage:test_with_coverage
 
       - name: 🎯 Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v1
@@ -47,7 +47,7 @@ jobs:
 
       - name: 📈 Check pana
         run: | 
-          flutter pub global activate pana
+          dart pub global activate pana
           PANA=$(pana . --no-warning); PANA_SCORE=$(echo $PANA | sed -n "s/.*Points: \([0-9]*\)\/\([0-9]*\)./\1\/\2/p")
           echo "score: $PANA_SCORE"
           IFS='/'; read -a SCORE_ARR <<< "$PANA_SCORE"; SCORE=SCORE_ARR[0]; TOTAL=SCORE_ARR[1]
