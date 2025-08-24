@@ -11,13 +11,13 @@ void main() {
   group('''Songs''', () {
     testWidgets('''Available songs''', (tester) async {
       await theFollowingSongs(
-        tester,
-        'Good',
-        const bdd.DataTable([
-          ['artist', 'title'],
-          ['The Beatles', 'Let It Be'],
-          ['Camel', 'Slow yourself down']
-        ]));
+          tester,
+          'Good',
+          const bdd.DataTable([
+            ['artist', 'title'],
+            ['The Beatles', 'Let It Be'],
+            ['Camel', 'Slow yourself down']
+          ]));
     });
   });
 }

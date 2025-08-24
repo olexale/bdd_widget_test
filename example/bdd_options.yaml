@@ -1,3 +1,0 @@
-include: package:bdd_widget_test/bdd_options.yaml
-externalSteps:
-  - package:bdd_widget_test/step/i_see_text.dart
