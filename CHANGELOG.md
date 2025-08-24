@@ -1,3 +1,9 @@
+## [1.9.0] - Upgrade dependencies
+
+* **BREAKING CHANGE**: The package doesn't provide pre-built steps anymore. Steps will appear in the `step` folder.
+* Drop unused dependencies
+* Upgrade `build` dependency
+
 ## [1.8.2] - Ignore linter warnings
 
 * Ignore all lint or warning rules in generated code by (@lsaudon)

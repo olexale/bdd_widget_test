@@ -204,35 +204,6 @@ List of predefined steps:
 * I tap {..} text
 * The app is running
 
-If you want to use predefined steps without having them in your `steps` folder then you may create a `build.yaml` file in the root of your project with the following content (see the `example` folder):
-```yaml
-targets:
-  $default:
-    builders:
-      bdd_widget_test|featureBuilder:
-        options:
-          externalSteps:
-            - package:bdd_widget_test/step/i_see_text.dart
-            - package:bdd_widget_test/step/i_dont_see_text.dart
-            - package:bdd_widget_test/step/i_see_multiple_texts.dart
-            - package:bdd_widget_test/step/i_tap_text.dart
-            - package:bdd_widget_test/step/i_see_icon.dart
-            - package:bdd_widget_test/step/i_dont_see_icon.dart
-            - package:bdd_widget_test/step/i_tap_icon.dart
-            - package:bdd_widget_test/step/i_see_rich_text.dart
-            - package:bdd_widget_test/step/i_dont_see_rich_text.dart
-            - package:bdd_widget_test/step/i_see_widget.dart
-            - package:bdd_widget_test/step/i_dont_see_widget.dart
-            - package:bdd_widget_test/step/i_see_exactly_widgets.dart
-            - package:bdd_widget_test/step/i_see_multiple_widgets.dart
-            - package:bdd_widget_test/step/i_enter_into_input_field.dart
-            - package:bdd_widget_test/step/i_see_disabled_elevated_button.dart
-            - package:bdd_widget_test/step/i_see_enabled_elevated_button.dart
-            - package:bdd_widget_test/step/i_wait.dart
-            - package:bdd_widget_test/step/i_dismiss_the_page.dart
-```
-That will tell the plugin to reuse steps from the plugin itself and do not put them into your code.
-
 ## Hooks
 If you want to add hooks, you need to add the addHooks flag to the `build.yaml`. This will generate a file that allows you to handle a beforeAll, afterAll, beforeEach and afterEach call.
 These hooks will be generated per directory, just like the steps. Also like with the steps, you can define a directory in the build.yaml to define one set location for the hooks. These hooks will then be used everywhere.
