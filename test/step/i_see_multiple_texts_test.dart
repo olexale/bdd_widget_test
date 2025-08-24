@@ -1,6 +1,6 @@
 import 'package:bdd_widget_test/src/feature_file.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('I See Multple Texts pre-built step generated', () {
