@@ -18,14 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 🐦 Setup Flutter SDK
-        uses: flutter-actions/setup-flutter@v3
-        with:
-          channel: stable
-          version: '3.35.1'
+      - name: 🎯 Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
 
       - name: 🛠 Install dependencies
-        run: dart pub get
+        run: dart pub get --no-example
 
       - name: 👨‍🎨 Validate formatting
         run: dart format --set-exit-if-changed lib test
