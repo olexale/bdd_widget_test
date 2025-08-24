@@ -1,4 +1,4 @@
-## [1.9.0] - Upgrade dependencies
+## [2.0.0] - Upgrade dependencies
 
 * **BREAKING CHANGE**: The package doesn't provide pre-built steps anymore. Steps will appear in the `step` folder.
 * Drop unused dependencies

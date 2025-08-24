@@ -299,12 +299,13 @@ targets:
 
 If you have many packages you might want to reuse the whole list of external steps. For that you'll have to create a `bdd_options.yaml` file in the root folder of your project with the following content: 
 ```yaml
-include: package:bdd_widget_test/bdd_options.yaml # if you want to reuse default steps as well
+include: package:<package_a>/bdd_options.yaml # will include all steps defined in bdd_options.yaml of package_a
 externalSteps:
-  - package:<your_package>/<your_step>.dart
+  - package:<package_b>/<your_step>.dart
+  - package:<package_c>/<your_step>.dart
 ```
 
-Alternatively, ff you need just to include an external config, use the `include` option in the `build.yaml` config:
+Alternatively, if you need just to include an external config, use the `include` option in the `build.yaml` config:
 ```yaml
 targets:
   $default:
