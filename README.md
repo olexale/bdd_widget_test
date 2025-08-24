@@ -425,6 +425,9 @@ targets:
           testerName: $
           testerType: PatrolIntegrationTester
           includeIntegrationTestBinding: false
+          customHeaders:
+            - "import 'package:flutter_test/flutter_test.dart';"
+            - "import 'package:patrol/patrol.dart';"
 ```
 
 Since Patrol version 3.0.0, `IntegrationTestWidgetsFlutterBinding.ensureInitialized` must not be called. Set `includeIntegrationTestBinding` to `false`.
