@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './../../../step/common/the_app_is_running.dart';
-import 'package:bdd_widget_test/step/i_see_text.dart';
+import './../../../step/i_see_text.dart';
 
 void main() {
   group('''Counter''', () {

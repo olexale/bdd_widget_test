@@ -4,8 +4,8 @@ import 'package:bdd_widget_test/src/util/isolate_helper.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:file/memory.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:test/test.dart';
 
 import 'util/testing_data.dart';
 
@@ -37,8 +37,7 @@ void main() {
         '  });\n'
         '}\n';
     const scenario = 'simple';
-    final content = await generate(scenario);
-    expect(content, expected);
+    await generate(scenario, expected);
   });
 
   test('existing step should not regenerate', () async {
@@ -50,7 +49,7 @@ void main() {
       ..createSync(recursive: true)
       ..writeAsStringSync(expectedFileContent);
 
-    await generate(scenario);
+    await generate(scenario, null);
 
     final content = fs.file(dummyStepPath).readAsStringSync();
     expect(content, expectedFileContent);
@@ -91,9 +90,7 @@ relativeToTestFolder: false
         '  });\n'
         '}\n';
 
-    final content = await generate(scenario);
-
-    expect(content, expected);
+    await generate(scenario, expected);
   });
 
   test('custom bdd_options', () async {
@@ -153,8 +150,7 @@ hookFolderName: hooksFolder
         '}\n';
 
     const scenario = 'options';
-    final content = await generate(scenario);
-    expect(content, expected);
+    await generate(scenario, expected);
   });
 
   test('non-valid include', () async {
@@ -165,7 +161,7 @@ hookFolderName: hooksFolder
 
     const scenario = 'options';
     expect(
-      () => generate(scenario),
+      () => generate(scenario, ''),
       throwsException,
     );
   });
@@ -204,8 +200,7 @@ stepFolderName: ./scenarios
         '}\n';
 
     const scenario = 'options';
-    final content = await generate(scenario);
-    expect(content, expected);
+    await generate(scenario, expected);
   });
 
   test('nested includes', () async {
@@ -258,13 +253,13 @@ stepFolderName: ./scenarios
         '}\n';
 
     const scenario = 'options';
-    final content = await generate(
+    await generate(
       scenario,
+      expected,
       const BuilderOptions(<String, dynamic>{
         'include': externalYaml3,
       }),
     );
-    expect(content, expected);
   });
 
   test('Integration test with integration_test dependency', () async {
@@ -296,8 +291,7 @@ dev_dependencies:
         '}\n';
 
     const scenario = 'integration';
-    final content = await generate(scenario, null, 'integration_test');
-    expect(content, expected);
+    await generate(scenario, expected, null, 'integration_test');
   });
 
   test('Integration test without integration_test dependency', () async {
@@ -324,16 +318,16 @@ dev_dependencies:
         '}\n';
 
     const scenario = 'integration';
-    final content = await generate(scenario, null, 'integration_test');
-    expect(content, expected);
+    await generate(scenario, expected, null, 'integration_test');
   });
 }
 
 // ----------------------------------------------------------------------------
 const pkgName = 'pkg';
 
-Future<String> generate(
-  String scenario, [
+Future<void> generate(
+  String scenario,
+  String? expectedOutput, [
   BuilderOptions? options,
   String testFolderName = 'test',
 ]) async {
@@ -343,15 +337,15 @@ Future<String> generate(
     '$pkgName|$path/sample.feature': minimalFeatureFile,
   };
 
-  final writer = InMemoryAssetWriter();
   await testBuilder(
     featureBuilder(options ?? BuilderOptions.empty),
     srcs,
     rootPackage: pkgName,
-    writer: writer,
-  );
-  return String.fromCharCodes(
-    writer.assets[AssetId(pkgName, '$path/sample_test.dart')] ?? [],
+    outputs: expectedOutput != null
+        ? {
+            '$pkgName|$path/sample_test.dart': decodedMatches(expectedOutput),
+          }
+        : null,
   );
 }
 
