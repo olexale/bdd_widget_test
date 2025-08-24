@@ -67,7 +67,7 @@ void main() {
         await theAppIsRunning(tester);
         await iRunCode(tester, 'func foo() {}; func bar() { print("hey!"); };');
         await iSeeText(tester, '0');
-      } on TestFailure {
+      } catch (_) {
         success = false;
         rethrow;
       } finally {
@@ -96,7 +96,7 @@ void main() {
       await beforeEach(\'\'\'Initial counter value is 0\'\'\' );
       await bddSetUp(tester);
       await theAppIsRunning(tester);
-      } on TestFailure {
+      } catch (_) {
         success = false;
         rethrow;
       } finally {

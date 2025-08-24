@@ -38,7 +38,7 @@ void parseScenario(
   }
 
   if (hasHooks) {
-    sb.writeln('      } on TestFailure {');
+    sb.writeln('      } catch (_) {');
     sb.writeln('        $testSuccessVariableName = false;');
     sb.writeln('        rethrow;');
   }
