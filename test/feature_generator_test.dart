@@ -327,7 +327,7 @@ const pkgName = 'pkg';
 
 Future<void> generate(
   String scenario,
-  String? expected, [
+  String? expectedOutput, [
   BuilderOptions? options,
   String testFolderName = 'test',
 ]) async {
@@ -341,9 +341,9 @@ Future<void> generate(
     featureBuilder(options ?? BuilderOptions.empty),
     srcs,
     rootPackage: pkgName,
-    outputs: expected != null
+    outputs: expectedOutput != null
         ? {
-            '$pkgName|$path/sample_test.dart': decodedMatches(expected),
+            '$pkgName|$path/sample_test.dart': decodedMatches(expectedOutput),
           }
         : null,
   );
