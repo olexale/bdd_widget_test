@@ -136,7 +136,7 @@ hookFolderName: hooksFolder
         '      try {\n'
         "        await beforeEach('''Testing scenario''');\n"
         '        await theAppIsRunning(tester);\n'
-        '      } on TestFailure {\n'
+        '      } catch (_) {\n'
         '        success = false;\n'
         '        rethrow;\n'
         '      } finally {\n'
