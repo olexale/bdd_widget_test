@@ -347,12 +347,6 @@ Future<void> generate(
           }
         : null,
   );
-  // await result.readerWriter.testing.loadIsolateSources();
-  // final outputs = result.buildResult.outputs;
-  // final r = await result.readerWriter
-  //     // .readAsString(AssetId(pkgName, '$path/sample_test.dart'));
-  //     .readAsString(outputs.first);
-  // return r;
 }
 
 String getStepFolderName(String scenario) => p.joinAll([
