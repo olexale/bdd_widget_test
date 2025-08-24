@@ -3,6 +3,7 @@
 * **BREAKING CHANGE**: The package doesn't provide pre-built steps anymore. Steps will appear in the `step` folder.
 * Drop unused dependencies
 * Upgrade `build` dependency
+* Fix exceptions processing in hooks
 
 ## [1.8.2] - Ignore linter warnings
 
