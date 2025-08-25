@@ -326,6 +326,7 @@ targets:
         options:
           customHeaders:
             - "import 'package:flutter_test/flutter_test.dart';"
+            - "import 'package:patrol/patrol.dart';"
             - "// Custom test utilities"
             - "import 'package:my_custom_package/my_helper.dart';"
 ```
@@ -336,8 +337,6 @@ This is useful when you need to:
 - Add specific packages that your tests will commonly use
 - Include custom test utilities, mocks, or constants
 - Add custom comments or documentation to generated files
-
-**Important**: When `customHeaders` are provided, the default imports (`import 'package:flutter/material.dart';` and `import 'package:flutter_test/flutter_test.dart';`) are **not** automatically included in feature files, and the default `import 'package:flutter_test/flutter_test.dart';` is not included in step files. You have full control over what imports and content are added to your generated files.
 
 The custom headers will be added to:
 - **Feature files**: After any data table imports, replacing the default flutter/material and flutter_test imports
