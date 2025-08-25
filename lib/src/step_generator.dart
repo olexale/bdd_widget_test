@@ -1,3 +1,4 @@
+import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
 import 'package:bdd_widget_test/src/step/generic_step.dart';
@@ -52,6 +53,7 @@ String generateStepDart(
   String testerType,
   String customTesterName,
   bool hasDataTable,
+  GeneratorOptions generatorOptions,
 ) {
   final methodName = getStepMethodName(line);
 
@@ -62,6 +64,7 @@ String generateStepDart(
     testerType,
     customTesterName,
     hasDataTable,
+    generatorOptions,
   );
   return bddStep.content;
 }
@@ -73,6 +76,7 @@ BddStep _getStep(
   String testerType,
   String testerName,
   bool hasDataTable,
+  GeneratorOptions generatorOptions,
 ) {
   //for now, predefined steps don't support testerType
   final factory = predefinedSteps[methodName] ??
@@ -82,6 +86,7 @@ BddStep _getStep(
             testerType,
             testerName,
             hasDataTable,
+            generatorOptions,
           );
   return factory(package, line);
 }

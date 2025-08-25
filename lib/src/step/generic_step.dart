@@ -1,3 +1,4 @@
+import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
@@ -10,6 +11,7 @@ class GenericStep implements BddStep {
     this.testerType,
     this.customTesterName,
     this.hasDataTable,
+    this.generatorOptions,
   );
 
   final String rawLine;
@@ -17,18 +19,25 @@ class GenericStep implements BddStep {
   final String testerType;
   final String customTesterName;
   final bool hasDataTable;
+  final GeneratorOptions generatorOptions;
 
   @override
-  String get content =>
-      '${hasDataTable ? "import 'package:bdd_widget_test/data_table.dart' as bdd;\n" : ''}'
-      '''
-import 'package:flutter_test/flutter_test.dart';
+  String get content {
+    final hasCustomHeaders = generatorOptions.customHeaders.isNotEmpty;
+    final headerSection = hasCustomHeaders
+        ? generatorOptions.customHeaders.join('\n')
+        : "import 'package:flutter_test/flutter_test.dart';";
+
+    return '${hasDataTable ? "import 'package:bdd_widget_test/data_table.dart' as bdd;\n" : ''}'
+        '''
+$headerSection
 
 /// Usage: $rawLine
 Future<void> $methodName($testerType $customTesterName${_getMethodParameters(rawLine, hasDataTable)}) async {
   throw UnimplementedError();
 }
 ''';
+  }
 
   String _getMethodParameters(String stepLine, bool hadDataTable) {
     final params = parseRawStepLine(stepLine).skip(1);

@@ -83,6 +83,7 @@ class FeatureFile {
         includeIntegrationTestBinding,
         includeIntegrationTestImport,
         hookFile,
+        generatorOptions,
       );
 
   List<StepFile> getStepFiles() => _stepFiles;

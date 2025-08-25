@@ -1,3 +1,7 @@
+## [2.0.1] - Custom headers support
+
+* Add `customHeaders` configuration option to include custom header lines (imports, comments, etc.) in all generated step files and feature files
+
 ## [2.0.0] - Upgrade dependencies
 
 * **BREAKING CHANGE**: The package doesn't provide pre-built steps anymore. Steps will appear in the `step` folder.
