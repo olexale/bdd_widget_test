@@ -32,7 +32,7 @@ Feature: Counter
         Then I see {'0'} text
 ```
 
-Now ask `built_value` to generate Dart files for you. You may do this with the command:
+Now ask `build_runner` to generate Dart files for you. You may do this with the command:
 ```
 dart run build_runner watch --delete-conflicting-outputs
 ```
