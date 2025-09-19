@@ -118,17 +118,16 @@ Iterable<BddLine> _processScenarioLines(
   );
 
   for (final line in lines.skip(1)) {
-    yield BddLine.fromValue(
-      line.type,
-      _replacePlaceholders(line.value, examples),
-    );
+    yield _replacePlaceholdersInLine(line, examples);
   }
 }
 
-String _replacePlaceholders(String line, Map<String, String> example) {
-  var replaced = line;
+BddLine _replacePlaceholdersInLine(BddLine line, Map<String, String> example) {
+  var replaced = line.value;
+  final isDataTable = line.type == LineType.dataTableStep;
   for (final e in example.keys) {
-    replaced = replaced.replaceAll('<$e>', '{${example[e]}}');
+    final replaceWith = isDataTable ? '${example[e]}' : '{${example[e]}}';
+    replaced = replaced.replaceAll('<$e>', replaceWith);
   }
-  return replaced;
+  return BddLine.fromValue(line.type, replaced);
 }
