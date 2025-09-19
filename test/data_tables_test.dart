@@ -485,4 +485,55 @@ Future<void> theFollowingSongs(WidgetTester tester, String param1, bdd.DataTable
       expectedStep,
     );
   });
+
+  test('Scenario Outline with data table variables', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario Outline: Add and remove buttons work together
+    Given the app is running
+    When I tap add icon <times> times
+    Then I see result
+        | 'counter' | 'color' |
+        | <counter> | <color> |
+    Examples:
+    | times | counter | color   |
+    | 20    | '20'    | 'blue'  |
+    | 25    | '25'    | 'green' |
+''';
+
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/the_app_is_running.dart';
+import './step/i_tap_add_icon_times.dart';
+import './step/i_see_result.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Outline: Add and remove buttons work together (20, '20', 'blue')\'\'\', (tester) async {
+      await theAppIsRunning(tester);
+      await iTapAddIconTimes(tester, 20);
+      await iSeeResult(tester, const bdd.DataTable([['counter', 'color'], ['20', 'blue']]));
+    });
+    testWidgets(\'\'\'Outline: Add and remove buttons work together (25, '25', 'green')\'\'\', (tester) async {
+      await theAppIsRunning(tester);
+      await iTapAddIconTimes(tester, 25);
+      await iSeeResult(tester, const bdd.DataTable([['counter', 'color'], ['25', 'green']]));
+    });
+  });
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
 }
