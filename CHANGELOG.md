@@ -1,3 +1,9 @@
+## [2.1.0] - Update dependencies
+
+* Update min SDK to 3.7.0
+* Update build_runner and dependencies (by @lsaudon)
+* Remove Extra Curly Braces from Data Table Variables in Scenario Outlines (by @tide-khushal)
+
 ## [2.0.1] - Custom headers support
 
 * Add `customHeaders` configuration option to include custom header lines (imports, comments, etc.) in all generated step files and feature files
