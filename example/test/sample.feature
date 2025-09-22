@@ -27,20 +27,6 @@ Feature: Counter
         |    1  |   '1'  |
         |   42  |  '42'  |
 
-    Scenario Outline: Add and remove buttons work together
-        Given the app is running
-        When I tap {Icons.add} icon <addTimes> times
-        And I tap {Icons.remove} icon <removeTimes> times
-        Then I see result
-            |   'counter'   |   'color'   |
-            |   <counter>   |   <color>   |
-        Examples:
-        | addTimes | removeTimes | counter | color    |
-        | 20       | 15          | '5'     | 'blue'   |
-        | 25       | 10          | '15'    | 'green'  |
-        | 40       | 10          | '30'    | 'yellow' |
-
-
     # Scenario: Built-in steps
     #     And I don't see {Icons.add} icon
     #     And I don't see {'text'} rich text

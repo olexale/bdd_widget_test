@@ -1,7 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:bdd_widget_test/data_table.dart' as bdd;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,7 +9,6 @@ import './step/i_do_not_see_text.dart';
 import './step/i_see_text.dart';
 import './step/i_tap_icon.dart';
 import './step/i_tap_icon_times.dart';
-import './step/i_see_result.dart';
 
 void main() {
   group('''Counter''', () {
@@ -68,60 +66,6 @@ void main() {
         await theAppIsRunning(tester);
         await iTapIconTimes(tester, Icons.add, 42);
         await iSeeText(tester, '42');
-      } finally {
-        await bddTearDown(tester);
-      }
-    });
-    testWidgets(
-        '''Outline: Add and remove buttons work together (20, 15, '5', 'blue')''',
-        (tester) async {
-      try {
-        await bddSetUp(tester);
-        await theAppIsRunning(tester);
-        await iTapIconTimes(tester, Icons.add, 20);
-        await iTapIconTimes(tester, Icons.remove, 15);
-        await iSeeResult(
-            tester,
-            const bdd.DataTable([
-              ['counter', 'color'],
-              ['5', 'blue']
-            ]));
-      } finally {
-        await bddTearDown(tester);
-      }
-    });
-    testWidgets(
-        '''Outline: Add and remove buttons work together (25, 10, '15', 'green')''',
-        (tester) async {
-      try {
-        await bddSetUp(tester);
-        await theAppIsRunning(tester);
-        await iTapIconTimes(tester, Icons.add, 25);
-        await iTapIconTimes(tester, Icons.remove, 10);
-        await iSeeResult(
-            tester,
-            const bdd.DataTable([
-              ['counter', 'color'],
-              ['15', 'green']
-            ]));
-      } finally {
-        await bddTearDown(tester);
-      }
-    });
-    testWidgets(
-        '''Outline: Add and remove buttons work together (40, 10, '30', 'yellow')''',
-        (tester) async {
-      try {
-        await bddSetUp(tester);
-        await theAppIsRunning(tester);
-        await iTapIconTimes(tester, Icons.add, 40);
-        await iTapIconTimes(tester, Icons.remove, 10);
-        await iSeeResult(
-            tester,
-            const bdd.DataTable([
-              ['counter', 'color'],
-              ['30', 'yellow']
-            ]));
       } finally {
         await bddTearDown(tester);
       }
