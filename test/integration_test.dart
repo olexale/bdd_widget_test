@@ -37,9 +37,9 @@ void main() {
   });
 
   test(
-      'integration-related lines are not added if includeIntegrationTestBinding is false',
-      () {
-    const expectedFeatureDart = '''
+    'integration-related lines are not added if includeIntegrationTestBinding is false',
+    () {
+      const expectedFeatureDart = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
@@ -58,14 +58,15 @@ void main() {
 }
 ''';
 
-    final feature = FeatureFile(
-      featureDir: 'test.feature',
-      package: 'test',
-      input: minimalFeatureFile,
-      includeIntegrationTestImport: true,
-    );
-    expect(feature.dartContent, expectedFeatureDart);
-  });
+      final feature = FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: minimalFeatureFile,
+        includeIntegrationTestImport: true,
+      );
+      expect(feature.dartContent, expectedFeatureDart);
+    },
+  );
 
   test('integration-related code is not added by default', () {
     const expectedFeatureDart = '''

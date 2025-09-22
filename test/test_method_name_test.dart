@@ -32,8 +32,9 @@ void main() {
       featureDir: 'test.feature',
       package: 'test',
       input: featureFile,
-      generatorOptions:
-          const GeneratorOptions(testMethodName: 'customTestWidgets'),
+      generatorOptions: const GeneratorOptions(
+        testMethodName: 'customTestWidgets',
+      ),
     );
     expect(feature.dartContent, expectedFeatureDart);
   });

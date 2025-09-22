@@ -1,11 +1,11 @@
 class BddLine {
   BddLine(this.rawLine)
-      : type = _lineTypeFromString(rawLine),
-        value = _removeLinePrefix(rawLine);
+    : type = _lineTypeFromString(rawLine),
+      value = _removeLinePrefix(rawLine);
 
   BddLine.fromValue(this.type, this.value) : rawLine = '';
   BddLine.fromRawValue(this.type, this.rawLine)
-      : value = _removeLinePrefix(rawLine);
+    : value = _removeLinePrefix(rawLine);
 
   final String rawLine;
   final String value;

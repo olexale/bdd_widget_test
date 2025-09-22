@@ -68,8 +68,9 @@ void main() {
       featureDir: 'test.feature',
       package: 'test',
       input: featureFile,
-      generatorOptions:
-          const GeneratorOptions(testerType: 'PatrolIntegrationTester'),
+      generatorOptions: const GeneratorOptions(
+        testerType: 'PatrolIntegrationTester',
+      ),
     );
     expect(feature.dartContent, expectedFeatureDart);
   });

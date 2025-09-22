@@ -20,7 +20,10 @@ Map<String, String> getExistingStepSubfolders(
   if (!steps.existsSync()) {
     return {};
   }
-  return steps.listSync(recursive: true).asMap().map(
+  return steps
+      .listSync(recursive: true)
+      .asMap()
+      .map(
         (_, step) => MapEntry<String, String>(
           p.basename(step.path),
           p.dirname(

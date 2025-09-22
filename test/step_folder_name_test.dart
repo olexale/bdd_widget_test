@@ -32,8 +32,9 @@ void main() {
       featureDir: 'test.feature',
       package: 'test',
       input: featureFile,
-      generatorOptions:
-          const GeneratorOptions(stepFolderName: '../../../custom_steps'),
+      generatorOptions: const GeneratorOptions(
+        stepFolderName: '../../../custom_steps',
+      ),
     );
     expect(feature.dartContent, expectedFeatureDart);
   });

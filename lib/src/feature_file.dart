@@ -18,16 +18,17 @@ class FeatureFile {
     this.includeIntegrationTestBinding = false,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
-  })  : _lines = _prepareLines(
-          input.split('\n').map((line) => line.trim()).map(BddLine.new),
-        ),
-        hookFile = generatorOptions.addHooks
-            ? HookFile.create(
-                featureDir: featureDir,
-                package: package,
-                generatorOptions: generatorOptions,
-              )
-            : null {
+  }) : _lines = _prepareLines(
+         input.split('\n').map((line) => line.trim()).map(BddLine.new),
+       ),
+       hookFile =
+           generatorOptions.addHooks
+               ? HookFile.create(
+                 featureDir: featureDir,
+                 package: package,
+                 generatorOptions: generatorOptions,
+               )
+               : null {
     _testerType = parseCustomTagFromFeatureTagLine(
       _lines,
       generatorOptions.testerType,
@@ -40,23 +41,25 @@ class FeatureFile {
       testerNameTag,
     );
 
-    _stepFiles = _lines
-        .where(
-          (line) =>
-              line.type == LineType.step || line.type == LineType.dataTableStep,
-        )
-        .map(
-          (bddLine) => StepFile.create(
-            featureDir,
-            package,
-            bddLine,
-            existingSteps,
-            generatorOptions,
-            _testerType,
-            _testerName,
-          ),
-        )
-        .toList();
+    _stepFiles =
+        _lines
+            .where(
+              (line) =>
+                  line.type == LineType.step ||
+                  line.type == LineType.dataTableStep,
+            )
+            .map(
+              (bddLine) => StepFile.create(
+                featureDir,
+                package,
+                bddLine,
+                existingSteps,
+                generatorOptions,
+                _testerType,
+                _testerName,
+              ),
+            )
+            .toList();
   }
 
   late List<StepFile> _stepFiles;
@@ -75,52 +78,57 @@ class FeatureFile {
   final HookFile? hookFile;
 
   String get dartContent => generateFeatureDart(
-        _lines,
-        getStepFiles(),
-        generatorOptions.testMethodName,
-        _testerType,
-        _testerName,
-        includeIntegrationTestBinding,
-        includeIntegrationTestImport,
-        hookFile,
-        generatorOptions,
-      );
+    _lines,
+    getStepFiles(),
+    generatorOptions.testMethodName,
+    _testerType,
+    _testerName,
+    includeIntegrationTestBinding,
+    includeIntegrationTestImport,
+    hookFile,
+    generatorOptions,
+  );
 
   List<StepFile> getStepFiles() => _stepFiles;
 
   static List<BddLine> _prepareLines(Iterable<BddLine> input) {
-    final lines = input.mapIndexed(
-      (index, bddLine) {
-        final isStep = bddLine.type == LineType.step;
-        final hasExamplesFormat = data_table_parser.hasExamplesFormat(
-          bddLine: bddLine,
-        );
-        final isNextTable = data_table_parser.isTable(
-          lines: input.toList(),
-          index: index + 1,
-        );
-        if (isStep && !hasExamplesFormat && isNextTable) {
-          return BddLine.fromRawValue(LineType.dataTableStep, bddLine.rawLine);
-        } else {
-          return bddLine;
-        }
-      },
-    ).toList(growable: false);
+    final lines = input
+        .mapIndexed(
+          (index, bddLine) {
+            final isStep = bddLine.type == LineType.step;
+            final hasExamplesFormat = data_table_parser.hasExamplesFormat(
+              bddLine: bddLine,
+            );
+            final isNextTable = data_table_parser.isTable(
+              lines: input.toList(),
+              index: index + 1,
+            );
+            if (isStep && !hasExamplesFormat && isNextTable) {
+              return BddLine.fromRawValue(
+                LineType.dataTableStep,
+                bddLine.rawLine,
+              );
+            } else {
+              return bddLine;
+            }
+          },
+        )
+        .toList(growable: false);
 
     final headers = lines
         .takeWhile((value) => value.type != LineType.feature)
         .where((value) => value.type == LineType.unknown)
         .foldIndexed(
-      // this removes empty line dupicates
-      <BddLine>[],
-      (index, headers, line) => [
-        ...headers,
-        if (index == 0 && line.rawLine != '\n' && line.rawLine.isNotEmpty)
-          line
-        else if (headers.isNotEmpty && headers.last.rawLine != line.rawLine)
-          line,
-      ],
-    );
+          // this removes empty line dupicates
+          <BddLine>[],
+          (index, headers, line) => [
+            ...headers,
+            if (index == 0 && line.rawLine != '\n' && line.rawLine.isNotEmpty)
+              line
+            else if (headers.isNotEmpty && headers.last.rawLine != line.rawLine)
+              line,
+          ],
+        );
     final steps = lines.where((value) => value.type != LineType.unknown);
     return [...headers, ...steps];
   }

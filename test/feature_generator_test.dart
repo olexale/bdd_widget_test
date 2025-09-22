@@ -21,7 +21,8 @@ void main() {
   });
 
   test('no customization', () async {
-    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -42,8 +43,10 @@ void main() {
 
   test('existing step should not regenerate', () async {
     const scenario = 'existing_step';
-    final dummyStepPath =
-        p.join(getStepFolderName(scenario), 'the_app_is_running.dart');
+    final dummyStepPath = p.join(
+      getStepFolderName(scenario),
+      'the_app_is_running.dart',
+    );
     const expectedFileContent = '// existing step';
     fs.file(dummyStepPath)
       ..createSync(recursive: true)
@@ -65,8 +68,11 @@ relativeToTestFolder: false
       ..writeAsStringSync(bddOptions);
 
     const scenario = 'existing_step_outside_test_folder';
-    final dummyStepPath =
-        p.join(fs.currentDirectory.path, 'my_steps', 'the_app_is_running.dart');
+    final dummyStepPath = p.join(
+      fs.currentDirectory.path,
+      'my_steps',
+      'the_app_is_running.dart',
+    );
     fs.file(dummyStepPath)
       ..createSync(recursive: true)
       ..writeAsStringSync('dummy');
@@ -74,7 +80,8 @@ relativeToTestFolder: false
     // note: the import is so weird because p.relative() can not
     // find intersection between two paths (however, somehow it works)
     // not a problem in the real world
-    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -107,7 +114,8 @@ customHeaders:
       ..createSync()
       ..writeAsStringSync(bddOptions);
 
-    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter_test/flutter_test.dart';\n"
@@ -186,7 +194,8 @@ testMethodName: customName
 stepFolderName: ./scenarios
 ''');
 
-    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -239,7 +248,8 @@ include: $externalYaml3
 stepFolderName: ./scenarios
 ''');
 
-    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -274,7 +284,8 @@ dev_dependencies:
     sdk: flutter
 ''');
 
-    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -304,7 +315,8 @@ dev_dependencies:
 dev_dependencies:
 ''');
 
-    const expected = '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
@@ -344,18 +356,19 @@ Future<void> generate(
     featureBuilder(options ?? BuilderOptions.empty),
     srcs,
     rootPackage: pkgName,
-    outputs: expectedOutput != null
-        ? {
-            '$pkgName|$path/sample_test.dart': decodedMatches(expectedOutput),
-          }
-        : null,
+    outputs:
+        expectedOutput != null
+            ? {
+              '$pkgName|$path/sample_test.dart': decodedMatches(expectedOutput),
+            }
+            : null,
   );
 }
 
 String getStepFolderName(String scenario) => p.joinAll([
-      fs.currentDirectory.path,
-      'test',
-      'builder_scenarios',
-      scenario,
-      'step',
-    ]);
+  fs.currentDirectory.path,
+  'test',
+  'builder_scenarios',
+  scenario,
+  'step',
+]);

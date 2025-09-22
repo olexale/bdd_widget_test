@@ -32,8 +32,8 @@ import 'package:yaml/yaml.dart';
 ///
 /// Returns a [FeatureBuilder] instance configured with the specified options.
 Builder featureBuilder(BuilderOptions options) => FeatureBuilder(
-      GeneratorOptions.fromMap(options.config),
-    );
+  GeneratorOptions.fromMap(options.config),
+);
 
 /// A code generator builder that transforms BDD feature files into Dart test files.
 ///
@@ -139,7 +139,7 @@ class FeatureBuilder implements Builder {
     final featureDir = p.dirname(inputId.path);
     final isIntegrationTest =
         inputId.pathSegments.contains('integration_test') &&
-            _hasIntegrationTestDevDependency();
+        _hasIntegrationTestDevDependency();
 
     final feature = FeatureFile(
       featureDir: featureDir,
@@ -159,9 +159,8 @@ class FeatureBuilder implements Builder {
     );
 
     final steps = feature.getStepFiles().whereType<NewStepFile>().map(
-          (e) =>
-              _createFileRecursively(e.filename, formatDartCode(e.dartContent)),
-        );
+      (e) => _createFileRecursively(e.filename, formatDartCode(e.dartContent)),
+    );
     await Future.wait(steps);
 
     final hookFile = feature.hookFile;
@@ -171,12 +170,14 @@ class FeatureBuilder implements Builder {
   }
 
   Future<GeneratorOptions> _prepareOptions() async {
-    final fileOptions = fs.file('bdd_options.yaml').existsSync()
-        ? readFromUri(Uri.file('bdd_options.yaml'))
-        : null;
-    final mergedOptions = fileOptions != null
-        ? merge(generatorOptions, fileOptions)
-        : generatorOptions;
+    final fileOptions =
+        fs.file('bdd_options.yaml').existsSync()
+            ? readFromUri(Uri.file('bdd_options.yaml'))
+            : null;
+    final mergedOptions =
+        fileOptions != null
+            ? merge(generatorOptions, fileOptions)
+            : generatorOptions;
     final options = await flattenOptions(mergedOptions);
     return options;
   }
