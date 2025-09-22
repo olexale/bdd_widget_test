@@ -27,33 +27,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  Color? _color = Colors.blue;
 
   void _incrementCounter() {
-    _counter++;
-    _changeColor(_counter);
-  }
-
-  void _decrementCounter() {
-    _counter--;
-    _changeColor(_counter);
-  }
-
-  void _changeColor(int counter) {
-    if (counter < 12) {
-      _color = Colors.blue;
-    } else if (counter < 24) {
-      _color = Colors.green;
-    } else if (counter < 35) {
-      _color = Colors.yellow;
-    }
-    setState(() {});
+    setState(() {
+      _counter++;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _color,
       appBar: AppBar(title: Text(widget.title)),
       body: Center(
         child: Column(
@@ -69,24 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            FloatingActionButton(
-              onPressed: _decrementCounter,
-              tooltip: 'Decrement',
-              child: const Icon(Icons.remove),
-            ),
-            FloatingActionButton(
-              onPressed: _incrementCounter,
-              tooltip: 'Increment',
-              child: const Icon(Icons.add),
-            ),
-          ],
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
       ),
     );
   }
