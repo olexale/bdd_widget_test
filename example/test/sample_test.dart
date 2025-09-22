@@ -73,12 +73,13 @@ void main() {
       }
     });
     testWidgets(
-        '''Outline: Add and remove buttons work together (5, '5', 'blue')''',
+        '''Outline: Add and remove buttons work together (20, 15, '5', 'blue')''',
         (tester) async {
       try {
         await bddSetUp(tester);
         await theAppIsRunning(tester);
-        await iTapIconTimes(tester, Icons.add, 5);
+        await iTapIconTimes(tester, Icons.add, 20);
+        await iTapIconTimes(tester, Icons.remove, 15);
         await iSeeResult(
             tester,
             const bdd.DataTable([
@@ -90,12 +91,13 @@ void main() {
       }
     });
     testWidgets(
-        '''Outline: Add and remove buttons work together (15, '15', 'green')''',
+        '''Outline: Add and remove buttons work together (25, 10, '15', 'green')''',
         (tester) async {
       try {
         await bddSetUp(tester);
         await theAppIsRunning(tester);
-        await iTapIconTimes(tester, Icons.add, 15);
+        await iTapIconTimes(tester, Icons.add, 25);
+        await iTapIconTimes(tester, Icons.remove, 10);
         await iSeeResult(
             tester,
             const bdd.DataTable([
@@ -107,12 +109,13 @@ void main() {
       }
     });
     testWidgets(
-        '''Outline: Add and remove buttons work together (30, '30', 'yellow')''',
+        '''Outline: Add and remove buttons work together (40, 10, '30', 'yellow')''',
         (tester) async {
       try {
         await bddSetUp(tester);
         await theAppIsRunning(tester);
-        await iTapIconTimes(tester, Icons.add, 30);
+        await iTapIconTimes(tester, Icons.add, 40);
+        await iTapIconTimes(tester, Icons.remove, 10);
         await iSeeResult(
             tester,
             const bdd.DataTable([
