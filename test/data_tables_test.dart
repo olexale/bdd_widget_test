@@ -536,4 +536,45 @@ void main() {
     );
     expect(feature.dartContent, expectedFeatureDart);
   });
+  test('Scenario Outline with data table variables in examples', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario Outline: Testing visibility of data table in examples
+    Given I load the splash screen
+    Then I verify welcome messages with <authStatus>
+      | text      |
+      | 'Welcome' |
+    Examples:
+      | authStatus  |
+      | 'initial'   |
+''';
+
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_load_the_splash_screen.dart';
+import './step/i_verify_welcome_messages_with.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Outline: Testing visibility of data table in examples ('initial')\'\'\', (tester) async {
+      await iLoadTheSplashScreen(tester);
+      await iVerifyWelcomeMessagesWith(tester, 'initial', const bdd.DataTable([[text], ['Welcome']]));
+    });
+  });
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
 }
