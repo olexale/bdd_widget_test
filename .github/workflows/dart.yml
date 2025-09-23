@@ -38,7 +38,7 @@ jobs:
 
       - name: 🥇 Update coverage badge
         if: github.event_name != 'pull_request'
-        uses: coverallsapp/github-action@2.3.6
+        uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ secrets.github_token }}
 
