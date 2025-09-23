@@ -92,25 +92,27 @@ class FeatureFile {
   List<StepFile> getStepFiles() => _stepFiles;
 
   static List<BddLine> _prepareLines(Iterable<BddLine> input) {
-    final lines = input
+    final inputList = input.toList(growable: false);
+    final lines = inputList
         .mapIndexed(
           (index, bddLine) {
             final isStep = bddLine.type == LineType.step;
-            final hasExamplesFormat = data_table_parser.hasExamplesFormat(
-              bddLine: bddLine,
-            );
             final isNextTable = data_table_parser.isTable(
-              lines: input.toList(),
+              lines: inputList,
               index: index + 1,
             );
-            if (isStep && !hasExamplesFormat && isNextTable) {
-              return BddLine.fromRawValue(
-                LineType.dataTableStep,
-                bddLine.rawLine,
-              );
-            } else {
-              return bddLine;
-            }
+            final isExamplesTable =
+                isNextTable &&
+                data_table_parser.isDataTableExamples(
+                  lines: inputList,
+                  index: index,
+                );
+            return isStep && isNextTable && !isExamplesTable
+                ? BddLine.fromRawValue(
+                  LineType.dataTableStep,
+                  bddLine.rawLine,
+                )
+                : bddLine;
           },
         )
         .toList(growable: false);
