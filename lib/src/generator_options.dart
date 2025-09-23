@@ -21,34 +21,35 @@ class GeneratorOptions {
     this.include,
     bool? includeIntegrationTestBinding,
     List<String>? customHeaders,
-  })  : stepFolder = stepFolderName ?? _stepFolderName,
-        relativeToTestFolder = relativeToTestFolder ?? true,
-        testMethodName = testMethodName ?? _defaultTestMethodName,
-        testerType = testerType ?? _defaultTesterType,
-        testerName = testerName ?? _defaultTesterName,
-        addHooks = addHooks ?? false,
-        hookFolderName = hookFolderName ?? _hookFolderName,
-        externalSteps = externalSteps ?? const [],
-        includeIntegrationTestBinding = includeIntegrationTestBinding ?? true,
-        customHeaders = customHeaders ?? const [];
+  }) : stepFolder = stepFolderName ?? _stepFolderName,
+       relativeToTestFolder = relativeToTestFolder ?? true,
+       testMethodName = testMethodName ?? _defaultTestMethodName,
+       testerType = testerType ?? _defaultTesterType,
+       testerName = testerName ?? _defaultTesterName,
+       addHooks = addHooks ?? false,
+       hookFolderName = hookFolderName ?? _hookFolderName,
+       externalSteps = externalSteps ?? const [],
+       includeIntegrationTestBinding = includeIntegrationTestBinding ?? true,
+       customHeaders = customHeaders ?? const [];
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
       GeneratorOptions(
-          testMethodName: json['testMethodName'] as String?,
-          testerType: json['testerType'] as String?,
-          testerName: json['testerName'] as String?,
-          externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
-          stepFolderName: json['stepFolderName'] as String?,
-          relativeToTestFolder: json['relativeToTestFolder'] as bool?,
-          addHooks: json['addHooks'] as bool?,
-          hookFolderName: json['hookFolderName'] as String?,
-          include: json['include'] is String
-              ? [(json['include'] as String)]
-              : (json['include'] as List?)?.cast<String>(),
-          includeIntegrationTestBinding:
-              json['includeIntegrationTestBinding'] as bool?,
-          customHeaders:
-              (json['customHeaders'] as List?)?.cast<String>() ?? []);
+        testMethodName: json['testMethodName'] as String?,
+        testerType: json['testerType'] as String?,
+        testerName: json['testerName'] as String?,
+        externalSteps: (json['externalSteps'] as List?)?.cast<String>(),
+        stepFolderName: json['stepFolderName'] as String?,
+        relativeToTestFolder: json['relativeToTestFolder'] as bool?,
+        addHooks: json['addHooks'] as bool?,
+        hookFolderName: json['hookFolderName'] as String?,
+        include:
+            json['include'] is String
+                ? [(json['include'] as String)]
+                : (json['include'] as List?)?.cast<String>(),
+        includeIntegrationTestBinding:
+            json['includeIntegrationTestBinding'] as bool?,
+        customHeaders: (json['customHeaders'] as List?)?.cast<String>() ?? [],
+      );
 
   final String stepFolder;
   final bool relativeToTestFolder;
@@ -93,25 +94,24 @@ GeneratorOptions readFromUri(Uri uri) {
   return GeneratorOptions.fromMap(doc.value.cast());
 }
 
-GeneratorOptions merge(GeneratorOptions a, GeneratorOptions b) =>
-    GeneratorOptions(
-      testMethodName: a.testMethodName != _defaultTestMethodName
+GeneratorOptions merge(
+  GeneratorOptions a,
+  GeneratorOptions b,
+) => GeneratorOptions(
+  testMethodName:
+      a.testMethodName != _defaultTestMethodName
           ? a.testMethodName
           : b.testMethodName,
-      testerType:
-          a.testerType != _defaultTesterType ? a.testerType : b.testerType,
-      testerName:
-          a.testerName != _defaultTesterName ? a.testerName : b.testerName,
-      stepFolderName:
-          a.stepFolder != _stepFolderName ? a.stepFolder : b.stepFolder,
-      relativeToTestFolder: a.relativeToTestFolder && b.relativeToTestFolder,
-      externalSteps: [...a.externalSteps, ...b.externalSteps],
-      addHooks: a.addHooks || b.addHooks,
-      hookFolderName: a.hookFolderName != _hookFolderName
-          ? a.hookFolderName
-          : b.hookFolderName,
-      include: b.include,
-      includeIntegrationTestBinding:
-          a.includeIntegrationTestBinding || b.includeIntegrationTestBinding,
-      customHeaders: [...a.customHeaders, ...b.customHeaders],
-    );
+  testerType: a.testerType != _defaultTesterType ? a.testerType : b.testerType,
+  testerName: a.testerName != _defaultTesterName ? a.testerName : b.testerName,
+  stepFolderName: a.stepFolder != _stepFolderName ? a.stepFolder : b.stepFolder,
+  relativeToTestFolder: a.relativeToTestFolder && b.relativeToTestFolder,
+  externalSteps: [...a.externalSteps, ...b.externalSteps],
+  addHooks: a.addHooks || b.addHooks,
+  hookFolderName:
+      a.hookFolderName != _hookFolderName ? a.hookFolderName : b.hookFolderName,
+  include: b.include,
+  includeIntegrationTestBinding:
+      a.includeIntegrationTestBinding || b.includeIntegrationTestBinding,
+  customHeaders: [...a.customHeaders, ...b.customHeaders],
+);

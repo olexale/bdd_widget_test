@@ -121,13 +121,19 @@ Iterable<BddLine> _processScenarioLines(
     yield BddLine.fromValue(
       line.type,
       _replacePlaceholders(
-          line.value, line.type == LineType.dataTableStep, examples),
+        line.value,
+        line.type == LineType.dataTableStep,
+        examples,
+      ),
     );
   }
 }
 
 String _replacePlaceholders(
-    String line, bool isDataTableStep, Map<String, String> example) {
+  String line,
+  bool isDataTableStep,
+  Map<String, String> example,
+) {
   var replaced = line;
   for (final e in example.keys) {
     final value = isDataTableStep ? '${example[e]}' : '{${example[e]}}';

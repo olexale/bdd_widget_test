@@ -126,16 +126,17 @@ void main() {
 ''';
 
     final feature = FeatureFile(
-        featureDir: 'test.feature',
-        package: 'test',
-        input: minimalFeatureFile,
-        generatorOptions: const GeneratorOptions(
-          customHeaders: [
-            "import 'package:patrol/patrol.dart';",
-            '// Import flutter_test for compatibility',
-            "import 'package:flutter_test/flutter_test.dart';",
-          ],
-        ));
+      featureDir: 'test.feature',
+      package: 'test',
+      input: minimalFeatureFile,
+      generatorOptions: const GeneratorOptions(
+        customHeaders: [
+          "import 'package:patrol/patrol.dart';",
+          '// Import flutter_test for compatibility',
+          "import 'package:flutter_test/flutter_test.dart';",
+        ],
+      ),
+    );
     expect(feature.dartContent, expectedFeatureDart);
   });
 }

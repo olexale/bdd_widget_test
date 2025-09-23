@@ -31,8 +31,9 @@ String generateFeatureDart(
   final linesBeforeFeature =
       lines.takeWhile((value) => value.type != LineType.feature).toList();
 
-  final tagLines =
-      linesBeforeFeature.where((line) => line.type == LineType.tag);
+  final tagLines = linesBeforeFeature.where(
+    (line) => line.type == LineType.tag,
+  );
   final tags = <String>[];
   for (final line in tagLines) {
     final methodName = parseCustomTag(line.rawLine, testMethodNameTag);
@@ -53,8 +54,9 @@ String generateFeatureDart(
     sb.writeln("@Tags(['${tags.join("', '")}'])");
   }
 
-  for (final line
-      in linesBeforeFeature.where((line) => line.type != LineType.tag)) {
+  for (final line in linesBeforeFeature.where(
+    (line) => line.type != LineType.tag,
+  )) {
     sb.writeln(line.rawLine);
   }
 
@@ -64,9 +66,7 @@ String generateFeatureDart(
 
   // Use custom headers if provided, otherwise use default imports
   if (generatorOptions.customHeaders.isNotEmpty) {
-    for (final header in generatorOptions.customHeaders) {
-      sb.writeln(header);
-    }
+    generatorOptions.customHeaders.forEach(sb.writeln);
   } else {
     sb.writeln("import 'package:flutter/material.dart';");
     sb.writeln("import 'package:flutter_test/flutter_test.dart';");
@@ -208,30 +208,28 @@ bool _parseBackground(
   List<BddLine> lines,
   String testerType,
   String testerName,
-) =>
-    _parseSetup(
-      sb,
-      lines,
-      LineType.background,
-      setUpMethodName,
-      testerType,
-      testerName,
-    );
+) => _parseSetup(
+  sb,
+  lines,
+  LineType.background,
+  setUpMethodName,
+  testerType,
+  testerName,
+);
 
 bool _parseAfter(
   StringBuffer sb,
   List<BddLine> lines,
   String testerType,
   String testerName,
-) =>
-    _parseSetup(
-      sb,
-      lines,
-      LineType.after,
-      tearDownMethodName,
-      testerType,
-      testerName,
-    );
+) => _parseSetup(
+  sb,
+  lines,
+  LineType.after,
+  tearDownMethodName,
+  testerType,
+  testerName,
+);
 
 bool _parseSetup(
   StringBuffer sb,
@@ -241,11 +239,13 @@ bool _parseSetup(
   String testerType,
   String testerName,
 ) {
-  final flattenDataTables = replaceDataTables(
-    lines.skipWhile((line) => line.type == LineType.tag).toList(),
-  ).toList();
-  var offset =
-      flattenDataTables.indexWhere((element) => element.type == elementType);
+  final flattenDataTables =
+      replaceDataTables(
+        lines.skipWhile((line) => line.type == LineType.tag).toList(),
+      ).toList();
+  var offset = flattenDataTables.indexWhere(
+    (element) => element.type == elementType,
+  );
   if (offset != -1) {
     sb.writeln('    Future<void> $title($testerType $testerName) async {');
     offset++;
@@ -270,9 +270,10 @@ void _parseFeature(
   String testMethodName,
   String testerName,
 ) {
-  final scenarios = _splitScenarios(
-    feature.skipWhile((value) => !_isNewScenario(value.type)).toList(),
-  ).toList();
+  final scenarios =
+      _splitScenarios(
+        feature.skipWhile((value) => !_isNewScenario(value.type)).toList(),
+      ).toList();
   for (final scenario in scenarios) {
     final scenarioTagLines =
         scenario.where((line) => line.type == LineType.tag).toList();
@@ -288,12 +289,14 @@ void _parseFeature(
       scenarioParamsTag,
     );
 
-    final flattenDataTables = replaceDataTables(
-      scenario.skipWhile((line) => line.type == LineType.tag).toList(),
-    ).toList();
-    final scenariosToParse = flattenDataTables.first.type == LineType.scenario
-        ? [flattenDataTables]
-        : generateScenariosFromScenarioOutline(flattenDataTables);
+    final flattenDataTables =
+        replaceDataTables(
+          scenario.skipWhile((line) => line.type == LineType.tag).toList(),
+        ).toList();
+    final scenariosToParse =
+        flattenDataTables.first.type == LineType.scenario
+            ? [flattenDataTables]
+            : generateScenariosFromScenarioOutline(flattenDataTables);
 
     for (final s in scenariosToParse) {
       parseScenario(

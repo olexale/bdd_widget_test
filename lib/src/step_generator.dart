@@ -79,38 +79,39 @@ BddStep _getStep(
   GeneratorOptions generatorOptions,
 ) {
   //for now, predefined steps don't support testerType
-  final factory = predefinedSteps[methodName] ??
-      (_, __) => GenericStep(
-            methodName,
-            line,
-            testerType,
-            testerName,
-            hasDataTable,
-            generatorOptions,
-          );
+  final factory =
+      predefinedSteps[methodName] ??
+      (_, _) => GenericStep(
+        methodName,
+        line,
+        testerType,
+        testerName,
+        hasDataTable,
+        generatorOptions,
+      );
   return factory(package, line);
 }
 
 final predefinedSteps = <String, BddStep Function(String, String)>{
   'theAppIsRunning': (package, _) => TheAppInRunningStep(package),
-  'iDismissThePage': (_, __) => IDismissThePage(),
-  'iDontSeeIcon': (_, __) => IDontSeeIcon(),
-  'iDontSeeRichText': (_, __) => IDontSeeRichText(),
-  'iDontSeeText': (_, __) => IDontSeeText(),
-  'iDontSeeWidget': (_, __) => IDontSeeWidget(),
-  'iEnterIntoInputField': (_, __) => IEnterIntoInputField(),
-  'iSeeDisabledElevatedButton': (_, __) => ISeeDisabledElevatedButton(),
-  'iSeeEnabledElevatedButton': (_, __) => ISeeEnabledElevatedButton(),
-  'iSeeExactlyWidgets': (_, __) => ISeeExactlyWidgets(),
-  'iSeeIcon': (_, __) => ISeeIcon(),
-  'iSeeMultipleTexts': (_, __) => ISeeMultipleTexts(),
-  'iSeeMultipleWidgets': (_, __) => ISeeMultipleWidgets(),
-  'iSeeRichText': (_, __) => ISeeRichText(),
-  'iSeeText': (_, __) => ISeeText(),
-  'iSeeWidget': (_, __) => ISeeWidget(),
-  'iTapIcon': (_, __) => ITapIcon(),
-  'iTapText': (_, __) => ITapText(),
-  'iWait': (_, __) => IWait(),
+  'iDismissThePage': (_, _) => IDismissThePage(),
+  'iDontSeeIcon': (_, _) => IDontSeeIcon(),
+  'iDontSeeRichText': (_, _) => IDontSeeRichText(),
+  'iDontSeeText': (_, _) => IDontSeeText(),
+  'iDontSeeWidget': (_, _) => IDontSeeWidget(),
+  'iEnterIntoInputField': (_, _) => IEnterIntoInputField(),
+  'iSeeDisabledElevatedButton': (_, _) => ISeeDisabledElevatedButton(),
+  'iSeeEnabledElevatedButton': (_, _) => ISeeEnabledElevatedButton(),
+  'iSeeExactlyWidgets': (_, _) => ISeeExactlyWidgets(),
+  'iSeeIcon': (_, _) => ISeeIcon(),
+  'iSeeMultipleTexts': (_, _) => ISeeMultipleTexts(),
+  'iSeeMultipleWidgets': (_, _) => ISeeMultipleWidgets(),
+  'iSeeRichText': (_, _) => ISeeRichText(),
+  'iSeeText': (_, _) => ISeeText(),
+  'iSeeWidget': (_, _) => ISeeWidget(),
+  'iTapIcon': (_, _) => ITapIcon(),
+  'iTapText': (_, _) => ITapText(),
+  'iWait': (_, _) => IWait(),
 };
 
 /// Return an array of Strings where first element is the step name and the rest

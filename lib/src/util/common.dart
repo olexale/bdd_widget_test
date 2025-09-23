@@ -18,8 +18,9 @@ String parseCustomTagFromFeatureTagLine(
 ) {
   var tagType = defaultTagValue;
 
-  final customTagLine = featureTagLines
-      .firstWhereOrNull((line) => line.rawLine.startsWith(customTag));
+  final customTagLine = featureTagLines.firstWhereOrNull(
+    (line) => line.rawLine.startsWith(customTag),
+  );
 
   if (customTagLine != null) {
     final tagOverride = parseCustomTag(

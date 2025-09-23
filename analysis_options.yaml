@@ -7,3 +7,6 @@ linter:
     constant_identifier_names: false
     lines_longer_than_80_chars: false
     public_member_api_docs: false
+
+formatter:
+  trailing_commas: preserve

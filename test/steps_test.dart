@@ -5,8 +5,11 @@ void main() {
   test('Empty feature file parses', () {
     const path = 'test';
 
-    final feature =
-        FeatureFile(featureDir: '$path.feature', package: path, input: '');
+    final feature = FeatureFile(
+      featureDir: '$path.feature',
+      package: path,
+      input: '',
+    );
     expect(feature.getStepFiles().length, 0);
   });
 }

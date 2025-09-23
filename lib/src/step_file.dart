@@ -20,13 +20,16 @@ abstract class StepFile {
     final file = '${getStepFilename(bddLine.value)}.dart';
 
     if (existingSteps.containsKey(file)) {
-      final import =
-          p.join('.', existingSteps[file], file).replaceAll(r'\', '/');
+      final import = p
+          .join('.', existingSteps[file], file)
+          .replaceAll(r'\', '/');
       return ExistingStepFile._(import);
     }
 
-    final externalStep = generatorOptions.externalSteps
-        .firstWhere((l) => l.contains(file), orElse: () => '');
+    final externalStep = generatorOptions.externalSteps.firstWhere(
+      (l) => l.contains(file),
+      orElse: () => '',
+    );
     if (externalStep.isNotEmpty) {
       return ExternalStepFile._(externalStep);
     }
@@ -34,8 +37,9 @@ abstract class StepFile {
     if (generatorOptions.stepFolder.startsWith('./') ||
         generatorOptions.stepFolder.startsWith('../')) {
       // step folder is relative to feature file
-      final import =
-          p.join(generatorOptions.stepFolder, file).replaceAll(r'\', '/');
+      final import = p
+          .join(generatorOptions.stepFolder, file)
+          .replaceAll(r'\', '/');
       final filename = p.join(featureDir, generatorOptions.stepFolder, file);
       return NewStepFile._(
         import,
@@ -50,8 +54,10 @@ abstract class StepFile {
     }
 
     // step folder is relative to test folder
-    final pathToTestFolder =
-        p.relative(getPathToStepFolder(generatorOptions), from: featureDir);
+    final pathToTestFolder = p.relative(
+      getPathToStepFolder(generatorOptions),
+      from: featureDir,
+    );
     final import = p
         .join(pathToTestFolder, generatorOptions.stepFolder, file)
         .replaceAll(r'\', '/');
@@ -93,13 +99,13 @@ class NewStepFile extends StepFile {
   final bool hasDataTable;
   final GeneratorOptions generatorOptions;
   String get dartContent => generateStepDart(
-        package,
-        line,
-        testerType,
-        testerName,
-        hasDataTable,
-        generatorOptions,
-      );
+    package,
+    line,
+    testerType,
+    testerName,
+    hasDataTable,
+    generatorOptions,
+  );
 }
 
 class ExistingStepFile extends StepFile {
