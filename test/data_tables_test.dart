@@ -53,19 +53,19 @@ void main() {
 Feature: Testing feature
   Scenario: Testing scenario
     Given the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'             |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
     And the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'             |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
     But the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'             |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
     When the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'             |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
     And I wait
@@ -87,10 +87,10 @@ import './step/i_wait.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
       await iWait(tester);
       await theFollowingSongs(tester, const bdd.DataTable([['The Beatles', 'Let It Be']]));
     });
@@ -111,7 +111,7 @@ void main() {
 Feature: Testing feature
   Scenario: Testing scenario
     Given the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'              |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
     And I wait
@@ -136,7 +136,7 @@ import './step/the_following_users_exist.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
       await iWait(tester);
       await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
       await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
@@ -164,7 +164,7 @@ Feature: Testing feature
     | 'Flutter'       | '@FlutterDev' |
     And I wait
     And the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'              |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
 ''';
@@ -187,7 +187,7 @@ void main() {
       await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
       await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
       await iWait(tester);
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
     });
   });
 }
@@ -213,7 +213,7 @@ Feature: Testing feature
     And band <band> is on tour
     And I wait
     And the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'              |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
     Examples:
@@ -241,7 +241,7 @@ void main() {
       await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
       await bandIsOnTour(tester, 'Camel');
       await iWait(tester);
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
     });
   });
 }
@@ -261,7 +261,7 @@ void main() {
 Feature: Testing feature
   Scenario Outline: Testing scenario
     Given the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'              |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
     And band <band> is on tour
@@ -293,14 +293,14 @@ import './step/the_following_users_exist.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Outline: Testing scenario ('Camel')\'\'\', (tester) async {
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
       await bandIsOnTour(tester, 'Camel');
       await iWait(tester);
       await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
       await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
     });
     testWidgets(\'\'\'Outline: Testing scenario ('Pearl Jam')\'\'\', (tester) async {
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
       await bandIsOnTour(tester, 'Pearl Jam');
       await iWait(tester);
       await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
@@ -326,7 +326,7 @@ Feature: Testing feature
   Background:
     Given I wait
     And the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'              |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
     And I wait
@@ -355,7 +355,7 @@ void main() {
   group(\'\'\'Testing feature\'\'\', () {
     Future<void> bddSetUp(WidgetTester tester) async {
       await iWait(tester);
-      await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
       await iWait(tester);
     }
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
@@ -391,7 +391,7 @@ Feature: Testing feature
 
   Scenario: Testing scenario
     Given the following songs
-    | artist           | title                |
+    | 'artist'         | 'title'              |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
    
@@ -419,7 +419,7 @@ void main() {
     }
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
       try {
-        await theFollowingSongs(tester, const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+        await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
       } finally {
         await bddTearDown(tester);
       }
@@ -441,7 +441,7 @@ void main() {
 Feature: Testing feature
   Scenario: Testing scenario
     Given the following {'Good'} songs
-    | artist           | title                |
+    | 'artist'         | 'title'              |
     | 'The Beatles'    | 'Let It Be'          |
     | 'Camel'          | 'Slow yourself down' |
 ''';
@@ -459,7 +459,7 @@ import './step/the_following_songs.dart';
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
-      await theFollowingSongs(tester, 'Good', const bdd.DataTable([[artist, title], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
+      await theFollowingSongs(tester, 'Good', const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
     });
   });
 }
@@ -524,6 +524,47 @@ void main() {
       await theAppIsRunning(tester);
       await iTapAddIconTimes(tester, 25);
       await iSeeResult(tester, const bdd.DataTable([['counter', 'color'], ['25', 'green']]));
+    });
+  });
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
+  test('Scenario Outline with data table variables in examples', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario Outline: Testing visibility of data table in examples
+    Given I load the splash screen
+    Then I verify welcome messages with <authStatus>
+      | 'text'    |
+      | 'Welcome' |
+    Examples:
+      | authStatus  |
+      | 'initial'   |
+''';
+
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_load_the_splash_screen.dart';
+import './step/i_verify_welcome_messages_with.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Outline: Testing visibility of data table in examples ('initial')\'\'\', (tester) async {
+      await iLoadTheSplashScreen(tester);
+      await iVerifyWelcomeMessagesWith(tester, 'initial', const bdd.DataTable([['text'], ['Welcome']]));
     });
   });
 }

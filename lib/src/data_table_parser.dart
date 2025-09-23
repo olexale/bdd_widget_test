@@ -8,8 +8,9 @@ bool hasBddDataTable(List<BddLine> lines) {
         lines[index].type == LineType.step ||
         lines[index].type == LineType.dataTableStep;
     final isNextLineTable = isTable(lines: lines, index: index + 1);
-    final isExamplesFormatted = hasExamplesFormat(bddLine: lines[index]);
-    if (isStep && isNextLineTable && !isExamplesFormatted) {
+    if (isStep &&
+        isNextLineTable &&
+        !isDataTableExamples(lines: lines, index: index)) {
       return true;
     }
   }
@@ -24,9 +25,9 @@ Iterable<BddLine> replaceDataTables(List<BddLine> lines) sync* {
     final isNextLineTable = isTable(lines: lines, index: index + 1);
     if (isStep && isNextLineTable) {
       final table =
-          !hasExamplesFormat(bddLine: lines[index])
-              ? _createCucumberDataTable(lines: lines, index: index)
-              : _createDataTableFromExamples(lines: lines, index: index);
+          isDataTableExamples(lines: lines, index: index)
+              ? _createDataTableFromExamples(lines: lines, index: index)
+              : _createCucumberDataTable(lines: lines, index: index);
       yield* table;
       // skip the parsed table
       while (isTable(lines: lines, index: index + 1)) {
@@ -45,6 +46,39 @@ bool isTable({
 
 bool hasExamplesFormat({required BddLine bddLine}) =>
     examplesRegExp.firstMatch(bddLine.rawLine) != null;
+
+/// Determines if the data table following the step at [index]
+/// is intended to be used as Examples (parameter expansion) rather than
+/// as a cucumber data table argument.
+///
+/// Heuristic: if the step contains placeholders like `<name>` and the first
+/// row of the following table contains headers that include ALL of those
+/// placeholder names, then treat the table as Examples; otherwise, treat it
+/// as a cucumber data table.
+bool isDataTableExamples({
+  required List<BddLine> lines,
+  required int index,
+}) {
+  final step = lines[index];
+  if (!hasExamplesFormat(bddLine: step)) return false;
+  final nextIsTable = isTable(lines: lines, index: index + 1);
+  if (!nextIsTable) return false;
+
+  final placeholders =
+      examplesRegExp
+          .allMatches(step.rawLine)
+          .map((m) => m.group(1)!.trim())
+          .where((e) => e.isNotEmpty)
+          .toSet();
+  if (placeholders.isEmpty) return false;
+
+  // Use the first table row as headers
+  final headers = _createRow(bddLine: lines[index + 1]).toSet();
+  if (headers.isEmpty) return false;
+
+  // Only treat as examples when all placeholders are present in headers
+  return placeholders.every(headers.contains);
+}
 
 List<String> _createRow({
   required BddLine bddLine,
