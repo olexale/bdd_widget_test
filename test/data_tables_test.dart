@@ -542,7 +542,7 @@ Feature: Testing feature
   Scenario Outline: Testing visibility of data table in examples
     Given I load the splash screen
     Then I verify welcome messages with <authStatus>
-      | text      |
+      | 'text'    |
       | 'Welcome' |
     Examples:
       | authStatus  |
@@ -564,7 +564,7 @@ void main() {
   group(\'\'\'Testing feature\'\'\', () {
     testWidgets(\'\'\'Outline: Testing visibility of data table in examples ('initial')\'\'\', (tester) async {
       await iLoadTheSplashScreen(tester);
-      await iVerifyWelcomeMessagesWith(tester, 'initial', const bdd.DataTable([[text], ['Welcome']]));
+      await iVerifyWelcomeMessagesWith(tester, 'initial', const bdd.DataTable([['text'], ['Welcome']]));
     });
   });
 }
