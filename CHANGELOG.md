@@ -1,3 +1,7 @@
+## [2.1.1] - Improve data table step detection
+
+* Fix data table step detection when combined with scenario outline
+
 ## [2.1.0] - Update dependencies
 
 * Update min SDK to 3.7.0
