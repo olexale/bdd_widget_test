@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:bdd_widget_test/src/util/isolate_helper.dart';
+import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 const _defaultTestMethodName = 'testWidgets';
@@ -64,24 +65,34 @@ class GeneratorOptions {
   final List<String> customHeaders;
 }
 
-Future<GeneratorOptions> flattenOptions(GeneratorOptions options) async {
+Future<GeneratorOptions> flattenOptions(
+  GeneratorOptions options, [
+  String? packageRoot,
+]) async {
   if (options.include?.isEmpty ?? true) {
     return options;
   }
   var resultOptions = options;
   for (final include in resultOptions.include!) {
-    final includedOptions = await _readFromPackage(include);
+    final includedOptions = await _readFromPackage(include, packageRoot);
     final newOptions = merge(resultOptions, includedOptions);
-    resultOptions = await flattenOptions(newOptions);
+    resultOptions = await flattenOptions(newOptions, packageRoot);
   }
 
   return resultOptions;
 }
 
-Future<GeneratorOptions> _readFromPackage(String packageUri) async {
-  final uri = await resolvePackageUri(
-    Uri.parse(packageUri),
-  );
+Future<GeneratorOptions> _readFromPackage(
+  String packageUri, [
+  String? packageRoot,
+]) async {
+  final parsed = Uri.parse(packageUri);
+  // A relative include is resolved against the owning package root so it works
+  // under `build_runner --workspace`.
+  if (!parsed.isAbsolute && parsed.scheme.isEmpty && packageRoot != null) {
+    return readFromUri(Uri.file(p.join(packageRoot, packageUri)));
+  }
+  final uri = await resolvePackageUri(parsed);
   if (uri == null) {
     throw Exception('Could not read $packageUri');
   }

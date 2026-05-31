@@ -15,7 +15,7 @@ void main() {
     expect(feature.hookFile, isNotNull);
     expect(
       feature.hookFile?.fileName,
-      'test/sub-feature/feature/./hook/hooks.dart',
+      'test/sub-feature/feature/hook/hooks.dart',
     );
     expect(feature.hookFile?.import, './hook/hooks.dart');
   });

@@ -1,7 +1,8 @@
 import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
-import 'package:bdd_widget_test/src/util/get_test_folder_name.dart';
+import 'package:bdd_widget_test/src/util/get_path_to_step_folder.dart';
+import 'package:bdd_widget_test/src/util/package_root_resolver.dart';
 import 'package:path/path.dart' as p;
 
 abstract class StepFile {
@@ -16,6 +17,7 @@ abstract class StepFile {
     GeneratorOptions generatorOptions,
     String testerTypeTagValue,
     String testerNameTagValue,
+    String? packageRoot,
   ) {
     final file = '${getStepFilename(bddLine.value)}.dart';
 
@@ -37,10 +39,17 @@ abstract class StepFile {
     if (generatorOptions.stepFolder.startsWith('./') ||
         generatorOptions.stepFolder.startsWith('../')) {
       // step folder is relative to feature file
+      final basePath = featureDir.underPackageRoot(packageRoot);
       final import = p
           .join(generatorOptions.stepFolder, file)
           .replaceAll(r'\', '/');
-      final filename = p.join(featureDir, generatorOptions.stepFolder, file);
+      final filename = p.normalize(
+        p.join(
+          basePath,
+          generatorOptions.stepFolder,
+          file,
+        ),
+      );
       return NewStepFile._(
         import,
         filename,
@@ -53,18 +62,22 @@ abstract class StepFile {
       );
     }
 
-    // step folder is relative to test folder
-    final pathToTestFolder = p.relative(
-      getPathToStepFolder(generatorOptions),
-      from: featureDir,
+    final basePath = getPathToStepFolder(
+      generatorOptions,
+      packageRoot: packageRoot,
     );
+    final fromDir = featureDir.underPackageRoot(packageRoot);
+    // step folder is relative to test folder
+    final pathToTestFolder = p.relative(basePath, from: fromDir);
     final import = p
         .join(pathToTestFolder, generatorOptions.stepFolder, file)
         .replaceAll(r'\', '/');
-    final filename = p.join(
-      getPathToStepFolder(generatorOptions),
-      generatorOptions.stepFolder,
-      file,
+    final filename = p.normalize(
+      p.join(
+        basePath,
+        generatorOptions.stepFolder,
+        file,
+      ),
     );
     return NewStepFile._(
       import,
