@@ -18,6 +18,7 @@ class FeatureFile {
     this.includeIntegrationTestBinding = false,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
+    this.packageRoot,
   }) : _lines = _prepareLines(
          input.split('\n').map((line) => line.trim()).map(BddLine.new),
        ),
@@ -27,6 +28,7 @@ class FeatureFile {
                  featureDir: featureDir,
                  package: package,
                  generatorOptions: generatorOptions,
+                 packageRoot: packageRoot,
                )
                : null {
     _testerType = parseCustomTagFromFeatureTagLine(
@@ -57,6 +59,7 @@ class FeatureFile {
                 generatorOptions,
                 _testerType,
                 _testerName,
+                packageRoot,
               ),
             )
             .toList();
@@ -68,6 +71,7 @@ class FeatureFile {
 
   final String featureDir;
   final String package;
+  final String? packageRoot;
 
   final bool includeIntegrationTestImport;
   final bool includeIntegrationTestBinding;

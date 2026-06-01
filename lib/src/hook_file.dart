@@ -1,6 +1,7 @@
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
-import 'package:bdd_widget_test/src/util/get_test_folder_name.dart';
+import 'package:bdd_widget_test/src/util/get_path_to_step_folder.dart';
+import 'package:bdd_widget_test/src/util/package_root_resolver.dart';
 import 'package:path/path.dart' as p;
 
 class HookFile {
@@ -15,6 +16,7 @@ class HookFile {
     required String featureDir,
     required String package,
     required GeneratorOptions generatorOptions,
+    String? packageRoot,
   }) {
     const fileName = '$hookFileName.dart';
     if (generatorOptions.hookFolderName.startsWith('./') ||
@@ -22,9 +24,18 @@ class HookFile {
       return HookFile._create(
         featureDir: featureDir,
         package: package,
-        fileName: p.join(featureDir, generatorOptions.hookFolderName, fileName),
+        fileName: p.normalize(
+          p.join(
+            featureDir.underPackageRoot(packageRoot),
+            generatorOptions.hookFolderName,
+            fileName,
+          ),
+        ),
         import: p
-            .join(generatorOptions.hookFolderName, fileName)
+            .join(
+              generatorOptions.hookFolderName,
+              fileName,
+            )
             .replaceAll(r'\', '/'),
       );
     }
@@ -32,14 +43,19 @@ class HookFile {
     return HookFile._create(
       featureDir: featureDir,
       package: package,
-      fileName: p.join(
-        getPathToStepFolder(generatorOptions),
-        generatorOptions.hookFolderName,
-        fileName,
+      fileName: p.normalize(
+        p.join(
+          getPathToStepFolder(generatorOptions, packageRoot: packageRoot),
+          generatorOptions.hookFolderName,
+          fileName,
+        ),
       ),
       import: p
           .join(
-            p.relative(getPathToStepFolder(generatorOptions), from: featureDir),
+            p.relative(
+              getPathToStepFolder(generatorOptions, packageRoot: packageRoot),
+              from: featureDir.underPackageRoot(packageRoot),
+            ),
             generatorOptions.hookFolderName,
             fileName,
           )

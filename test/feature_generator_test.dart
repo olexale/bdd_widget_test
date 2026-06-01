@@ -77,17 +77,27 @@ relativeToTestFolder: false
       ..createSync(recursive: true)
       ..writeAsStringSync('dummy');
 
+    // Builder uses the virtual path 'test/builder_scenarios/$scenario' as featureDir
+    const featureDir =
+        'test/builder_scenarios/existing_step_outside_test_folder';
+    final stepRelPath = p.relative(dummyStepPath, from: featureDir);
+    final expectedImportPath = p.join(
+      '.',
+      p.dirname(stepRelPath),
+      'the_app_is_running.dart',
+    );
+
     // note: the import is so weird because p.relative() can not
     // find intersection between two paths (however, somehow it works)
     // not a problem in the real world
-    const expected =
+    final expected =
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
         "import 'package:flutter/material.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
-        "import './../../../../../../../../my_steps/the_app_is_running.dart';\n"
+        "import '$expectedImportPath';\n"
         '\n'
         'void main() {\n'
         "  group('''Testing feature''', () {\n"

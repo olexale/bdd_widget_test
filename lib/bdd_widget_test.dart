@@ -5,6 +5,7 @@ import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
 import 'package:bdd_widget_test/src/util/dart_formatter.dart';
 import 'package:bdd_widget_test/src/util/fs.dart';
+import 'package:bdd_widget_test/src/util/package_root_resolver.dart';
 import 'package:build/build.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
@@ -131,25 +132,32 @@ class FeatureBuilder implements Builder {
 
   @override
   Future<void> build(BuildStep buildStep) async {
-    final options = await _prepareOptions();
-
     final inputId = buildStep.inputId;
+    final packageName = inputId.package;
+    final packageRoot = await resolvePackageRoot(packageName);
+    final options = await _prepareOptions(packageRoot);
+
     final contents = await buildStep.readAsString(inputId);
 
     final featureDir = p.dirname(inputId.path);
     final isIntegrationTest =
         inputId.pathSegments.contains('integration_test') &&
-        _hasIntegrationTestDevDependency();
+        _hasIntegrationTestDevDependency(packageRoot);
 
     final feature = FeatureFile(
       featureDir: featureDir,
-      package: inputId.package,
-      existingSteps: getExistingStepSubfolders(featureDir, options),
+      package: packageName,
+      existingSteps: getExistingStepSubfolders(
+        featureDir,
+        options,
+        packageRoot,
+      ),
       input: contents,
       generatorOptions: options,
       includeIntegrationTestImport: isIntegrationTest,
       includeIntegrationTestBinding:
           isIntegrationTest && generatorOptions.includeIntegrationTestBinding,
+      packageRoot: packageRoot,
     );
 
     final featureDart = inputId.changeExtension('_test.dart');
@@ -165,21 +173,30 @@ class FeatureBuilder implements Builder {
 
     final hookFile = feature.hookFile;
     if (hookFile != null) {
-      await _createFileRecursively(hookFile.fileName, hookFileContent);
+      await _createFileRecursively(
+        hookFile.fileName,
+        formatDartCode(hookFileContent),
+      );
     }
   }
 
-  Future<GeneratorOptions> _prepareOptions() async {
+  Future<GeneratorOptions> _prepareOptions(String? packageRoot) async {
+    final bddOptionsPath = 'bdd_options.yaml'.underPackageRoot(packageRoot);
+
     final fileOptions =
-        fs.file('bdd_options.yaml').existsSync()
-            ? readFromUri(Uri.file('bdd_options.yaml'))
+        _fileExists(bddOptionsPath)
+            ? readFromUri(Uri.file(bddOptionsPath))
             : null;
     final mergedOptions =
         fileOptions != null
             ? merge(generatorOptions, fileOptions)
             : generatorOptions;
-    final options = await flattenOptions(mergedOptions);
+    final options = await flattenOptions(mergedOptions, packageRoot);
     return options;
+  }
+
+  bool _fileExists(String path) {
+    return fs.file(path).existsSync();
   }
 
   Future<void> _createFileRecursively(String filename, String content) async {
@@ -191,9 +208,12 @@ class FeatureBuilder implements Builder {
     await file.writeAsString(content);
   }
 
-  bool _hasIntegrationTestDevDependency() {
-    if (fs.file('pubspec.yaml').existsSync()) {
-      final fileContent = fs.file('pubspec.yaml').readAsStringSync();
+  bool _hasIntegrationTestDevDependency(String? packageRoot) {
+    const pubspecFileName = 'pubspec.yaml';
+    final pubspecPath = pubspecFileName.underPackageRoot(packageRoot);
+
+    if (_fileExists(pubspecPath)) {
+      final fileContent = fs.file(pubspecPath).readAsStringSync();
       final pubspec = loadYaml(fileContent) as YamlMap;
       final devDependencies = pubspec['dev_dependencies'] as YamlMap?;
       return devDependencies?.containsKey('integration_test') ?? false;
