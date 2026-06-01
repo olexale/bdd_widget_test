@@ -1,3 +1,7 @@
+## [2.1.4] - Dart Workspace fix
+
+* Add package root resolution and update step folder handling for workspace builds
+
 ## [2.1.3] - Data table special characters fix
 
 * Make placeholder replacement function more context-aware to avoid replacing special characters inside data table cells
