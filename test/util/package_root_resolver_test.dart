@@ -4,18 +4,17 @@ import 'package:bdd_widget_test/src/util/package_root_resolver.dart';
 import 'package:test/test.dart';
 
 void main() {
-  // Real workspace resolution (and the workspace/preloaded-config path) is
-  // covered end-to-end by workspace_e2e_test.dart, which injects a
-  // `preloadedPackageConfig` and so also exercises `_resolvePackageUri` for the
-  // happy `file:` case. This file only covers the defensive fallback when the
-  // package config can't be parsed.
+  // Real workspace resolution is covered end-to-end by workspace_e2e_test.dart,
+  // which injects a `preloadedPackageConfig` and so exercises both the cached
+  // early-return in `resolvePackageRoot` (repeated calls for the same package
+  // name) and `_resolvePackageUri` for the happy `file:` case. This file only
+  // covers the defensive fallback when the package config can't be parsed.
   //
-  // COVERAGE GAPS (intentionally not unit-tested here):
-  //  - the cached early-return in `resolvePackageRoot` (second call for the
-  //    same package name returns the memoized value);
+  // NOT exercised by the suite (and not required by the coverage gate):
   //  - the real `findPackageConfig(Directory.current)` discovery, which would
   //    require a fixture workspace on the real filesystem;
-  //  - `_resolvePackageUri` returning null for a non-`file` scheme root.
+  //  - `_resolvePackageUri` returning null for a non-`file` scheme root (the VM
+  //    coverage instrumentation does not emit that branch as a coverable line).
   test('returns null when package_config.json cannot be parsed', () async {
     final tempDir = Directory.systemTemp.createTempSync('bdd_pkg_root_');
     final originalCwd = Directory.current;
