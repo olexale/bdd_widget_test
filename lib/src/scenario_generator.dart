@@ -44,7 +44,7 @@ void parseScenario(
     sb.writeln('$indent    rethrow;');
   }
 
-  if (hasTearDown | hasHooks) {
+  if (hasTearDown || hasHooks) {
     sb.writeln('$indent  } finally {');
     if (hasTearDown) {
       sb.writeln('$indent    await $tearDownMethodName($testerName);');

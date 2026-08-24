@@ -43,9 +43,13 @@ const _afterScenarioName = '__bdd_after__';
 /// `@testMethodName: foo` are normalised to a whitespace-free form, `After:`
 /// blocks are rewritten, and files holding several features are parsed once
 /// per feature. The pre-pass only ever replaces a line with another line of
-/// its own, so reported error positions match the original file.
+/// its own, and leaves indentation alone, so reported error positions match
+/// the original file.
 FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
-  final source = input.split('\n').map((line) => line.trim()).toList();
+  final raw = input.split('\n');
+  // Keyword detection, header lines and tag lines all work off the trimmed
+  // text; only the lines handed to the parser keep their original indentation.
+  final source = raw.map((line) => line.trim()).toList();
   final dialect = _dialectOf(source);
   final featureMarkers = dialect.feature.map((keyword) => '$keyword:');
   final stepMarkers = [
@@ -77,8 +81,8 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
   final features = <Feature>[];
 
   final normalised = [
-    for (var i = 0; i < source.length; i++)
-      if (headerIndices.contains(i)) '' else _normalise(source[i]),
+    for (var i = 0; i < raw.length; i++)
+      if (headerIndices.contains(i)) '' else _normalise(raw[i]),
   ];
 
   final starts = _chunkStarts(source, featureLines);
@@ -86,7 +90,7 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
     final end = i + 1 < starts.length ? starts[i + 1] : source.length;
     final parsed = _parse(normalised, starts[i], end, languageLines, uri);
     if (parsed != null) {
-      _rejectStepsInDescriptions(parsed, source, uri, stepMarkers);
+      _rejectStepsInDescriptions(parsed, source, raw, uri, stepMarkers);
       tagLines.addAll(_tagLines(parsed.tags, source));
       features.add(_toFeature(parsed, source));
     }
@@ -158,6 +162,7 @@ messages.Feature? _parse(
 void _rejectStepsInDescriptions(
   messages.Feature feature,
   List<String> source,
+  List<String> raw,
   String uri,
   List<String> stepMarkers,
 ) {
@@ -168,9 +173,10 @@ void _rejectStepsInDescriptions(
         continue;
       }
       final index = source.indexOf(step);
+      final column = index == -1 ? 0 : raw[index].indexOf(step) + 1;
       throw FormatException(
         'Failed to parse $uri:\n'
-        '  ${index == -1 ? '' : '(${index + 1}:1): '}'
+        '  ${index == -1 ? '' : '(${index + 1}:$column): '}'
         "step '$step' is not part of a scenario — "
         'check the keyword above it',
       );
@@ -195,20 +201,26 @@ Iterable<String> _descriptions(messages.Feature feature) sync* {
   }
 }
 
+/// Rewrites one line into something the official parser accepts. Leading
+/// whitespace is preserved so error positions still point at the original
+/// column.
 String _normalise(String line) {
-  if (line.startsWith('@')) {
+  final trimmed = line.trim();
+  final indent = line.substring(0, line.length - line.trimLeft().length);
+  if (trimmed.startsWith('@')) {
     // A tag may not contain whitespace, so `@testMethodName: testGoldens`
-    // becomes `@testMethodName:testGoldens`. The original line is what ends up
-    // in `BddLine.rawLine`, so this stays invisible to the generators.
-    return line
+    // becomes `@testMethodName:testGoldens`. Generators never see this form:
+    // they read the untouched line out of the original source, via [_tagLines].
+    final tags = trimmed
         .split('@')
         .map((tag) => tag.replaceAll(RegExp(r'\s+'), ''))
         .where((tag) => tag.isNotEmpty)
         .map((tag) => '@$tag')
         .join(' ');
+    return '$indent$tags';
   }
-  if (line.startsWith(_afterMarker)) {
-    return 'Scenario: $_afterScenarioName';
+  if (trimmed.startsWith(_afterMarker)) {
+    return '${indent}Scenario: $_afterScenarioName';
   }
   return line;
 }

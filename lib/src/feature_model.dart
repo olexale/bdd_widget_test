@@ -10,7 +10,8 @@ class FeatureFileModel {
   /// generated file untouched.
   final List<String> header;
 
-  /// Raw tag lines above the first `Feature:`, e.g. `@testMethodName: foo`.
+  /// Raw feature-level tag lines, e.g. `@testMethodName: foo` — the ones above
+  /// a `Feature:` keyword, gathered across every feature in the file.
   final List<String> tagLines;
 
   final List<Feature> features;
