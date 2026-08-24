@@ -1,5 +1,5 @@
-import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:bdd_widget_test/src/data_table_parser.dart';
+import 'package:bdd_widget_test/src/feature_model.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/hook_file.dart';
 import 'package:bdd_widget_test/src/scenario_generator.dart';
@@ -9,7 +9,7 @@ import 'package:bdd_widget_test/src/util/common.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
 
 String generateFeatureDart(
-  List<BddLine> lines,
+  FeatureFileModel model,
   List<StepFile> steps,
   String testMethodName,
   String testerType,
@@ -28,17 +28,11 @@ String generateFeatureDart(
   var testerTypeOverride = testerType;
   var testerNameOverride = testerName;
 
-  final linesBeforeFeature =
-      lines.takeWhile((value) => value.type != LineType.feature).toList();
-
-  final tagLines = linesBeforeFeature.where(
-    (line) => line.type == LineType.tag,
-  );
   final tags = <String>[];
-  for (final line in tagLines) {
-    final methodName = parseCustomTag(line.rawLine, testMethodNameTag);
-    final parsedTesterType = parseCustomTag(line.rawLine, testerTypeTag);
-    final parsedTesterName = parseCustomTag(line.rawLine, testerNameTag);
+  for (final line in model.tagLines) {
+    final methodName = parseCustomTag(line, testMethodNameTag);
+    final parsedTesterType = parseCustomTag(line, testerTypeTag);
+    final parsedTesterName = parseCustomTag(line, testerNameTag);
 
     if (methodName.isNotEmpty ||
         parsedTesterType.isNotEmpty ||
@@ -47,20 +41,16 @@ String generateFeatureDart(
       if (parsedTesterType.isNotEmpty) testerTypeOverride = parsedTesterType;
       if (parsedTesterName.isNotEmpty) testerNameOverride = parsedTesterName;
     } else {
-      tags.add(line.rawLine.substring('@'.length));
+      tags.add(line.substring('@'.length));
     }
   }
   if (tags.isNotEmpty) {
     sb.writeln("@Tags(['${tags.join("', '")}'])");
   }
 
-  for (final line in linesBeforeFeature.where(
-    (line) => line.type != LineType.tag,
-  )) {
-    sb.writeln(line.rawLine);
-  }
+  model.header.forEach(sb.writeln);
 
-  if (hasBddDataTable(lines)) {
+  if (model.hasDataTable) {
     sb.writeln("import 'package:bdd_widget_test/data_table.dart' as bdd;");
   }
 
@@ -108,62 +98,73 @@ String generateFeatureDart(
     sb.writeln();
   }
 
-  final features = splitWhen<BddLine>(
-    lines.skipWhile((value) => value.type != LineType.feature), // skip header
-    (e) => e.type == LineType.feature,
-  );
+  for (final feature in model.features) {
+    sb.writeln("  group('''${feature.title}''', () {");
 
-  for (final feature in features) {
-    sb.writeln("  group('''${feature.first.value}''', () {");
-
-    final hasBackground = _parseBackground(
+    final hasBackground = _writeSetup(
       sb,
-      feature,
+      feature.background,
+      setUpMethodName,
       testerTypeOverride,
       testerNameOverride,
     );
-    final hasAfter = _parseAfter(
+    final hasAfter = _writeSetup(
       sb,
-      feature,
+      feature.after,
+      tearDownMethodName,
       testerTypeOverride,
       testerNameOverride,
     );
+    final featureSetUps = [if (hasBackground) setUpMethodName];
 
     if (hookFile != null) {
-      _parseBeforeHook(
+      _parseBeforeHook(sb, hookClass);
+      _parseAfterHook(sb, hookClass);
+    }
+
+    for (final scenario in feature.scenarios) {
+      _writeScenario(
         sb,
-        hookClass,
-        testerTypeOverride,
-        testerNameOverride,
-      );
-      _parseAfterHook(
-        sb,
-        hookClass,
-        testerTypeOverride,
+        scenario,
+        featureSetUps,
+        hasAfter,
+        hookFile != null,
+        featureTestMethodNameOverride,
         testerNameOverride,
       );
     }
 
-    _parseFeature(
-      sb,
-      feature,
-      hasBackground,
-      hasAfter,
-      hookFile != null,
-      featureTestMethodNameOverride,
-      testerNameOverride,
-    );
+    for (final rule in feature.rules) {
+      sb.writeln("    group('''${rule.title}''', () {");
+      final hasRuleBackground = _writeSetup(
+        sb,
+        rule.background,
+        ruleSetUpMethodName,
+        testerTypeOverride,
+        testerNameOverride,
+        indent: '      ',
+      );
+      for (final scenario in rule.scenarios) {
+        _writeScenario(
+          sb,
+          scenario,
+          [...featureSetUps, if (hasRuleBackground) ruleSetUpMethodName],
+          hasAfter,
+          hookFile != null,
+          featureTestMethodNameOverride,
+          testerNameOverride,
+          indent: '      ',
+        );
+      }
+      sb.writeln('    });');
+    }
+    sb.writeln('  });');
   }
   sb.writeln('}');
   return sb.toString();
 }
 
-void _parseAfterHook(
-  StringBuffer sb,
-  String hookClass,
-  String testerType,
-  String testerName,
-) {
+void _parseAfterHook(StringBuffer sb, String hookClass) {
   sb.writeln(
     '    Future<void> $tearDownHookName(String title, bool $testSuccessVariableName, [List<String>? tags]) async {',
   );
@@ -173,12 +174,7 @@ void _parseAfterHook(
   sb.writeln('    }');
 }
 
-void _parseBeforeHook(
-  StringBuffer sb,
-  String hookClass,
-  String testerType,
-  String testerName,
-) {
+void _parseBeforeHook(StringBuffer sb, String hookClass) {
   sb.writeln(
     '    Future<void> $setUpHookName(String title, [List<String>? tags]) async {',
   );
@@ -203,167 +199,75 @@ void _parseSetupAllHook(
   sb.writeln('  });');
 }
 
-bool _parseBackground(
+/// Writes a `Background:` or `After:` section as a function the scenarios
+/// call, and reports whether there was one to write.
+bool _writeSetup(
   StringBuffer sb,
-  List<BddLine> lines,
-  String testerType,
-  String testerName,
-) => _parseSetup(
-  sb,
-  lines,
-  LineType.background,
-  setUpMethodName,
-  testerType,
-  testerName,
-);
-
-bool _parseAfter(
-  StringBuffer sb,
-  List<BddLine> lines,
-  String testerType,
-  String testerName,
-) => _parseSetup(
-  sb,
-  lines,
-  LineType.after,
-  tearDownMethodName,
-  testerType,
-  testerName,
-);
-
-bool _parseSetup(
-  StringBuffer sb,
-  List<BddLine> lines,
-  LineType elementType,
+  List<Step> steps,
   String title,
   String testerType,
-  String testerName,
-) {
-  final flattenDataTables =
-      replaceDataTables(
-        lines.skipWhile((line) => line.type == LineType.tag).toList(),
-      ).toList();
-  var offset = flattenDataTables.indexWhere(
-    (element) => element.type == elementType,
-  );
-  if (offset != -1) {
-    sb.writeln('    Future<void> $title($testerType $testerName) async {');
-    offset++;
-    while (flattenDataTables[offset].type == LineType.step ||
-        flattenDataTables[offset].type == LineType.dataTableStep) {
-      sb.writeln(
-        '      await ${getStepMethodCall(flattenDataTables[offset].value, testerName)};',
-      );
-      offset++;
-    }
-    sb.writeln('    }');
+  String testerName, {
+  String indent = '    ',
+}) {
+  if (steps.isEmpty) {
+    return false;
   }
-  return offset != -1;
+  sb.writeln('${indent}Future<void> $title($testerType $testerName) async {');
+  for (final step in resolveSteps(steps)) {
+    sb.writeln('$indent  await ${getStepMethodCall(step, testerName)};');
+  }
+  sb.writeln('$indent}');
+  return true;
 }
 
-void _parseFeature(
+void _writeScenario(
   StringBuffer sb,
-  List<BddLine> feature,
-  bool hasSetUp,
+  Scenario scenario,
+  List<String> setUps,
   bool hasTearDown,
   bool hasHooks,
   String testMethodName,
-  String testerName,
-) {
-  final scenarios =
-      _splitScenarios(
-        feature.skipWhile((value) => !_isNewScenario(value.type)).toList(),
-      ).toList();
-  for (final scenario in scenarios) {
-    final scenarioTagLines =
-        scenario.where((line) => line.type == LineType.tag).toList();
-    final scenarioTestMethodName = parseCustomTagFromFeatureTagLine(
-      scenarioTagLines,
-      testMethodName,
-      testMethodNameTag,
+  String testerName, {
+  String indent = '    ',
+}) {
+  final scenarioTestMethodName = parseCustomTagValue(
+    scenario.tagLines,
+    testMethodName,
+    testMethodNameTag,
+  );
+
+  final scenarioParams = parseCustomTagValue(
+    scenario.tagLines,
+    '',
+    scenarioParamsTag,
+  );
+
+  final tags = scenario.tagLines
+      .where(
+        (tag) =>
+            !tag.startsWith(testMethodNameTag) &&
+            !tag.startsWith(scenarioParamsTag),
+      )
+      .map((tag) => tag.substring('@'.length))
+      .toList();
+
+  final runs = scenario.isOutline
+      ? expandOutline(scenario)
+      : [(title: scenario.title, steps: scenario.steps)];
+
+  for (final run in runs) {
+    parseScenario(
+      sb,
+      run.title,
+      resolveSteps(run.steps),
+      setUps,
+      hasTearDown,
+      hasHooks,
+      scenarioTestMethodName,
+      testerName,
+      tags,
+      scenarioParams,
+      indent: indent,
     );
-
-    final scenarioParams = parseCustomTagFromFeatureTagLine(
-      scenarioTagLines,
-      '',
-      scenarioParamsTag,
-    );
-
-    final flattenDataTables =
-        replaceDataTables(
-          scenario.skipWhile((line) => line.type == LineType.tag).toList(),
-        ).toList();
-    final scenariosToParse =
-        flattenDataTables.first.type == LineType.scenario
-            ? [flattenDataTables]
-            : generateScenariosFromScenarioOutline(flattenDataTables);
-
-    for (final s in scenariosToParse) {
-      parseScenario(
-        sb,
-        s.first.value,
-        s
-            .where(
-              (e) =>
-                  e.type == LineType.step || e.type == LineType.dataTableStep,
-            )
-            .toList(),
-        hasSetUp,
-        hasTearDown,
-        hasHooks,
-        scenarioTestMethodName,
-        testerName,
-        scenarioTagLines
-            .where(
-              (tag) =>
-                  !tag.rawLine.startsWith(testMethodNameTag) &&
-                  !tag.rawLine.startsWith(scenarioParamsTag),
-            )
-            .map((line) => line.rawLine.substring('@'.length))
-            .toList(),
-        scenarioParams,
-      );
-    }
-  }
-  sb.writeln('  });');
-}
-
-bool _isNewScenario(LineType type) =>
-    _isScenarioKindLine(type) || type == LineType.tag;
-
-bool _isScenarioKindLine(LineType type) =>
-    type == LineType.scenario || type == LineType.scenarioOutline;
-
-List<List<T>> splitWhen<T>(Iterable<T> original, bool Function(T) predicate) =>
-    original.fold(<List<T>>[], (previousValue, element) {
-      if (predicate(element)) {
-        previousValue.add([element]);
-      } else {
-        previousValue.last.add(element);
-      }
-      return previousValue;
-    });
-
-Iterable<List<BddLine>> _splitScenarios(List<BddLine> lines) sync* {
-  for (var current = 0; current < lines.length;) {
-    if (_isScenarioKindLine(lines[current].type) ||
-        lines[current].type == LineType.tag) {
-      final scenario = _parseScenario(lines.sublist(current)).toList();
-      current += scenario.length;
-      yield scenario;
-    }
-  }
-}
-
-Iterable<BddLine> _parseScenario(List<BddLine> lines) sync* {
-  var isNewScenario = true;
-  for (final line in lines) {
-    if (line.type == LineType.step || line.type == LineType.dataTableStep) {
-      isNewScenario = false;
-    }
-    if (!isNewScenario && _isNewScenario(line.type)) {
-      return;
-    }
-    yield line;
   }
 }

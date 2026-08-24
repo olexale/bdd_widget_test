@@ -20,7 +20,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/cupertino.dart';
 
 ''';
-    const expectedFeatureDart = '''
+    const expectedFeatureDart =
+        '''
 $expectedHeader$additionalLines${expectedImports}import './step/the_app_is_running.dart';
 
 void main() {
@@ -38,5 +39,26 @@ void main() {
       input: additionalLines + minimalFeatureFile,
     );
     expect(feature.dartContent, expectedFeatureDart);
+  });
+
+  test('lines before feature survive a leading blank line', () {
+    const featureFile = '''
+
+import 'package:flutter/cupertino.dart';
+
+Feature: Testing feature
+    Scenario: Testing scenario
+        Given the app is running
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(
+      feature.dartContent,
+      contains("import 'package:flutter/cupertino.dart';"),
+    );
   });
 }

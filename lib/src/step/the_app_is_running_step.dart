@@ -5,7 +5,8 @@ class TheAppInRunningStep implements BddStep {
   final String package;
 
   @override
-  String get content => '''
+  String get content =>
+      '''
 import 'package:flutter_test/flutter_test.dart';
 import 'package:$package/main.dart';
 

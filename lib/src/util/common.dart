@@ -1,4 +1,3 @@
-import 'package:bdd_widget_test/src/bdd_line.dart';
 import 'package:collection/collection.dart';
 
 /// [parseCustomTag] Returns custom tag value or empty string if not found.
@@ -10,21 +9,22 @@ String parseCustomTag(String rawLine, String customTag) {
   return '';
 }
 
-/// [parseCustomTagFromFeatureTagLine] returns tags of [customTag] from the feature tag lines
-String parseCustomTagFromFeatureTagLine(
-  List<BddLine> featureTagLines,
+/// [parseCustomTagValue] returns the value of [customTag] from [tagLines],
+/// or [defaultTagValue] when no line carries that tag.
+String parseCustomTagValue(
+  Iterable<String> tagLines,
   String defaultTagValue,
   String customTag,
 ) {
   var tagType = defaultTagValue;
 
-  final customTagLine = featureTagLines.firstWhereOrNull(
-    (line) => line.rawLine.startsWith(customTag),
+  final customTagLine = tagLines.firstWhereOrNull(
+    (line) => line.startsWith(customTag),
   );
 
   if (customTagLine != null) {
     final tagOverride = parseCustomTag(
-      customTagLine.rawLine,
+      customTagLine,
       customTag,
     );
     if (tagOverride.isNotEmpty) {

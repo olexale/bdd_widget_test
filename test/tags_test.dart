@@ -112,4 +112,48 @@ void main() {
     );
     expect(feature.dartContent, expectedFeatureDart);
   });
+
+  test('Feature Tags on a later feature in the same file', () {
+    const featureFile = '''
+Feature: First testing feature
+  Scenario: First testing scenario
+    Given the app is running
+
+@beta
+Feature: Second testing feature
+  Scenario: Second testing scenario
+    Given the app is running
+''';
+
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@Tags(['beta'])
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/the_app_is_running.dart';
+
+void main() {
+  group(\'\'\'First testing feature\'\'\', () {
+    testWidgets(\'\'\'First testing scenario\'\'\', (tester) async {
+      await theAppIsRunning(tester);
+    });
+  });
+  group(\'\'\'Second testing feature\'\'\', () {
+    testWidgets(\'\'\'Second testing scenario\'\'\', (tester) async {
+      await theAppIsRunning(tester);
+    });
+  });
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
 }

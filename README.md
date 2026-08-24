@@ -77,8 +77,10 @@ Each feature file must have one or more `Feature:`s. Features become test groups
 
 Each feature group must have one or more `Scenario:`s (or `Example:`s). Scenario become widget tests.
 
-Each scenario must have one or more lines with steps. Each of them must start with `Given`, `When`, `Then`, `And`, or `But` keywords. Conventionally `Given` steps are used for test arrangements, `When` — for interaction, `Then` — for asserts. Keywords are not taken into account when looking for a step definition.
+Each scenario must have one or more lines with steps. Each of them must start with `Given`, `When`, `Then`, `And`, `But`, or `*` keywords. Conventionally `Given` steps are used for test arrangements, `When` — for interaction, `Then` — for asserts. Keywords are not taken into account when looking for a step definition.
 You can have as many steps as you like, but it's recommended you keep the number at 3-5 per scenario. Having too many steps will cause it to lose it’s expressive power as specification and documentation. 
+
+Feature files are parsed with [`cucumber_gherkin`](https://pub.dev/packages/cucumber_gherkin), the official Dart Gherkin parser, so a file that is not valid Gherkin fails the build with the offending line and column rather than being silently ignored. A mistyped keyword, stray text between scenarios, or a second `Background:` in the same feature are all reported instead of quietly producing a test file that tests less than it appears to.
 
 The `Scenario Outline` keyword can be used to run the same `Scenario` multiple times, with different combinations of values.
 
@@ -101,6 +103,23 @@ Feature: Sample
     |    1  |   '1'  |
     |   42  |  '42'  |
 ```
+
+The `Rule` keyword groups related scenarios inside a feature. Each rule becomes a nested test group, and a rule may have a `Background` of its own that applies only to the scenarios it contains — it runs after the feature's `Background`, if there is one. Tags on a rule are inherited by its scenarios.
+```gherkin
+Feature: Counter
+
+  Background:
+    Given the app is running
+
+  Rule: The counter never goes below zero
+
+    Background:
+      Given the counter is {0}
+
+    Scenario: Minus button is disabled at zero
+      Then I see disabled {'-'} elevated button
+```
+Here `Minus button is disabled at zero` runs the feature background first, then the rule background, then its own steps.
 
 If you need to have the same step but with different parameters, you may use a `DataTable`-like syntax:
 ```gherkin
@@ -157,6 +176,21 @@ Use the `DataTable` parameter to get access to the data:
 final dataAsList = dataTable.asLists(); // [['artist', 'name'], ['The Doors', 'Riders on the storm'], ...]
 final dataAsMaps = dataTable.asMaps(); // [{'artist: 'The Doors', 'name: 'Riders on the storm'}, ...]
 ```
+## Other languages
+
+Gherkin keywords are available in 80 languages. Declare the language on the first line of the feature file with a `# language:` header, and write the keywords in that language:
+```gherkin
+# language: fr
+Fonctionnalité: Compteur
+
+  Contexte:
+    Soit the app is running
+
+  Scénario: La valeur initiale est 0
+    Alors I see {'0'} text
+```
+Step text itself is still whatever you write — only the keywords are translated. See the [full list of dialects](https://cucumber.io/docs/gherkin/languages/) for the keywords of each language.
+
 ## Tags
 
 Tags are used to filter scenarios in the test runner. Here are some examples:
@@ -180,6 +214,37 @@ To exclude tests that are marked with `@slow` tag, you can use the following com
 ```sh
 flutter test --exclude-tags slow
 ```
+
+## Gherkin standard
+
+Feature files are parsed by [`cucumber_gherkin`](https://pub.dev/packages/cucumber_gherkin), the official Dart Gherkin parser, so anything valid in Gherkin is valid here — including `Rule:` and the keywords of all 80 languages. Doc strings (`"""`) are parsed but currently ignored.
+
+On top of the standard, this package adds a few extensions that make Flutter testing easier. They are not part of Gherkin, so other Cucumber tooling will not read them the way this package does:
+
+| Extension | What other Gherkin tools do with it |
+| --- | --- |
+| `After:` sections | Read as feature description text — **the steps are silently dropped** |
+| A table under a step, used to repeat that step | Read as a `DataTable` argument, so **the step runs once instead of once per row** |
+| Dart lines above `Feature:` | Parse error |
+| Tags containing a space, e.g. `@testMethodName: testGoldens` | Parse error — a tag may not contain whitespace |
+| Several `Feature:`s in one file | Parse error — Gherkin allows one feature per file |
+| `{}` parameters, e.g. `{'0'}` | Nothing — to a Gherkin parser these are ordinary step text |
+
+The first two are worth singling out: they produce no error anywhere, the file just means something different.
+
+### Keeping your feature files canonical
+
+If your feature files need to stay readable by other Cucumber tooling — a specification shared with a backend suite, a Gherkin editor plugin, a reporting tool — every extension except `{}` has a standard alternative this package already supports:
+
+| Instead of | Use |
+| --- | --- |
+| `After:` | [Hooks](#hooks) — `Hooks.afterEach` runs after every scenario, failures included |
+| Dart lines above `Feature:` | The [`customHeaders` option](#how-to-add-custom-headers-to-generated-files) in `build.yaml` |
+| `@testMethodName: testGoldens` | `@testMethodName:testGoldens` — same meaning, no space, a valid tag |
+| Several `Feature:`s in one file | One feature per file |
+| A table under a step | Write the repeated steps out in full, as shown [above](#feature-file-syntax) |
+
+`{}` parameters need no replacement. A Gherkin parser treats them as part of the step text, so a feature file that uses them is still a valid Gherkin document — only your step definitions are specific to this package.
 
 ## Predefined steps
 

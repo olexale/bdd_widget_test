@@ -1,3 +1,36 @@
+## [3.0.0] - Official Gherkin parser
+
+Feature files are now parsed by [`cucumber_gherkin`](https://pub.dev/packages/cucumber_gherkin), the
+official Dart Gherkin parser, instead of the hand-written line scanner. All non-standard syntax this
+package supports keeps working unchanged: `After:` sections, raw Dart lines above `Feature:`,
+`@testMethodName: value` style tags, and several features in one file.
+
+* **BREAKING CHANGE**: Malformed feature files now fail the build instead of being silently accepted.
+  Previously the unrecognised lines were dropped and a test file was generated anyway — usually one
+  that quietly tested less than it looked like it did. The build now stops on stray text inside a
+  feature, a mistyped scenario keyword (`Scenrio:`) whose steps were left orphaned, a mistyped step
+  keyword, and a second `Background:` in the same feature. Errors report the line and column.
+* **BREAKING CHANGE**: `Scenario Outline` test names no longer carry a fragment of the keyword.
+  `Scenario Outline: eating` now generates `testWidgets('''eating (12, 5, 7)''')` rather than
+  `testWidgets('''Outline: eating (12, 5, 7)''')`. Update any `--plain-name` filters, IDE run
+  configurations, or hooks that match on the scenario title — `Hooks.beforeEach` and
+  `Hooks.afterEach` receive the new value.
+* **BREAKING CHANGE**: Steps written with the `*` keyword now generate step calls. The line was
+  previously unrecognised and dropped, so such scenarios produced an empty test body. Those tests
+  now run their steps and may fail.
+* **BREAKING CHANGE**: Minimum Dart SDK is now 3.8.0.
+* Add support for `Rule:`. Each rule becomes a nested `group()`, and a rule's `Background:` applies
+  only to the scenarios inside it, running after the feature's own background. Tags on a rule are
+  inherited by the scenarios it contains. Previously the `Rule:` line was ignored and its background
+  leaked onto unrelated scenarios.
+* Add support for localised feature files. All 80 Gherkin dialects work via the `# language: fr`
+  header, including localised keywords for features, backgrounds, scenario outlines and examples.
+* Fix a scenario outline with more than one `Examples:` block generating a spurious test case from
+  the second block's header row.
+* Fix lines above `Feature:` being dropped when the feature file starts with a blank line, which
+  silently removed custom imports from the generated file.
+* Add `cucumber_gherkin` and `cucumber_messages` dependencies; drop the unused `build_config`.
+
 ## [2.1.4] - Dart Workspace fix
 
 * Add package root resolution and update step folder handling for workspace builds

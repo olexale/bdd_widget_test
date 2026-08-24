@@ -76,19 +76,17 @@ void main() {
     expect(feature.dartContent, expectedFeatureDart);
   });
 
-  test('Comments after first feature are ignored', () {
+  test('Description lines under a keyword are ignored', () {
     const featureFile = '''
 Feature: Testing feature
-  This is a comment
+  This is a description
   Scenario: Testing scenario
+    This is a description too
     Given the app is running
 
-This is another comment
 Feature: Testing feature 2
-  This is a comment
   Scenario: Testing scenario
     Given the app is running
-    This is a comment too
 ''';
 
     const expectedFeatureDart = '''
@@ -120,5 +118,61 @@ void main() {
       input: featureFile,
     );
     expect(feature.dartContent, expectedFeatureDart);
+  });
+
+  test('A line that belongs nowhere is reported, not dropped', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given the app is running
+
+This line belongs nowhere
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('test.feature'),
+            contains('(5:1)'),
+            contains('This line belongs nowhere'),
+          ),
+        ),
+      ),
+    );
+  });
+
+  test('A mistyped keyword is reported, not dropped', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenrio: Testing scenario
+    Given the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('(3:1)'),
+            contains('Given the app is running'),
+            contains('is not part of a scenario'),
+          ),
+        ),
+      ),
+    );
   });
 }

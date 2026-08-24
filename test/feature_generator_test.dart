@@ -366,12 +366,11 @@ Future<void> generate(
     featureBuilder(options ?? BuilderOptions.empty),
     srcs,
     rootPackage: pkgName,
-    outputs:
-        expectedOutput != null
-            ? {
-              '$pkgName|$path/sample_test.dart': decodedMatches(expectedOutput),
-            }
-            : null,
+    outputs: expectedOutput != null
+        ? {
+            '$pkgName|$path/sample_test.dart': decodedMatches(expectedOutput),
+          }
+        : null,
   );
 }
 

@@ -29,12 +29,12 @@ import './step/i_should_have_cucumbers.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: eating (12, 5, 7)\'\'\', (tester) async {
+    testWidgets(\'\'\'eating (12, 5, 7)\'\'\', (tester) async {
       await thereAreCucumbers(tester, 12);
       await iEatCucumbers(tester, 5);
       await iShouldHaveCucumbers(tester, 7);
     });
-    testWidgets(\'\'\'Outline: eating (20, 5, 15)\'\'\', (tester) async {
+    testWidgets(\'\'\'eating (20, 5, 15)\'\'\', (tester) async {
       await thereAreCucumbers(tester, 20);
       await iEatCucumbers(tester, 5);
       await iShouldHaveCucumbers(tester, 15);
@@ -74,10 +74,10 @@ import './step/there_are_mixed_parameters.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: params (12, '5', Icons.add)\'\'\', (tester) async {
+    testWidgets(\'\'\'params (12, '5', Icons.add)\'\'\', (tester) async {
       await thereAreMixedParameters(tester, 12, '5', Icons.add);
     });
-    testWidgets(\'\'\'Outline: params ('20', 5.0, MyClass)\'\'\', (tester) async {
+    testWidgets(\'\'\'params ('20', 5.0, MyClass)\'\'\', (tester) async {
       await thereAreMixedParameters(tester, '20', 5.0, MyClass);
     });
   });
@@ -115,10 +115,10 @@ import './step/i_tap_times.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Variables in array (1, 2)\'\'\', (tester) async {
+    testWidgets(\'\'\'Variables in array (1, 2)\'\'\', (tester) async {
       await iTapTimes(tester, [1, 2]);
     });
-    testWidgets(\'\'\'Outline: Variables in array (42, -84)\'\'\', (tester) async {
+    testWidgets(\'\'\'Variables in array (42, -84)\'\'\', (tester) async {
       await iTapTimes(tester, [42, -84]);
     });
   });
@@ -156,10 +156,10 @@ import './step/i_tap_times.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Variables in named parameter variable (1, 2)\'\'\', (tester) async {
+    testWidgets(\'\'\'Variables in named parameter variable (1, 2)\'\'\', (tester) async {
       await iTapTimes(tester, plus: 1, minus: 2);
     });
-    testWidgets(\'\'\'Outline: Variables in named parameter variable (42, -84)\'\'\', (tester) async {
+    testWidgets(\'\'\'Variables in named parameter variable (42, -84)\'\'\', (tester) async {
       await iTapTimes(tester, plus: 42, minus: -84);
     });
   });
@@ -196,7 +196,7 @@ import './step/i_perform_with_and_parameter.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Mixed variables ('tap', 1, 2, Icons.add)\'\'\', (tester) async {
+    testWidgets(\'\'\'Mixed variables ('tap', 1, 2, Icons.add)\'\'\', (tester) async {
       await iPerformWithAndParameter(tester, 'tap', data: [1, 2], Icons.add);
     });
   });
@@ -233,7 +233,7 @@ import './step/i_check_if_is_less_than.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Non-placeholder angle brackets (5, 10)\'\'\', (tester) async {
+    testWidgets(\'\'\'Non-placeholder angle brackets (5, 10)\'\'\', (tester) async {
       await iCheckIfIsLessThan(tester, 5, 10);
     });
   });
@@ -270,7 +270,7 @@ import './step/i_use_structure.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Nested braces (42)\'\'\', (tester) async {
+    testWidgets(\'\'\'Nested braces (42)\'\'\', (tester) async {
       await iUseStructure(tester, outer: {inner: 42});
     });
   });
@@ -307,7 +307,7 @@ import './step/i_process_data.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Multiple vars same block (1, 2, 3)\'\'\', (tester) async {
+    testWidgets(\'\'\'Multiple vars same block (1, 2, 3)\'\'\', (tester) async {
       await iProcessData(tester, a: 1, b: 2, c: 3);
     });
   });
@@ -344,7 +344,7 @@ import './step/i_call_with.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Mix outside and inside ('run', 10, 20)\'\'\', (tester) async {
+    testWidgets(\'\'\'Mix outside and inside ('run', 10, 20)\'\'\', (tester) async {
       await iCallWith(tester, 'run', args: [10, 20]);
     });
   });
@@ -381,7 +381,7 @@ import './step/i_add_and_and.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Sequential variables (1, 2, 3)\'\'\', (tester) async {
+    testWidgets(\'\'\'Sequential variables (1, 2, 3)\'\'\', (tester) async {
       await iAddAndAnd(tester, 1, 2, 3);
     });
   });
@@ -418,7 +418,7 @@ import './step/i_process_data.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Angle bracket not a placeholder (50)\'\'\', (tester) async {
+    testWidgets(\'\'\'Angle bracket not a placeholder (50)\'\'\', (tester) async {
       await iProcessData(tester, operator: <, value: 50);
     });
   });
@@ -489,10 +489,10 @@ import './step/i_see_icon.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Unicode variables ('🚀')\'\'\', (tester) async {
+    testWidgets(\'\'\'Unicode variables ('🚀')\'\'\', (tester) async {
       await iSeeIcon(tester, '🚀');
     });
-    testWidgets(\'\'\'Outline: Unicode variables ('💯')\'\'\', (tester) async {
+    testWidgets(\'\'\'Unicode variables ('💯')\'\'\', (tester) async {
       await iSeeIcon(tester, '💯');
     });
   });

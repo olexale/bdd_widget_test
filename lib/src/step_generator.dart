@@ -34,16 +34,9 @@ String getStepMethodName(String stepText) {
   return _camelizedString(step);
 }
 
-String getStepMethodCall(
-  String stepLine,
-  String customTesterName, {
-  List<String>? forceParams,
-}) {
+String getStepMethodCall(String stepLine, String customTesterName) {
   final step = parseRawStepLine(stepLine);
-  final parameters = [
-    customTesterName,
-    if (forceParams != null) ...forceParams else ...step.skip(1),
-  ].join(', ');
+  final parameters = [customTesterName, ...step.skip(1)].join(', ');
   return '${_camelizedString(step[0])}($parameters)';
 }
 
