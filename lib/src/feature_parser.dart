@@ -167,12 +167,16 @@ void _rejectStepsInDescriptions(
   List<String> stepMarkers,
 ) {
   for (final description in _descriptions(feature)) {
-    for (final line in description.split('\n')) {
+    for (final line in description.text.split('\n')) {
       final step = line.trim();
       if (!stepMarkers.any(step.startsWith)) {
         continue;
       }
-      final index = source.indexOf(step);
+      // A description starts on the line after the keyword that owns it, so
+      // the search starts there. Searching the whole file would report an
+      // identical step written earlier — a legitimate one, in a scenario that
+      // parsed fine.
+      final index = source.indexOf(step, description.keywordLine);
       final column = index == -1 ? 0 : raw[index].indexOf(step) + 1;
       throw FormatException(
         'Failed to parse $uri:\n'
@@ -184,18 +188,44 @@ void _rejectStepsInDescriptions(
   }
 }
 
-/// Every description block in the feature, rules and their children included.
-Iterable<String> _descriptions(messages.Feature feature) sync* {
-  yield feature.description;
+/// Every description block in the feature, rules and their children included,
+/// each paired with the 1-based line of the keyword it hangs off. That line is
+/// what makes a description's position in the file recoverable — the parser
+/// reports a location for every keyword, but not for the description text.
+typedef _Description = ({String text, int keywordLine});
+
+Iterable<_Description> _descriptions(messages.Feature feature) sync* {
+  yield (text: feature.description, keywordLine: feature.location.line);
   for (final child in feature.children) {
-    yield child.background?.description ?? '';
-    yield child.scenario?.description ?? '';
+    final background = child.background;
+    if (background != null) {
+      yield (
+        text: background.description,
+        keywordLine: background.location.line,
+      );
+    }
+    final scenario = child.scenario;
+    if (scenario != null) {
+      yield (text: scenario.description, keywordLine: scenario.location.line);
+    }
     final rule = child.rule;
     if (rule != null) {
-      yield rule.description;
+      yield (text: rule.description, keywordLine: rule.location.line);
       for (final ruleChild in rule.children) {
-        yield ruleChild.background?.description ?? '';
-        yield ruleChild.scenario?.description ?? '';
+        final ruleBackground = ruleChild.background;
+        if (ruleBackground != null) {
+          yield (
+            text: ruleBackground.description,
+            keywordLine: ruleBackground.location.line,
+          );
+        }
+        final ruleScenario = ruleChild.scenario;
+        if (ruleScenario != null) {
+          yield (
+            text: ruleScenario.description,
+            keywordLine: ruleScenario.location.line,
+          );
+        }
       }
     }
   }

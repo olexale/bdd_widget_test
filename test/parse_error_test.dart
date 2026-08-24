@@ -84,4 +84,33 @@ Feature: Testing feature
       ),
     );
   });
+
+  test('A duplicated step reports the orphan, not the earlier valid one', () {
+    const featureFile = '''
+Feature: One
+  Scenario: Testing scenario
+    Given the app is running
+
+Feature: Two
+  Scenrio: Testing scenario
+    Given the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          // Line 7, the orphaned step — not the identical line 3, which sits
+          // in a scenario that parsed fine.
+          contains('(7:5)'),
+        ),
+      ),
+    );
+  });
 }
