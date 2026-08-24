@@ -37,7 +37,7 @@ void main() {
         await bddTearDown(tester);
       }
     });
-    testWidgets('''Outline: Plus button increases the counter (0, '0')''',
+    testWidgets('''Plus button increases the counter (0, '0')''',
         (tester) async {
       try {
         await bddSetUp(tester);
@@ -48,7 +48,7 @@ void main() {
         await bddTearDown(tester);
       }
     });
-    testWidgets('''Outline: Plus button increases the counter (1, '1')''',
+    testWidgets('''Plus button increases the counter (1, '1')''',
         (tester) async {
       try {
         await bddSetUp(tester);
@@ -59,7 +59,7 @@ void main() {
         await bddTearDown(tester);
       }
     });
-    testWidgets('''Outline: Plus button increases the counter (42, '42')''',
+    testWidgets('''Plus button increases the counter (42, '42')''',
         (tester) async {
       try {
         await bddSetUp(tester);
