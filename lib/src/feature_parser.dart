@@ -20,17 +20,31 @@ const _afterMarker = 'After:';
 /// Gherkin's own `# language: xx` header.
 final _languagePattern = RegExp(r'^\s*#\s*language\s*:\s*([a-zA-Z\-_]+)\s*$');
 
-/// The dialect the file declares, or English.
-GherkinLanguageKeywords _dialectOf(List<String> source) {
-  for (final line in source) {
-    final match = _languagePattern.firstMatch(line);
-    final dialect = match == null ? null : builtinDialects[match.group(1)];
-    if (dialect != null) {
-      return dialect;
+/// The dialect a file that declares none is read in.
+final GherkinLanguageKeywords _english = builtinDialects['en']!;
+
+/// The language the file declares, and the line it declares it on, or null
+/// when it declares none. The code is whatever was written: resolving it to a
+/// dialect is the caller's job, because a code no dialect answers to is a
+/// mistake to report, not a dialect to use.
+({int line, String code})? _declaredLanguage(List<String> source) {
+  for (var i = 0; i < source.length; i++) {
+    final code = _languagePattern.firstMatch(source[i])?.group(1);
+    if (code != null) {
+      return (line: i, code: code);
     }
   }
-  return builtinDialects['en']!;
+  return null;
 }
+
+/// The lines the file titles a feature with, in [dialect].
+List<int> _featureLines(
+  List<String> source,
+  GherkinLanguageKeywords dialect,
+) => [
+  for (var i = 0; i < source.length; i++)
+    if (dialect.feature.any((keyword) => source[i].startsWith('$keyword:'))) i,
+];
 
 /// The keyword `After:` is rewritten into. Gherkin matches a dialect's own
 /// keywords and nothing else, so the English `Scenario:` would read as prose in
@@ -73,25 +87,74 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
   // Keyword detection, header lines and tag lines all work off the trimmed
   // text; only the lines handed to the parser keep their original indentation.
   final source = raw.map((line) => line.trim()).toList();
-  final dialect = _dialectOf(source);
-  final afterKeyword = _scenarioKeyword(source, dialect);
-  final featureMarkers = dialect.feature.map((keyword) => '$keyword:');
-  final stepMarkers = [
-    ...dialect.given,
-    ...dialect.when,
-    ...dialect.then,
-    ...dialect.and,
-    ...dialect.but,
-  ];
-  final featureLines = [
-    for (var i = 0; i < source.length; i++)
-      if (featureMarkers.any(source[i].startsWith)) i,
-  ];
-  // The language header sits above the first feature, so every chunk needs it.
+
+  var dialect = _english;
+  var featureLines = _featureLines(source, dialect);
+  GherkinLanguageKeywords? ignoredDialect;
+  final declared = _declaredLanguage(source);
+  final declaredDialect = declared == null
+      ? null
+      : builtinDialects[declared.code];
+  if (declared != null && declaredDialect != null) {
+    dialect = declaredDialect;
+    featureLines = _featureLines(source, dialect);
+    // Gherkin honours a language declaration only above the first feature
+    // keyword. Below it — in a description, say — it reads an ordinary comment
+    // and stays in English, and so must this pre-pass: hunting for keywords in
+    // a dialect nobody wrote the file in finds none, after which the whole file
+    // reads as raw Dart sitting above the feature.
+    if (featureLines.isEmpty || declared.line > featureLines.first) {
+      ignoredDialect = dialect;
+      dialect = _english;
+      featureLines = _featureLines(source, dialect);
+    }
+  }
+
+  // The honoured header sits above the first feature, so every chunk needs it.
+  // A declaration this pre-pass dismissed is not carried: re-injected into a
+  // later chunk it would land above that chunk's feature keyword, which is
+  // exactly where Gherkin does honour one, and the chunk would fail to parse.
   final languageLines = {
-    for (var i = 0; i < source.length; i++)
-      if (_languagePattern.hasMatch(source[i])) i,
+    if (declaredDialect != null && ignoredDialect == null) declared!.line,
   };
+
+  if (featureLines.isEmpty) {
+    // A code no dialect answers to is Gherkin's error to report, and it does —
+    // but only once a feature keyword has carried the file as far as the
+    // parser. Without one it would be rejected for the missing feature, which
+    // is not the mistake that was made.
+    if (declared != null && declaredDialect == null) {
+      throw FormatException(
+        'Failed to parse $uri:\n'
+        '  (${declared.line + 1}:'
+        '${raw[declared.line].indexOf(source[declared.line]) + 1}): '
+        'Language not supported: ${declared.code}',
+      );
+    }
+    // No feature keyword means nothing was found to parse, and — unlike every
+    // other mistake in the file — nothing was rejected either. The keyword
+    // named is the one the file's own declaration asks for.
+    final unchecked = _firstUncheckedLine(source);
+    if (unchecked != null) {
+      _rejectMissingFeature(
+        source,
+        raw,
+        unchecked,
+        ignoredDialect ?? dialect,
+        uri,
+      );
+    }
+  }
+
+  final afterKeyword = _scenarioKeyword(source, dialect);
+  final stepMarkers = [
+    ..._stepKeywords(dialect),
+    // A dialect the parser dismissed is still the dialect the lines under it
+    // were written in, so their step spellings stay step-shaped to
+    // [_rejectStepsInDescriptions]. Otherwise a scenario written in that
+    // dialect lands in a description, and a group with no tests in it, quietly.
+    if (ignoredDialect != null) ..._stepKeywords(ignoredDialect),
+  ];
 
   // Raw Dart lines above the first feature are copied into the generated file
   // and hidden from the parser, which only allows comments and tags there.
@@ -177,6 +240,58 @@ messages.Feature? _parse(
       .map((envelope) => envelope.gherkinDocument?.feature)
       .nonNulls
       .firstOrNull;
+}
+
+/// The keywords a dialect spells a step with.
+List<String> _stepKeywords(GherkinLanguageKeywords dialect) => [
+  ...dialect.given,
+  ...dialect.when,
+  ...dialect.then,
+  ...dialect.and,
+  ...dialect.but,
+];
+
+/// The first line of a file with no feature keyword that would be copied out
+/// as Dart, or null when there is none.
+///
+/// A `#` comment, a tag line or a blank is what Gherkin allows above
+/// `Feature:`, so a file holding nothing but those declares nothing and is left
+/// alone. `//` is Dart, and Dart sitting over a feature that never arrived is a
+/// commented-out feature: a green run, testing nothing.
+int? _firstUncheckedLine(List<String> source) {
+  for (var i = 0; i < source.length; i++) {
+    final line = source[i];
+    if (line.isNotEmpty && !line.startsWith('#') && !line.startsWith('@')) {
+      return i;
+    }
+  }
+  return null;
+}
+
+/// Rejects a file that holds text but names no feature.
+///
+/// Without a feature keyword there is nothing for the parser to chew on, and
+/// the region above the first feature — the only region that goes unchecked —
+/// is the whole file. Every line of it lands in the generated Dart, so a
+/// `Featur:` typo or a dropped `Feature:` line leaves either a
+/// `FormatterException` quoting Dart line numbers, or, when the lines happen to
+/// read as Dart, a `main()` holding no tests at all. Both pass unnoticed, which
+/// is the hole this closes.
+Never _rejectMissingFeature(
+  List<String> source,
+  List<String> raw,
+  int index,
+  GherkinLanguageKeywords dialect,
+  String uri,
+) {
+  final line = source[index];
+  throw FormatException(
+    'Failed to parse $uri:\n'
+    '  (${index + 1}:${raw[index].indexOf(line) + 1}): '
+    "the file holds no '${dialect.feature.first}:' keyword, so no feature "
+    "was found and no tests would be generated. '$line' was read as Dart — "
+    'check for a missing or mistyped feature keyword',
+  );
 }
 
 /// Gherkin lets a description block absorb every line that is not a keyword

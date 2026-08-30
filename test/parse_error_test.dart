@@ -286,4 +286,146 @@ Feature: Testing feature
     );
     expect(feature.dartContent, contains('await iCleanUp(tester);'));
   });
+
+  // Everything above the first feature keyword is copied to Dart unchecked, so
+  // a file that never reaches a feature keyword has nothing validated in it at
+  // all — and generates a `main()` with no tests, or a syntax error whose line
+  // numbers point at the generated file rather than at this one.
+  test('A mistyped feature keyword is reported, not copied out as Dart', () {
+    const featureFile = '''
+Featur: Testing feature
+  Scenario: Testing scenario
+    Given the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('(1:1)'),
+            contains("no 'Feature:' keyword"),
+            contains('Featur: Testing feature'),
+          ),
+        ),
+      ),
+    );
+  });
+
+  test('A file with no feature keyword is reported, not left empty', () {
+    const featureFile = '''
+# a comment the parser allows here
+@slow
+
+Testing feature
+  Given the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(4:1)'), contains('Testing feature')),
+        ),
+      ),
+    );
+  });
+
+  // `//` is Dart, so a feature commented out this way is text sitting over a
+  // feature keyword that is gone: the greenest of empty test files.
+  test('A commented-out feature is reported, not run empty', () {
+    const featureFile = '''
+// Feature: Testing feature
+//   Scenario: Testing scenario
+//     Given the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('(1:1)'),
+            contains('// Feature: Testing feature'),
+          ),
+        ),
+      ),
+    );
+  });
+
+  // Comments and tags are what Gherkin allows above a feature, so a file
+  // holding nothing else declares nothing and is left to generate nothing.
+  test('A feature file of nothing but comments is left alone', () {
+    const featureFile = '''
+# not a feature yet
+@slow
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, contains('void main() {\n}'));
+  });
+
+  // Gherkin honours `# language:` above the first feature keyword and nowhere
+  // else: below it the line is a comment, and the file is read in English.
+  test('A language comment below the feature keyword is read as a comment', () {
+    const featureFile = '''
+Feature: Testing feature
+  # language: fr
+  Scenario: Testing scenario
+    Given the app is running
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, contains('await theAppIsRunning(tester);'));
+  });
+
+  test('A scenario in a dialect the parser ignored is reported', () {
+    const featureFile = '''
+Feature: Testing feature
+  # language: fr
+  Scénario: Testing scenario
+    Etant donné que the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(4:5)'), contains("step 'Etant donné que")),
+        ),
+      ),
+    );
+  });
 }

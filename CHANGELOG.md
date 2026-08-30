@@ -9,7 +9,9 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   Previously the unrecognised lines were dropped and a test file was generated anyway — usually one
   that quietly tested less than it looked like it did. The build now stops on stray text inside a
   feature, a mistyped scenario keyword (`Scenrio:`) whose steps were left orphaned, a mistyped step
-  keyword, and a second `Background:` in the same feature. Errors report the line and column.
+  keyword, a second `Background:` in the same feature, and a file holding no feature keyword at all
+  — a missing, mistyped (`Featur:`) or commented-out `Feature:` line used to generate a test file
+  with an empty `main()`. Errors report the line and column.
   Prose is still prose: a description line that merely looks like a step — a `*` bullet, or a
   sentence opening with `And` — is kept as documentation whenever the block around it has steps.
   A block that ends up with no steps at all and whose description reads like steps is reported.
@@ -28,6 +30,8 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   leaked onto unrelated scenarios.
 * Add support for localised feature files. All 80 Gherkin dialects work via the `# language: fr`
   header, including localised keywords for features, backgrounds, scenario outlines and examples.
+  As in Gherkin, the header counts only above the first feature keyword; written below one it is an
+  ordinary comment and the file is read in English. An unsupported language code is reported.
   `After:` sections work in them too, and are rewritten into the keyword the file titles its
   scenarios with.
 * Fix a scenario outline with more than one `Examples:` block generating a spurious test case from
@@ -130,9 +134,9 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
 
 ## [1.6.1] - Allow custom tester type, name and scenario parameters (by @mkhtradm01)
 
-* Allow addition of custom tester type from other test packages using `@testerType:` tag the value can be like `PatrolIntegrationTester` instead of `WidgetTester`(default) 
+* Allow addition of custom tester type from other test packages using `@testerType:` tag the value can be like `PatrolIntegrationTester` instead of `WidgetTester`(default)
 * Allow addition of custom tester name using `@testerName:` tag, the value can be like `$`, `integrationTest` instead of `tester` leaving `tester`(default)
-* Allow passing scenario parameters using `@scenarioParams:` tag, for example: `@scenarioParams: skip: false, timeout: Timeout(Duration(seconds: 1))` and many more. 
+* Allow passing scenario parameters using `@scenarioParams:` tag, for example: `@scenarioParams: skip: false, timeout: Timeout(Duration(seconds: 1))` and many more.
 * Though these additions do not affect predefined steps.
   
 ## [1.6.0] - Change step folder destination
@@ -236,7 +240,7 @@ If you didn't change the step folder name, you should not notice this change. Ho
 
 ## [0.1.7] - Internal release
 
-* Use `extra_pedantic` 
+* Use `extra_pedantic`
 * Update dependencies
 
 ## [0.1.6] - 'After' keyword

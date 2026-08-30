@@ -180,7 +180,7 @@ final dataAsMaps = dataTable.asMaps(); // [{'artist: 'The Doors', 'name: 'Riders
 ```
 ## Other languages
 
-Gherkin keywords are available in 80 languages. Declare the language on the first line of the feature file with a `# language:` header, and write the keywords in that language:
+Gherkin keywords are available in 80 languages. Declare the language above the first feature keyword with a `# language:` header — below Dart header lines is fine — and write the keywords in that language:
 ```gherkin
 # language: fr
 Fonctionnalité: Compteur
@@ -191,7 +191,7 @@ Fonctionnalité: Compteur
   Scénario: La valeur initiale est 0
     Alors I see {'0'} text
 ```
-Step text itself is still whatever you write — only the keywords are translated. The package's own extensions keep their spelling: `After:` is written in English in a French feature file as much as in an English one, and is rewritten internally into the keyword the file titles its scenarios with. See the [full list of dialects](https://cucumber.io/docs/gherkin/languages/) for the keywords of each language.
+Written below the first feature keyword the header is an ordinary comment, and the file is read in English. Step text itself is still whatever you write — only the keywords are translated. The package's own extensions keep their spelling: `After:` is written in English in a French feature file as much as in an English one, and is rewritten internally into the keyword the file titles its scenarios with. See the [full list of dialects](https://cucumber.io/docs/gherkin/languages/) for the keywords of each language.
 
 ## Tags
 

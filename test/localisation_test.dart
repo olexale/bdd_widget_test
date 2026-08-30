@@ -144,6 +144,34 @@ void main() {
     expect(feature.dartContent, expectedFeatureDart);
   });
 
+  // The Dart headers are blanked out before the file is parsed, so a
+  // declaration written under them still sits above the feature, which is where
+  // Gherkin honours one.
+  test('A language declaration below the Dart headers is honoured', () {
+    const featureFile = '''
+import 'dart:async';
+
+# language: uk
+Функціонал: Лічильник
+  Сценарій: сценарій
+    Тоді I see 1 text
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(
+      feature.dartContent,
+      allOf(
+        contains("import 'dart:async';"),
+        contains("group('''Лічильник'''"),
+        contains('iSee1Text'),
+      ),
+    );
+  });
+
   test('An unknown language is reported', () {
     const featureFile = '''
 # language: zz
@@ -163,6 +191,81 @@ Feature: Testing feature
           (e) => e.message,
           'message',
           contains('Language not supported: zz'),
+        ),
+      ),
+    );
+  });
+
+  // A declaration below the first feature keyword is an ordinary comment, and
+  // must not be carried into a later feature's chunk — there it would sit above
+  // that feature's keyword, which is the one place Gherkin does honour one.
+  test('A language comment in one feature does not reach the next', () {
+    const featureFile = '''
+Feature: one
+  # language: fr
+  Scenario: s
+    Given the app is running
+
+Feature: two
+  Scenario: t
+    Given the app is running
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(
+      feature.dartContent,
+      allOf(contains("group('''one'''"), contains("group('''two'''")),
+    );
+  });
+
+  test('A missing feature keyword is named in the declared language', () {
+    const featureFile = '''
+# language: fr
+Scénario: un
+  Soit the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains("no 'Fonctionnalité:' keyword"),
+        ),
+      ),
+    );
+  });
+
+  // Without a feature keyword the file never reaches the parser, so the
+  // unsupported code has to be reported here or not at all.
+  test('An unknown language is reported when no feature keyword parses', () {
+    const featureFile = '''
+# language: zz
+Fonctionnalité: Testing feature
+  Scénario: Testing scenario
+    Soit the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(1:1)'), contains('Language not supported: zz')),
         ),
       ),
     );
