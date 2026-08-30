@@ -10,8 +10,10 @@ class FeatureFileModel {
   /// generated file untouched.
   final List<String> header;
 
-  /// Raw feature-level tag lines, e.g. `@testMethodName: foo` — the ones above
-  /// a `Feature:` keyword, gathered across every feature in the file.
+  /// Tags written above a `Feature:` keyword, gathered across every feature in
+  /// the file — one entry per tag, e.g. `@integration`. The package's own
+  /// `@name: value` tags stand for their whole line and are kept as written,
+  /// e.g. `@testMethodName: foo`.
   final List<String> tagLines;
 
   final List<Feature> features;
@@ -93,6 +95,9 @@ class Scenario {
     this.examples,
   });
 
+  /// The tags written above this scenario, plus those of the `Rule:` it sits
+  /// in, each once. As in [FeatureFileModel.tagLines], a `@name: value` tag
+  /// carries the line it was written on.
   final List<String> tagLines;
   final String title;
   final List<Step> steps;

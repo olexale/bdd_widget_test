@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/data_table_parser.dart';
 import 'package:bdd_widget_test/src/feature_model.dart';
+import 'package:bdd_widget_test/src/util/constants.dart';
 import 'package:collection/collection.dart';
 import 'package:cucumber_gherkin/cucumber_gherkin.dart';
 // The dialect table is the parser's own keyword data. Duplicating it here
@@ -184,7 +185,7 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
   }
   return FeatureFileModel(
     header: _headerLines(headerIndices.map((i) => source[i])),
-    tagLines: tagLines,
+    tagLines: _unique(tagLines),
     features: features,
   );
 }
@@ -442,8 +443,9 @@ String _normalise(String line, String afterKeyword) {
   final indent = line.substring(0, line.length - line.trimLeft().length);
   if (trimmed.startsWith('@')) {
     // A tag may not contain whitespace, so `@testMethodName: testGoldens`
-    // becomes `@testMethodName:testGoldens`. Generators never see this form:
-    // they read the untouched line out of the original source, via [_tagLines].
+    // becomes `@testMethodName:testGoldens`. Ordinary tags are reported back to
+    // the generators in this form; the custom ones the rewrite is named after
+    // are not, and [_tagLines] reads those out of the untouched source.
     final tags = trimmed
         .split('@')
         .map((tag) => tag.replaceAll(RegExp(r'\s+'), ''))
@@ -535,7 +537,12 @@ List<Scenario> _scenarios(
 ) => [
   for (final scenario in scenarios.nonNulls.where((s) => !_isAfter(s)))
     Scenario(
-      tagLines: [...inheritedTags, ..._tagLines(scenario.tags, source)],
+      // A tag written on both the rule and the scenario reaches this point
+      // twice — once inherited, once parsed — and would be generated twice.
+      tagLines: _unique([
+        ...inheritedTags,
+        ..._tagLines(scenario.tags, source),
+      ]),
       title: scenario.name,
       steps: scenario.steps.map(_toStep).toList(),
       examples: _examples(scenario.examples),
@@ -558,15 +565,93 @@ Step _toStep(messages.Step step) {
 bool _isAfter(messages.Scenario scenario) =>
     scenario.name == _afterScenarioName;
 
-/// Tags are collected one line at a time, not one tag at a time, because a
-/// custom tag such as `@scenarioParams: skip: false` occupies a whole line.
+/// Tags, one entry per tag rather than one per line.
+///
+/// Gherkin allows several tags on a line and reports each of them separately,
+/// so the split need not be re-derived from the text: `tag.name` is still the
+/// tag as written, `@` and all, which is what the generators cut out of it.
+///
+/// Repeats are dropped, the first one winning, so a tag named twice for the
+/// same scenario — a `Rule:` tag and the same tag on a scenario inside it — is
+/// still written out once.
 List<String> _tagLines(List<messages.Tag> tags, List<String> source) {
-  final seen = <int>{};
+  // Whether a line can be taken tag by tag is a question about the whole line,
+  // so its tags are grouped before they are read.
+  final byLine = <int, List<messages.Tag>>{};
+  for (final tag in tags) {
+    byLine.putIfAbsent(tag.location.line, () => []).add(tag);
+  }
+  return _unique([
+    for (final entry in byLine.entries)
+      ..._lineTags(entry.value, source[entry.key - 1]),
+  ]);
+}
+
+/// The tags the parser found as [tags] were written on [line].
+///
+/// The package's own tags — `@scenarioParams: skip: false`, `@testerName: $` —
+/// are the reason a line cannot always be taken tag by tag. Their value holds
+/// whitespace, which [_normalise] has squeezed out of the name the parser
+/// reports, leaving `@scenarioParams:skip:false`, which is no longer the form
+/// the generators read. From such a tag to the end of the line the text is one
+/// value as far as this package is concerned, so it is handed over untouched.
+/// What stands before it was read as ordinary tags by Gherkin and is emitted one
+/// by one — which is what a line like `@smoke @testMethodName: testGoldens`,
+/// whose `@smoke` used to be lost along with the line it sat on, needs.
+///
+/// What a custom tag swallows after its value — a second custom tag, or a plain
+/// tag — goes with it, as it always has: an `@` inside a value, as in
+/// `@scenarioParams: tags: ['a@b.com']`, is indistinguishable from a tag, and
+/// the value wins.
+List<String> _lineTags(List<messages.Tag> tags, String line) {
+  final custom = _customTagStart(line);
+  if (custom == null) {
+    return tags.map((tag) => tag.name).toList();
+  }
   return [
-    for (final tag in tags)
-      if (seen.add(tag.location.line)) source[tag.location.line - 1],
+    for (final tag in tags.takeWhile((tag) => !_isCustomTag(tag.name)))
+      tag.name,
+    line.substring(custom),
   ];
 }
+
+/// The package's tags, spelled `@name: value` rather than as a Gherkin tag, so
+/// that the name the parser reports has their value's whitespace flattened out.
+const List<String> _customTags = [
+  testMethodNameTag,
+  testerTypeTag,
+  testerNameTag,
+  scenarioParamsTag,
+];
+
+/// Whether [name], as the parser reports it, is one of [_customTags] — and so
+/// one whose value is no longer readable from the name.
+bool _isCustomTag(String name) => _customTags.any(name.startsWith);
+
+/// Where the first of [_customTags] begins in [line], or null when the line
+/// holds none. A tag begins the line or follows whitespace, so one mentioned
+/// inside another tag's value — `@scenarioParams: name: '@testerType: x'` —
+/// stays part of that value.
+int? _customTagStart(String line) {
+  var start = line.length;
+  for (final tag in _customTags) {
+    for (var at = line.indexOf(tag); at >= 0; at = line.indexOf(tag, at + 1)) {
+      if (at > 0 && !_whitespace.hasMatch(line[at - 1])) {
+        continue;
+      }
+      if (at < start) {
+        start = at;
+      }
+      break;
+    }
+  }
+  return start == line.length ? null : start;
+}
+
+final RegExp _whitespace = RegExp(r'\s');
+
+/// [values] without repeats, in the order they were first seen.
+List<String> _unique(Iterable<String> values) => values.toSet().toList();
 
 /// Zips each `Examples:` block's header row with its body rows. Blocks are
 /// independent, so a scenario outline with two of them expands correctly.

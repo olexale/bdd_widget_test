@@ -43,6 +43,9 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   the second block's header row.
 * Fix lines above `Feature:` being dropped when the feature file starts with a blank line, which
   silently removed custom imports from the generated file.
+* Fix several tags written on one line (`@integration @slow`) becoming a single tag named
+  `integration @slow`, which no `--tags` filter can ever match. Each tag on the line is now emitted
+  separately, and a tag a `Rule:` shares with a scenario inside it is emitted once instead of twice.
 * Add `cucumber_gherkin` and `cucumber_messages` dependencies; drop the unused `build_config`.
 
 ## [2.1.4] - Dart Workspace fix

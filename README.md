@@ -208,6 +208,11 @@ Feature: Sample
 
 Here we mark the test as `slow`, `integration`, and `important`. 
 
+Tags may share a line, as Gherkin allows: `@slow @integration` marks a feature as both. The one
+exception is this package's own `@name: value` tags — `@testMethodName:`, `@testerType:`,
+`@testerName:` and `@scenarioParams:` — whose value runs to the end of the line, so write one of
+those on a line of its own. Tags written before it on the same line are read as tags.
+
 To run tests that are marked with `@important` tag, you can use the following command:
 ```sh
 flutter test --tags important
