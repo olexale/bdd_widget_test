@@ -459,15 +459,23 @@ String _normalise(String line, String afterKeyword) {
 }
 
 /// Raw lines above the first feature, copied into the generated file verbatim.
-/// Consecutive duplicates (blank lines, mostly) collapse into one.
+/// Leading blanks are dropped and runs of blanks collapse into one, so a
+/// feature file may separate its header lines from `Feature:` by any number of
+/// blank lines. Non-blank lines are never dropped or merged: they are raw Dart,
+/// and Dart lines repeat all the time (`}` closing nested blocks, `});` closing
+/// nested callbacks), so collapsing identical lines would emit broken code.
 List<String> _headerLines(Iterable<String> lines) {
   final headers = <String>[];
   for (final line in lines) {
     if (line.startsWith('@') || line.startsWith('#')) {
       continue;
     }
-    // Drop leading blanks, and collapse runs of identical lines into one.
-    if (headers.isEmpty ? line.isNotEmpty : headers.last != line) {
+    if (line.isEmpty) {
+      // Keep at most one blank, and never a leading one.
+      if (headers.isNotEmpty && headers.last.isNotEmpty) {
+        headers.add(line);
+      }
+    } else {
       headers.add(line);
     }
   }
