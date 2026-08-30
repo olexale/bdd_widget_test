@@ -45,7 +45,7 @@ String generateFeatureDart(
     }
   }
   if (tags.isNotEmpty) {
-    sb.writeln("@Tags(['${tags.join("', '")}'])");
+    sb.writeln("@Tags(['${tags.map(escapeDartSingleQuoted).join("', '")}'])");
   }
 
   model.header.forEach(sb.writeln);
@@ -99,7 +99,7 @@ String generateFeatureDart(
   }
 
   for (final feature in model.features) {
-    sb.writeln("  group('''${feature.title}''', () {");
+    sb.writeln("  group('''${escapeDartLiteral(feature.title)}''', () {");
 
     final hasBackground = _writeSetup(
       sb,
@@ -135,7 +135,7 @@ String generateFeatureDart(
     }
 
     for (final rule in feature.rules) {
-      sb.writeln("    group('''${rule.title}''', () {");
+      sb.writeln("    group('''${escapeDartLiteral(rule.title)}''', () {");
       final hasRuleBackground = _writeSetup(
         sb,
         rule.background,

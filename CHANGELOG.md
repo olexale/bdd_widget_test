@@ -46,6 +46,12 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
 * Fix several tags written on one line (`@integration @slow`) becoming a single tag named
   `integration @slow`, which no `--tags` filter can ever match. Each tag on the line is now emitted
   separately, and a tag a `Rule:` shares with a scenario inside it is emitted once instead of twice.
+* Fix titles that contain `$` or `'''` generating a file that fails to compile. `Feature: Price is $100`
+  produced `group('''Price is $100''')`, which Dart reads as an interpolation, and the build died with a
+  `FormatterException` quoting lines of a generated file rather than the `.feature` file behind it. The
+  same applied to rule titles, to the title a scenario outline builds from its `Examples:` cells, to the
+  title passed to `Hooks.beforeEach` and `Hooks.afterEach`, and to tag names. Apostrophes that cannot
+  reach a delimiter — an ordinary `Test's scenario` — are left as they were.
 * Add `cucumber_gherkin` and `cucumber_messages` dependencies; drop the unused `build_config`.
 
 ## [2.1.4] - Dart Workspace fix

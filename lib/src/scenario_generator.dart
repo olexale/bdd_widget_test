@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/feature_model.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
+import 'package:bdd_widget_test/src/util/common.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
 
 void parseScenario(
@@ -16,7 +17,7 @@ void parseScenario(
   String indent = '    ',
 }) {
   sb.writeln(
-    "$indent$testMethodName('''$scenarioTitle''', ($testerName) async {",
+    "$indent$testMethodName('''${escapeDartLiteral(scenarioTitle)}''', ($testerName) async {",
   );
   if (hasHooks) {
     sb.writeln('$indent  var $testSuccessVariableName = true;');
@@ -27,7 +28,7 @@ void parseScenario(
   final spaces = hasTearDown ? '$indent    ' : '$indent  ';
   if (hasHooks) {
     sb.writeln(
-      "${spaces}await $setUpHookName('''$scenarioTitle''' ${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});",
+      "${spaces}await $setUpHookName('''${escapeDartLiteral(scenarioTitle)}''' ${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});",
     );
   }
   for (final setUp in setUps) {
@@ -51,7 +52,7 @@ void parseScenario(
     }
     if (hasHooks) {
       sb.writeln('$indent    await $tearDownHookName(');
-      sb.writeln("$indent      '''$scenarioTitle''',");
+      sb.writeln("$indent      '''${escapeDartLiteral(scenarioTitle)}''',");
       sb.writeln('$indent      $testSuccessVariableName,');
       if (tags.isNotEmpty) {
         sb.writeln('$indent      ${tagsToString(tags)},');
@@ -75,7 +76,7 @@ void parseScenario(
 }
 
 String tagsToString(List<String> tags) {
-  return "['${tags.join("', '")}']";
+  return "['${tags.map(escapeDartSingleQuoted).join("', '")}']";
 }
 
 /// Repeats an outline once per row of its `Examples:` table, substituting the
