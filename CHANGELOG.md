@@ -8,13 +8,18 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
 * **BREAKING CHANGE**: Malformed feature files now fail the build instead of being silently accepted.
   Previously the unrecognised lines were dropped and a test file was generated anyway — usually one
   that quietly tested less than it looked like it did. The build now stops on stray text inside a
-  feature, a mistyped scenario keyword (`Scenrio:`) whose steps were left orphaned, a mistyped step
-  keyword, a second `Background:` in the same feature, and a file holding no feature keyword at all
-  — a missing, mistyped (`Featur:`) or commented-out `Feature:` line used to generate a test file
-  with an empty `main()`. Errors name the feature file, the line and the column.
-  Prose is still prose: a description line that merely looks like a step — a `*` bullet, or a
-  sentence opening with `And` — is kept as documentation whenever the block around it has steps.
-  A block that ends up with no steps at all and whose description reads like steps is reported.
+  feature, a mistyped scenario (`Scenrio:`) or step keyword, a second `Background:` in the same
+  feature, and a file holding no feature keyword at all — a missing, mistyped (`Featur:`) or
+  commented-out `Feature:` line used to generate a test file with an empty `main()`. Errors name the
+  feature file, the line and the column.
+  Description blocks are the exception, and it is one Gherkin itself defines: the lines between a
+  keyword and the first step under it are description text, where any non-keyword line is legal. So
+  prose is still prose — a description line that merely looks like a step, a `*` bullet or a
+  sentence opening with `And`, is kept as documentation. The cost is that a keyword mistyped in that
+  same position — a scenario's first step, or a `Scenrio:` written directly under `Feature:` — is
+  read as description too, and the steps under it are dropped without an error, unless the block ends
+  up with no steps at all, in which case it is reported. Written anywhere below a block's first step,
+  a mistyped keyword is always reported.
 * **BREAKING CHANGE**: `Scenario Outline` test names no longer carry a fragment of the keyword.
   `Scenario Outline: eating` now generates `testWidgets('''eating (12, 5, 7)''')` rather than
   `testWidgets('''Outline: eating (12, 5, 7)''')`. Update any `--plain-name` filters, IDE run
