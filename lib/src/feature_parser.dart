@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/data_table_parser.dart';
 import 'package:bdd_widget_test/src/feature_model.dart';
+import 'package:bdd_widget_test/src/step_generator.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
 import 'package:collection/collection.dart';
 import 'package:cucumber_gherkin/cucumber_gherkin.dart';
@@ -179,6 +180,7 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
     final parsed = _parse(normalised, starts[i], end, languageLines, uri);
     if (parsed != null) {
       _rejectStepsInDescriptions(parsed, source, raw, uri, stepMarkers);
+      _rejectUnnamedSteps(parsed, uri);
       tagLines.addAll(_tagLines(parsed.tags, source));
       features.add(_toFeature(parsed, source));
     }
@@ -343,6 +345,49 @@ void _rejectStepsInDescriptions(
         "step '$step' is not part of a scenario — "
         'check the keyword above it',
       );
+    }
+  }
+}
+
+/// Rejects a step whose text names nothing a generated file can be built
+/// around.
+///
+/// Step text becomes a Dart identifier by dropping everything that is not an
+/// ASCII word character, so a step written in another script leaves no name
+/// behind: `Given アプリが起動している` generated `import './step/.dart';` and an
+/// `await (tester);` sitting in nothing, two files that do not compile. The
+/// keywords localise — that is the dialect table working — only this one mapping
+/// from step text to identifier has never been able to leave ASCII, so the file
+/// reads perfectly right up to the line that breaks the build.
+///
+/// Renaming the step is the advice, and the position comes free: unlike a
+/// description, the parser reports a location for every step.
+void _rejectUnnamedSteps(messages.Feature feature, String uri) {
+  for (final step in _allSteps(feature)) {
+    if (stepIdentifier(step.text) != null) {
+      continue;
+    }
+    throw FormatException(
+      'Failed to parse $uri:\n'
+      '  (${step.location.line}:${step.location.column}): '
+      '${unnamedStepError(step.text)}',
+    );
+  }
+}
+
+/// Every step of the feature, wherever it was written: backgrounds, scenarios,
+/// the `After:` block (a scenario under its reserved name), and everything
+/// inside the rules. An outline yields its steps once, not once per row.
+Iterable<messages.Step> _allSteps(messages.Feature feature) sync* {
+  for (final child in feature.children) {
+    yield* child.background?.steps ?? const <messages.Step>[];
+    yield* child.scenario?.steps ?? const <messages.Step>[];
+    final rule = child.rule;
+    if (rule != null) {
+      for (final ruleChild in rule.children) {
+        yield* ruleChild.background?.steps ?? const <messages.Step>[];
+        yield* ruleChild.scenario?.steps ?? const <messages.Step>[];
+      }
     }
   }
 }

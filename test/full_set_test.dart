@@ -12,7 +12,7 @@ Feature: Counter
     Background:
         Given the app is running
     After:
-        And _I do not see {'42'} text
+        And I do not see {'42'} text
 
     @customScenarioTag
     Scenario: Initial counter value is 0
@@ -37,7 +37,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import './hooksFolder/hooks.dart';
 import '../../my_steps/the_app_is_running.dart';
-import '../../my_steps/_i_do_not_see_text.dart';
+import '../../my_steps/i_do_not_see_text.dart';
 import '../../my_steps/i_run_code.dart';
 import 'package:bdd_sample/i_see_text.dart';
 
@@ -54,7 +54,7 @@ void main() {
       await theAppIsRunning(tester);
     }
     Future<void> bddTearDown(WidgetTester tester) async {
-      await _iDoNotSeeText(tester, '42');
+      await iDoNotSeeText(tester, '42');
     }
     Future<void> beforeEach(String title, [List<String>? tags]) async {
       await Hooks.beforeEach(title, tags);

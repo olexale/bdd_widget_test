@@ -446,4 +446,199 @@ Feature: Testing feature
       ),
     );
   });
+
+  // The keywords localise, but a step name is built out of ASCII word
+  // characters, and text in another script holds none. The file is valid
+  // Gherkin all the way to this line, and used to generate `./step/.dart`
+  // alongside an `await (tester);` — two files that do not compile, with an
+  // error naming neither.
+  test('A step whose text holds no ASCII word character is reported', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given アプリが起動している
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('test/test.feature'),
+            contains('(3:5)'),
+            contains("step 'アプリが起動している'"),
+            contains('no valid Dart identifier'),
+          ),
+        ),
+      ),
+    );
+  });
+
+  test('A step of that shape inside a rule carries its own position', () {
+    const featureFile = '''
+Feature: Testing feature
+  Rule: A rule
+    Scenario: Testing scenario
+      When データがある
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(4:7)'), contains("step 'データがある'")),
+        ),
+      ),
+    );
+  });
+
+  // A step is checked wherever it was written, and the walk over the feature
+  // has a branch per place one can sit. A branch that goes missing does not
+  // fail loudly — it just stops rejecting — so each is pinned here.
+  test('A step of that shape in a Background: carries its own position', () {
+    const featureFile = '''
+Feature: Testing feature
+  Background:
+    Given アプリが起動している
+  Scenario: Testing scenario
+    Given the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(3:5)'), contains("step 'アプリが起動している'")),
+        ),
+      ),
+    );
+  });
+
+  // `After:` is this package's own keyword, rewritten into a scenario under a
+  // reserved name before the parser sees it — so it is the scenario branch of
+  // the walk that has to catch this one.
+  test('A step of that shape in an After: carries its own position', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given the app is running
+  After:
+    Given ログアウトする
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(5:5)'), contains("step 'ログアウトする'")),
+        ),
+      ),
+    );
+  });
+
+  test("A step of that shape in a rule's Background: is reported", () {
+    const featureFile = '''
+Feature: Testing feature
+  Rule: A rule
+    Background:
+      Given データがある
+    Scenario: Testing scenario
+      Given the app is running
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(4:7)'), contains("step 'データがある'")),
+        ),
+      ),
+    );
+  });
+
+  // A name is more than a non-empty string: it may not open with a digit, and
+  // it may not open with an underscore either — that one names a function the
+  // generated test imports and then cannot see.
+  test('A step whose text opens with an underscore is reported', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given _debug mode is on
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(3:5)'), contains("step '_debug mode is on'")),
+        ),
+      ),
+    );
+  });
+
+  test('A step whose text opens with a digit is reported', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given 2FA is on
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('(3:5)'), contains("step '2FA is on'")),
+        ),
+      ),
+    );
+  });
 }

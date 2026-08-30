@@ -52,6 +52,17 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   same applied to rule titles, to the title a scenario outline builds from its `Examples:` cells, to the
   title passed to `Hooks.beforeEach` and `Hooks.afterEach`, and to tag names. Apostrophes that cannot
   reach a delimiter — an ordinary `Test's scenario` — are left as they were.
+* Fix step text that names nothing failing the build with a `FormatterException` about generated code. A
+  step's Dart file and function are named after the ASCII letters and digits in its text, and where
+  there are none the generators wrote a step file called `.dart` holding `Future<void> (WidgetTester
+  tester) async`, plus an `await (tester);` call to go with it — neither of which compiles. That covers
+  step text in a non-Latin script (`Given アプリが起動している`), a step named entirely by a parameter or
+  an `<outline placeholder>`, one opening with a digit (`Given 2FA is on` became `2faisOn`), and one
+  opening with an underscore (`Given _debug mode is on` became a `_debugModeIsOn` private to the step
+  file, which the generated test imported and could not call). These now fail the build with the
+  feature file, the line and the column instead. Step text in another script
+  keeps working wherever the step also holds ASCII text to name it after, and accents are folded onto
+  ASCII, so `los diacríticos son útil` is unaffected.
 * Add `cucumber_gherkin` and `cucumber_messages` dependencies; drop the unused `build_config`.
 
 ## [2.1.4] - Dart Workspace fix
