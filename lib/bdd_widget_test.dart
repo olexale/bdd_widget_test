@@ -153,6 +153,7 @@ class FeatureBuilder implements Builder {
         packageRoot,
       ),
       input: contents,
+      inputPath: inputId.path,
       generatorOptions: options,
       includeIntegrationTestImport: isIntegrationTest,
       includeIntegrationTestBinding:
@@ -183,14 +184,12 @@ class FeatureBuilder implements Builder {
   Future<GeneratorOptions> _prepareOptions(String? packageRoot) async {
     final bddOptionsPath = 'bdd_options.yaml'.underPackageRoot(packageRoot);
 
-    final fileOptions =
-        _fileExists(bddOptionsPath)
-            ? readFromUri(Uri.file(bddOptionsPath))
-            : null;
-    final mergedOptions =
-        fileOptions != null
-            ? merge(generatorOptions, fileOptions)
-            : generatorOptions;
+    final fileOptions = _fileExists(bddOptionsPath)
+        ? readFromUri(Uri.file(bddOptionsPath))
+        : null;
+    final mergedOptions = fileOptions != null
+        ? merge(generatorOptions, fileOptions)
+        : generatorOptions;
     final options = await flattenOptions(mergedOptions, packageRoot);
     return options;
   }

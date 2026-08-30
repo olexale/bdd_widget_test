@@ -1,3 +1,70 @@
+## [3.0.0] - Official Gherkin parser
+
+Feature files are now parsed by [`cucumber_gherkin`](https://pub.dev/packages/cucumber_gherkin), the
+official Dart Gherkin parser, instead of the hand-written line scanner. All non-standard syntax this
+package supports keeps working unchanged: `After:` sections, raw Dart lines above `Feature:`,
+`@testMethodName: value` style tags, and several features in one file.
+
+* **BREAKING CHANGE**: Malformed feature files now fail the build instead of being silently accepted.
+  Previously the unrecognised lines were dropped and a test file was generated anyway — usually one
+  that quietly tested less than it looked like it did. The build now stops on stray text inside a
+  feature, a mistyped scenario (`Scenrio:`) or step keyword, a second `Background:` in the same
+  feature, and a file holding no feature keyword at all — a missing, mistyped (`Featur:`) or
+  commented-out `Feature:` line used to generate a test file with an empty `main()`. Errors name the
+  feature file, the line and the column.
+  Description blocks are the exception, and it is one Gherkin itself defines: the lines between a
+  keyword and the first step under it are description text, where any non-keyword line is legal. So
+  prose is still prose — a description line that merely looks like a step, a `*` bullet or a
+  sentence opening with `And`, is kept as documentation. The cost is that a keyword mistyped in that
+  same position — a scenario's first step, or a `Scenrio:` written directly under `Feature:` — is
+  read as description too, and the steps under it are dropped without an error, unless the block ends
+  up with no steps at all, in which case it is reported. Written anywhere below a block's first step,
+  a mistyped keyword is always reported.
+* **BREAKING CHANGE**: `Scenario Outline` test names no longer carry a fragment of the keyword.
+  `Scenario Outline: eating` now generates `testWidgets('''eating (12, 5, 7)''')` rather than
+  `testWidgets('''Outline: eating (12, 5, 7)''')`. Update any `--plain-name` filters, IDE run
+  configurations, or hooks that match on the scenario title — `Hooks.beforeEach` and
+  `Hooks.afterEach` receive the new value.
+* **BREAKING CHANGE**: Steps written with the `*` keyword now generate step calls. The line was
+  previously unrecognised and dropped, so such scenarios produced an empty test body. Those tests
+  now run their steps and may fail.
+* **BREAKING CHANGE**: Minimum Dart SDK is now 3.8.0.
+* Add support for `Rule:`. Each rule becomes a nested `group()`, and a rule's `Background:` applies
+  only to the scenarios inside it, running after the feature's own background. Tags on a rule are
+  inherited by the scenarios it contains. Previously the `Rule:` line was ignored and its background
+  leaked onto unrelated scenarios.
+* Add support for localised feature files. All 80 Gherkin dialects work via the `# language: fr`
+  header, including localised keywords for features, backgrounds, scenario outlines and examples.
+  As in Gherkin, the header counts only above the first feature keyword; written below one it is an
+  ordinary comment and the file is read in English. An unsupported language code is reported.
+  `After:` sections work in them too, and are rewritten into the keyword the file titles its
+  scenarios with.
+* Fix a scenario outline with more than one `Examples:` block generating a spurious test case from
+  the second block's header row.
+* Fix lines above `Feature:` being dropped when the feature file starts with a blank line, which
+  silently removed custom imports from the generated file.
+* Fix several tags written on one line (`@integration @slow`) becoming a single tag named
+  `integration @slow`, which no `--tags` filter can ever match. Each tag on the line is now emitted
+  separately, and a tag a `Rule:` shares with a scenario inside it is emitted once instead of twice.
+* Fix titles that contain `$` or `'''` generating a file that fails to compile. `Feature: Price is $100`
+  produced `group('''Price is $100''')`, which Dart reads as an interpolation, and the build died with a
+  `FormatterException` quoting lines of a generated file rather than the `.feature` file behind it. The
+  same applied to rule titles, to the title a scenario outline builds from its `Examples:` cells, to the
+  title passed to `Hooks.beforeEach` and `Hooks.afterEach`, and to tag names. Apostrophes that cannot
+  reach a delimiter — an ordinary `Test's scenario` — are left as they were.
+* Fix step text that names nothing failing the build with a `FormatterException` about generated code. A
+  step's Dart file and function are named after the ASCII letters and digits in its text, and where
+  there are none the generators wrote a step file called `.dart` holding `Future<void> (WidgetTester
+  tester) async`, plus an `await (tester);` call to go with it — neither of which compiles. That covers
+  step text in a non-Latin script (`Given アプリが起動している`), a step named entirely by a parameter or
+  an `<outline placeholder>`, one opening with a digit (`Given 2FA is on` became `2faisOn`), and one
+  opening with an underscore (`Given _debug mode is on` became a `_debugModeIsOn` private to the step
+  file, which the generated test imported and could not call). These now fail the build with the
+  feature file, the line and the column instead. Step text in another script
+  keeps working wherever the step also holds ASCII text to name it after, and accents are folded onto
+  ASCII, so `los diacríticos son útil` is unaffected.
+* Add `cucumber_gherkin` and `cucumber_messages` dependencies; drop the unused `build_config`.
+
 ## [2.1.4] - Dart Workspace fix
 
 * Add package root resolution and update step folder handling for workspace builds
@@ -92,9 +159,9 @@
 
 ## [1.6.1] - Allow custom tester type, name and scenario parameters (by @mkhtradm01)
 
-* Allow addition of custom tester type from other test packages using `@testerType:` tag the value can be like `PatrolIntegrationTester` instead of `WidgetTester`(default) 
+* Allow addition of custom tester type from other test packages using `@testerType:` tag the value can be like `PatrolIntegrationTester` instead of `WidgetTester`(default)
 * Allow addition of custom tester name using `@testerName:` tag, the value can be like `$`, `integrationTest` instead of `tester` leaving `tester`(default)
-* Allow passing scenario parameters using `@scenarioParams:` tag, for example: `@scenarioParams: skip: false, timeout: Timeout(Duration(seconds: 1))` and many more. 
+* Allow passing scenario parameters using `@scenarioParams:` tag, for example: `@scenarioParams: skip: false, timeout: Timeout(Duration(seconds: 1))` and many more.
 * Though these additions do not affect predefined steps.
   
 ## [1.6.0] - Change step folder destination
@@ -198,7 +265,7 @@ If you didn't change the step folder name, you should not notice this change. Ho
 
 ## [0.1.7] - Internal release
 
-* Use `extra_pedantic` 
+* Use `extra_pedantic`
 * Update dependencies
 
 ## [0.1.6] - 'After' keyword

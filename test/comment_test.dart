@@ -76,19 +76,17 @@ void main() {
     expect(feature.dartContent, expectedFeatureDart);
   });
 
-  test('Comments after first feature are ignored', () {
+  test('Description lines under a keyword are ignored', () {
     const featureFile = '''
 Feature: Testing feature
-  This is a comment
+  This is a description
   Scenario: Testing scenario
+    This is a description too
     Given the app is running
 
-This is another comment
 Feature: Testing feature 2
-  This is a comment
   Scenario: Testing scenario
     Given the app is running
-    This is a comment too
 ''';
 
     const expectedFeatureDart = '''

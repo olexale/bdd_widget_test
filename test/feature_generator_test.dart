@@ -345,6 +345,34 @@ dev_dependencies:
     const scenario = 'integration';
     await generate(scenario, expected, null, 'integration_test');
   });
+
+  test('A parse error names the feature file, not the folder', () async {
+    const broken = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given the app is running
+
+This line belongs nowhere
+''';
+    const path = 'test/builder_scenarios/parse_error';
+    final logs = <String>[];
+
+    await testBuilder(
+      featureBuilder(BuilderOptions.empty),
+      {'$pkgName|$path/sample.feature': broken},
+      rootPackage: pkgName,
+      onLog: (log) => logs.add(log.message),
+    );
+
+    // The build reports through the log rather than by throwing, and build_runner
+    // prefixes every record with the input it was working on. Matching the
+    // parser's own `Failed to parse <path>:` prefix is what separates the file
+    // the error came from from the file merely being built.
+    expect(
+      logs.join(),
+      contains('Failed to parse $path/sample.feature:'),
+    );
+  });
 }
 
 // ----------------------------------------------------------------------------
@@ -366,12 +394,11 @@ Future<void> generate(
     featureBuilder(options ?? BuilderOptions.empty),
     srcs,
     rootPackage: pkgName,
-    outputs:
-        expectedOutput != null
-            ? {
-              '$pkgName|$path/sample_test.dart': decodedMatches(expectedOutput),
-            }
-            : null,
+    outputs: expectedOutput != null
+        ? {
+            '$pkgName|$path/sample_test.dart': decodedMatches(expectedOutput),
+          }
+        : null,
   );
 }
 

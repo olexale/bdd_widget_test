@@ -236,7 +236,7 @@ import './step/the_following_songs.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Testing scenario ('Camel')\'\'\', (tester) async {
+    testWidgets(\'\'\'Testing scenario ('Camel')\'\'\', (tester) async {
       await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
       await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
       await bandIsOnTour(tester, 'Camel');
@@ -292,14 +292,14 @@ import './step/the_following_users_exist.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Testing scenario ('Camel')\'\'\', (tester) async {
+    testWidgets(\'\'\'Testing scenario ('Camel')\'\'\', (tester) async {
       await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
       await bandIsOnTour(tester, 'Camel');
       await iWait(tester);
       await theFollowingUsersExist(tester, 'Oleksandr', '@olexale');
       await theFollowingUsersExist(tester, 'Flutter', '@FlutterDev');
     });
-    testWidgets(\'\'\'Outline: Testing scenario ('Pearl Jam')\'\'\', (tester) async {
+    testWidgets(\'\'\'Testing scenario ('Pearl Jam')\'\'\', (tester) async {
       await theFollowingSongs(tester, const bdd.DataTable([['artist', 'title'], ['The Beatles', 'Let It Be'], ['Camel', 'Slow yourself down']]));
       await bandIsOnTour(tester, 'Pearl Jam');
       await iWait(tester);
@@ -515,12 +515,12 @@ import './step/i_see_result.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Add and remove buttons work together (20, '20', 'blue')\'\'\', (tester) async {
+    testWidgets(\'\'\'Add and remove buttons work together (20, '20', 'blue')\'\'\', (tester) async {
       await theAppIsRunning(tester);
       await iTapAddIconTimes(tester, 20);
       await iSeeResult(tester, const bdd.DataTable([['counter', 'color'], ['20', 'blue']]));
     });
-    testWidgets(\'\'\'Outline: Add and remove buttons work together (25, '25', 'green')\'\'\', (tester) async {
+    testWidgets(\'\'\'Add and remove buttons work together (25, '25', 'green')\'\'\', (tester) async {
       await theAppIsRunning(tester);
       await iTapAddIconTimes(tester, 25);
       await iSeeResult(tester, const bdd.DataTable([['counter', 'color'], ['25', 'green']]));
@@ -562,7 +562,7 @@ import './step/i_verify_welcome_messages_with.dart';
 
 void main() {
   group(\'\'\'Testing feature\'\'\', () {
-    testWidgets(\'\'\'Outline: Testing visibility of data table in examples ('initial')\'\'\', (tester) async {
+    testWidgets(\'\'\'Testing visibility of data table in examples ('initial')\'\'\', (tester) async {
       await iLoadTheSplashScreen(tester);
       await iVerifyWelcomeMessagesWith(tester, 'initial', const bdd.DataTable([['text'], ['Welcome']]));
     });

@@ -24,27 +24,96 @@ import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:bdd_widget_test/src/util/string_utils.dart';
 import 'package:diacritic/diacritic.dart';
 
+/// The step file's name, without the extension: "the app is running" becomes
+/// `the_app_is_running`.
+///
+/// Never empty, because [getStepMethodName] refuses the step text that would
+/// make it so — a `.dart` file with an empty stem is not a file anyone can
+/// import, let alone name a function inside.
 String getStepFilename(String stepText) {
   final step = getStepMethodName(stepText);
   return underscore(step);
 }
 
 String getStepMethodName(String stepText) {
-  final step = parseRawStepLine(stepText).first;
-  return _camelizedString(step);
+  final identifier = stepIdentifier(stepText);
+  if (identifier == null) {
+    throw FormatException(unnamedStepError(stepText));
+  }
+  return identifier;
 }
 
-String getStepMethodCall(
-  String stepLine,
-  String customTesterName, {
-  List<String>? forceParams,
-}) {
+String getStepMethodCall(String stepLine, String customTesterName) {
   final step = parseRawStepLine(stepLine);
-  final parameters = [
-    customTesterName,
-    if (forceParams != null) ...forceParams else ...step.skip(1),
-  ].join(', ');
-  return '${_camelizedString(step[0])}($parameters)';
+  final parameters = [customTesterName, ...step.skip(1)].join(', ');
+  final identifier = stepIdentifier(stepLine);
+  if (identifier == null) {
+    throw FormatException(unnamedStepError(stepLine));
+  }
+  return '$identifier($parameters)';
+}
+
+/// The Dart identifier a step is named after, or null when its text names
+/// nothing at all.
+///
+/// Step names are ASCII: [camelize] keeps letters, digits and underscores and
+/// throws away everything else. Text written in another script —
+/// `Given アプリが起動している` — is therefore thrown away entirely, and text opening
+/// with a digit (`Given 2FA is on`) leaves behind a `2faisOn`, which Dart
+/// refuses as a name. Both are valid Gherkin, and both used to generate
+/// `import './step/.dart';` alongside an `await (tester);` call — two files that
+/// do not compile, over a feature file that has nothing wrong with it.
+///
+/// A leading underscore is refused one step further along the same road:
+/// `Given _debug mode is on` names `_debugModeIsOn`, which Dart accepts as a
+/// declaration but keeps private to the step file holding it, so the generated
+/// test that imports that file cannot call it.
+///
+/// The parser asks this question of every step before anything is generated, so
+/// the mistake is reported against the `.feature` line that holds it (see
+/// `_rejectUnnamedSteps` in `feature_parser.dart`). Refusing here is what keeps
+/// any other caller from emitting that pair of files anyway.
+String? stepIdentifier(String stepText) {
+  final candidate = _stepNameCandidate(stepText);
+  return _isUsable(candidate) ? candidate : null;
+}
+
+/// The name a step's text boils down to, before anything asks whether Dart can
+/// use it.
+String _stepNameCandidate(String stepText) =>
+    _camelizedString(parseRawStepLine(stepText).first);
+
+/// Whether the generated test can import a step file naming its function
+/// [candidate] and then call it.
+bool _isUsable(String candidate) =>
+    candidate.isNotEmpty && !_unusableStart.hasMatch(candidate);
+
+/// What such a function may not start with: a digit, which is no name at all,
+/// or an underscore, which is a name only the step file itself can see.
+final RegExp _unusableStart = RegExp(r'^[\d_]');
+
+/// The mistake behind [stepIdentifier] returning null, in the words both
+/// callers use: the parser puts the step's position in front of it, the
+/// generators have no position to give and stand alone.
+String unnamedStepError(String stepText) =>
+    "step '${stepText.trim()}' produces no valid Dart identifier: "
+    '${_whyUnusable(_stepNameCandidate(stepText))}';
+
+/// Why [_isUsable] turned [candidate] down, and what to do about it. The
+/// branches answer that method's conditions one for one, so a new condition
+/// wants a branch here to explain it.
+String _whyUnusable(String candidate) {
+  if (candidate.isEmpty) {
+    return 'its text holds no ASCII letter or digit to name it after. '
+        'Rename the step, or give it a word of ASCII';
+  }
+  if (candidate.startsWith('_')) {
+    return "'$candidate' is private to the step file it would be written in, "
+        'where the generated test cannot call it. Rename the step so its text '
+        'does not open with an underscore';
+  }
+  return "'$candidate' is not a name Dart accepts. Rename the step so its "
+      'text does not open with a digit';
 }
 
 String generateStepDart(

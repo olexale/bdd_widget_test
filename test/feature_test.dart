@@ -17,7 +17,8 @@ import 'package:flutter_test/flutter_test.dart';
   const expectedHeader = '''$expectedComment$expectedImports''';
 
   test('Empty feature file', () {
-    const expectedFeatureDart = '''
+    const expectedFeatureDart =
+        '''
 $expectedComment$expectedImports
 void main() {
 }
@@ -32,7 +33,8 @@ void main() {
   });
 
   test('simplest feature file parses', () {
-    const expectedFeatureDart = '''
+    const expectedFeatureDart =
+        '''
 ${expectedHeader}import './step/the_app_is_running.dart';
 
 void main() {
@@ -53,7 +55,8 @@ void main() {
   });
 
   test('Step with parameters', () {
-    const expectedFeatureDart = '''
+    const expectedFeatureDart =
+        '''
 ${expectedHeader}import './step/the_app_is_running.dart';
 import './step/i_see_text.dart';
 import './step/i_see_icon.dart';
@@ -78,7 +81,8 @@ void main() {
   });
 
   test('Several features in one file', () {
-    const expectedFeatureDart = '''
+    const expectedFeatureDart =
+        '''
 $expectedComment// some comment
 
 ${expectedImports}import './step/the_app_is_running.dart';
@@ -109,7 +113,8 @@ void main() {
   });
 
   test('Feature with special characters in names', () {
-    const expectedFeatureDart = '''
+    const expectedFeatureDart =
+        '''
 $expectedComment// some comment
 
 ${expectedImports}import './step/the_app_is_running.dart';
@@ -141,7 +146,8 @@ Feature: "Testing" <Special> {Characters}
   });
 
   test('Feature with very long step description', () {
-    const expectedFeatureDart = '''
+    const expectedFeatureDart =
+        '''
 ${expectedHeader}import './step/the_app_is_running.dart';
 import './step/i_verify_that_this_is_a_very_long_step_description_that_tests_whether_the_framework_can_handle_extremely_long_step_names_without_issues.dart';
 
@@ -169,7 +175,8 @@ Feature: Testing feature
   });
 
   test('Multiple scenarios in single feature', () {
-    const expectedFeatureDart = '''
+    const expectedFeatureDart =
+        '''
 ${expectedHeader}import './step/the_app_is_running.dart';
 import './step/i_see_text.dart';
 import './step/i_tap_icon.dart';
