@@ -10,6 +10,9 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   that quietly tested less than it looked like it did. The build now stops on stray text inside a
   feature, a mistyped scenario keyword (`Scenrio:`) whose steps were left orphaned, a mistyped step
   keyword, and a second `Background:` in the same feature. Errors report the line and column.
+  Prose is still prose: a description line that merely looks like a step — a `*` bullet, or a
+  sentence opening with `And` — is kept as documentation whenever the block around it has steps.
+  A block that ends up with no steps at all and whose description reads like steps is reported.
 * **BREAKING CHANGE**: `Scenario Outline` test names no longer carry a fragment of the keyword.
   `Scenario Outline: eating` now generates `testWidgets('''eating (12, 5, 7)''')` rather than
   `testWidgets('''Outline: eating (12, 5, 7)''')`. Update any `--plain-name` filters, IDE run
@@ -25,6 +28,8 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   leaked onto unrelated scenarios.
 * Add support for localised feature files. All 80 Gherkin dialects work via the `# language: fr`
   header, including localised keywords for features, backgrounds, scenario outlines and examples.
+  `After:` sections work in them too, and are rewritten into the keyword the file titles its
+  scenarios with.
 * Fix a scenario outline with more than one `Examples:` block generating a spurious test case from
   the second block's header row.
 * Fix lines above `Feature:` being dropped when the feature file starts with a blank line, which

@@ -82,6 +82,8 @@ You can have as many steps as you like, but it's recommended you keep the number
 
 Feature files are parsed with [`cucumber_gherkin`](https://pub.dev/packages/cucumber_gherkin), the official Dart Gherkin parser, so a file that is not valid Gherkin fails the build with the offending line and column rather than being silently ignored. A mistyped keyword, stray text between scenarios, or a second `Background:` in the same feature are all reported instead of quietly producing a test file that tests less than it appears to.
 
+A description is still a description, though. Gherkin lets one hold any text that is not a keyword line, so a bullet list or a sentence opening with `And` under a `Feature:` or `Rule:` is kept as documentation as long as that block has steps under it.
+
 The `Scenario Outline` keyword can be used to run the same `Scenario` multiple times, with different combinations of values.
 
 A Scenario Outline must contain an `Examples` (or `Scenarios`) section. Its steps are interpreted as a template which is never directly run. Instead, the Scenario Outline is run once for each row in the Examples section beneath it (not counting the first header row).
@@ -189,7 +191,7 @@ Fonctionnalité: Compteur
   Scénario: La valeur initiale est 0
     Alors I see {'0'} text
 ```
-Step text itself is still whatever you write — only the keywords are translated. See the [full list of dialects](https://cucumber.io/docs/gherkin/languages/) for the keywords of each language.
+Step text itself is still whatever you write — only the keywords are translated. The package's own extensions keep their spelling: `After:` is written in English in a French feature file as much as in an English one, and is rewritten internally into the keyword the file titles its scenarios with. See the [full list of dialects](https://cucumber.io/docs/gherkin/languages/) for the keywords of each language.
 
 ## Tags
 

@@ -11,8 +11,10 @@ import 'package:cucumber_gherkin/src/language/dialects_builtin.g.dart';
 import 'package:cucumber_gherkin/src/language/gherkin_language_keywords.dart';
 import 'package:cucumber_messages/cucumber_messages.dart' as messages;
 
-/// `After:` is a bdd_widget_test keyword, so unlike everything else the
-/// pre-pass looks for, it is not translated.
+/// `After:` is a bdd_widget_test keyword of our own, so it has no dialect
+/// equivalent and is looked for in this spelling in every language. What does
+/// change with the dialect is the keyword it gets rewritten to — see
+/// [_scenarioKeyword].
 const _afterMarker = 'After:';
 
 /// Gherkin's own `# language: xx` header.
@@ -30,6 +32,26 @@ GherkinLanguageKeywords _dialectOf(List<String> source) {
   return builtinDialects['en']!;
 }
 
+/// The keyword `After:` is rewritten into. Gherkin matches a dialect's own
+/// keywords and nothing else, so the English `Scenario:` would read as prose in
+/// a French file, and the `After:` steps would be lost.
+///
+/// The keyword the file already titles its scenarios with is preferred, so the
+/// substitute reads like the rest of the file; a file that writes no plain
+/// scenario title (outlines only, or an `After:` block alone) gets the
+/// dialect's first one, which parses just as well.
+String _scenarioKeyword(
+  List<String> source,
+  GherkinLanguageKeywords dialect,
+) {
+  for (final keyword in dialect.scenario) {
+    if (source.any((line) => line.startsWith('$keyword:'))) {
+      return keyword;
+    }
+  }
+  return dialect.scenario.first;
+}
+
 /// `After:` is not a Gherkin keyword. It is rewritten into a scenario with
 /// this reserved name so the official parser handles its steps (and their data
 /// tables) natively, then mapped back into [Feature.after].
@@ -42,8 +64,9 @@ const _afterScenarioName = '__bdd_after__';
 /// lines above `Feature:` are passed through, tags such as
 /// `@testMethodName: foo` are normalised to a whitespace-free form, `After:`
 /// blocks are rewritten, and files holding several features are parsed once
-/// per feature. The pre-pass only ever replaces a line with another line of
-/// its own, and leaves indentation alone, so reported error positions match
+/// per feature — rewritten with the file's own scenario keyword, since Gherkin
+/// accepts no other. The pre-pass only ever replaces a line with another line
+/// of its own, and leaves indentation alone, so reported error positions match
 /// the original file.
 FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
   final raw = input.split('\n');
@@ -51,6 +74,7 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
   // text; only the lines handed to the parser keep their original indentation.
   final source = raw.map((line) => line.trim()).toList();
   final dialect = _dialectOf(source);
+  final afterKeyword = _scenarioKeyword(source, dialect);
   final featureMarkers = dialect.feature.map((keyword) => '$keyword:');
   final stepMarkers = [
     ...dialect.given,
@@ -82,7 +106,7 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
 
   final normalised = [
     for (var i = 0; i < raw.length; i++)
-      if (headerIndices.contains(i)) '' else _normalise(raw[i]),
+      if (headerIndices.contains(i)) '' else _normalise(raw[i], afterKeyword),
   ];
 
   final starts = _chunkStarts(source, featureLines);
@@ -157,8 +181,24 @@ messages.Feature? _parse(
 
 /// Gherkin lets a description block absorb every line that is not a keyword
 /// line — steps included. So a mistyped `Scenrio:` parses cleanly and quietly
-/// turns the steps under it into prose. A step inside a description is always
-/// a mistake, so it is reported here rather than dropped.
+/// turns the steps under it into prose.
+///
+/// The parser cannot tell that prose apart from a real orphaned step: a bullet
+/// like `* adds a counter` is legitimate Gherkin in a description, and the same
+/// spelling is a symptom of a mistyped keyword one line later. What it can tell
+/// is the consequence — steps that were swallowed by a description leave the
+/// block they were meant for with no steps at all, and that is the case where a
+/// test file gets built running less than it looks like. So only step-looking
+/// lines in a block that ends up step-less are reported; a block with steps of
+/// its own keeps its prose, however keyword-shaped a line of it looks.
+///
+/// The residual false positive is a step-less block whose description reads
+/// like steps. Such a block generates a test that asserts nothing — or, for a
+/// feature, a group with no tests in it — which is the failure this check
+/// exists to catch. The matching blind spot is a mistyped `Background:`
+/// (`Backround:`, say) in a feature that has steps elsewhere: those steps are
+/// still lost, but the block has steps and the lines read as prose. The test
+/// then fails on the missing step rather than the build failing on the typo.
 void _rejectStepsInDescriptions(
   messages.Feature feature,
   List<String> source,
@@ -167,6 +207,9 @@ void _rejectStepsInDescriptions(
   List<String> stepMarkers,
 ) {
   for (final description in _descriptions(feature)) {
+    if (description.hasSteps) {
+      continue;
+    }
     for (final line in description.text.split('\n')) {
       final step = line.trim();
       if (!stepMarkers.any(step.startsWith)) {
@@ -189,34 +232,53 @@ void _rejectStepsInDescriptions(
 }
 
 /// Every description block in the feature, rules and their children included,
-/// each paired with the 1-based line of the keyword it hangs off. That line is
-/// what makes a description's position in the file recoverable — the parser
-/// reports a location for every keyword, but not for the description text.
-typedef _Description = ({String text, int keywordLine});
+/// each paired with the 1-based line of the keyword it hangs off and whether
+/// the block it belongs to has any steps. The line is what makes a
+/// description's position in the file recoverable — the parser reports a
+/// location for every keyword, but not for the description text.
+typedef _Description = ({
+  String text,
+  int keywordLine,
+  bool hasSteps,
+});
 
 Iterable<_Description> _descriptions(messages.Feature feature) sync* {
-  yield (text: feature.description, keywordLine: feature.location.line);
+  yield (
+    text: feature.description,
+    keywordLine: feature.location.line,
+    hasSteps: _hasSteps(feature.children),
+  );
   for (final child in feature.children) {
     final background = child.background;
     if (background != null) {
       yield (
         text: background.description,
         keywordLine: background.location.line,
+        hasSteps: background.steps.isNotEmpty,
       );
     }
     final scenario = child.scenario;
     if (scenario != null) {
-      yield (text: scenario.description, keywordLine: scenario.location.line);
+      yield (
+        text: scenario.description,
+        keywordLine: scenario.location.line,
+        hasSteps: scenario.steps.isNotEmpty,
+      );
     }
     final rule = child.rule;
     if (rule != null) {
-      yield (text: rule.description, keywordLine: rule.location.line);
+      yield (
+        text: rule.description,
+        keywordLine: rule.location.line,
+        hasSteps: _ruleHasSteps(rule),
+      );
       for (final ruleChild in rule.children) {
         final ruleBackground = ruleChild.background;
         if (ruleBackground != null) {
           yield (
             text: ruleBackground.description,
             keywordLine: ruleBackground.location.line,
+            hasSteps: ruleBackground.steps.isNotEmpty,
           );
         }
         final ruleScenario = ruleChild.scenario;
@@ -224,6 +286,7 @@ Iterable<_Description> _descriptions(messages.Feature feature) sync* {
           yield (
             text: ruleScenario.description,
             keywordLine: ruleScenario.location.line,
+            hasSteps: ruleScenario.steps.isNotEmpty,
           );
         }
       }
@@ -231,10 +294,35 @@ Iterable<_Description> _descriptions(messages.Feature feature) sync* {
   }
 }
 
+/// Whether any scenario or background under these feature children has a step,
+/// rules included. A feature whose steps all ended up in a description has
+/// none, which is what makes those steps worth reporting.
+bool _hasSteps(Iterable<messages.FeatureChild> children) {
+  for (final child in children) {
+    if ((child.background?.steps.isNotEmpty ?? false) ||
+        (child.scenario?.steps.isNotEmpty ?? false)) {
+      return true;
+    }
+    final rule = child.rule;
+    if (rule != null && _ruleHasSteps(rule)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/// The same for one rule. Gherkin nests rules no deeper than this, so there is
+/// nothing below a rule's own children to walk into.
+bool _ruleHasSteps(messages.Rule rule) => rule.children.any(
+  (child) =>
+      (child.background?.steps.isNotEmpty ?? false) ||
+      (child.scenario?.steps.isNotEmpty ?? false),
+);
+
 /// Rewrites one line into something the official parser accepts. Leading
 /// whitespace is preserved so error positions still point at the original
 /// column.
-String _normalise(String line) {
+String _normalise(String line, String afterKeyword) {
   final trimmed = line.trim();
   final indent = line.substring(0, line.length - line.trimLeft().length);
   if (trimmed.startsWith('@')) {
@@ -250,7 +338,7 @@ String _normalise(String line) {
     return '$indent$tags';
   }
   if (trimmed.startsWith(_afterMarker)) {
-    return '${indent}Scenario: $_afterScenarioName';
+    return '$indent$afterKeyword: $_afterScenarioName';
   }
   return line;
 }
