@@ -11,7 +11,7 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   feature, a mistyped scenario keyword (`Scenrio:`) whose steps were left orphaned, a mistyped step
   keyword, a second `Background:` in the same feature, and a file holding no feature keyword at all
   — a missing, mistyped (`Featur:`) or commented-out `Feature:` line used to generate a test file
-  with an empty `main()`. Errors report the line and column.
+  with an empty `main()`. Errors name the feature file, the line and the column.
   Prose is still prose: a description line that merely looks like a step — a `*` bullet, or a
   sentence opening with `And` — is kept as documentation whenever the block around it has steps.
   A block that ends up with no steps at all and whose description reads like steps is reported.

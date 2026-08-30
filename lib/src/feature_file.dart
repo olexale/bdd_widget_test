@@ -12,12 +12,16 @@ class FeatureFile {
     required this.featureDir,
     required this.package,
     required String input,
+    // The path of the file `input` came from, named in parse errors. Falls back
+    // to the directory when the caller has no path to offer, which is all an
+    // error message can then point at.
+    String? inputPath,
     this.includeIntegrationTestImport = false,
     this.includeIntegrationTestBinding = false,
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
     this.packageRoot,
-  }) : _model = parseFeatureFile(input, featureDir),
+  }) : _model = parseFeatureFile(input, inputPath ?? featureDir),
        hookFile = generatorOptions.addHooks
            ? HookFile.create(
                featureDir: featureDir,

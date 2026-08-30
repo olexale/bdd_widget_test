@@ -13,7 +13,8 @@ This line belongs nowhere
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,
@@ -22,7 +23,7 @@ This line belongs nowhere
           (e) => e.message,
           'message',
           allOf(
-            contains('test.feature'),
+            contains('test/test.feature'),
             contains('(5:1)'),
             contains('This line belongs nowhere'),
           ),
@@ -42,7 +43,8 @@ Feature: Testing feature
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,
@@ -66,7 +68,8 @@ Feature: Testing feature
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,
@@ -98,7 +101,8 @@ Feature: Two
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,
@@ -124,7 +128,8 @@ Feature: Testing feature
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,
@@ -153,7 +158,8 @@ Feature: Testing feature
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
+      featureDir: 'test',
+      inputPath: 'test/test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -173,7 +179,8 @@ Feature: Testing feature
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
+      featureDir: 'test',
+      inputPath: 'test/test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -190,7 +197,8 @@ Feature: Testing feature
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
+      featureDir: 'test',
+      inputPath: 'test/test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -212,7 +220,8 @@ Feature: Testing feature
 
       expect(
         () => FeatureFile(
-          featureDir: 'test.feature',
+          featureDir: 'test',
+          inputPath: 'test/test.feature',
           package: 'test',
           input: featureFile,
         ).dartContent,
@@ -237,7 +246,8 @@ Feature: Testing feature
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
+      featureDir: 'test',
+      inputPath: 'test/test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -259,7 +269,8 @@ Feature: Testing feature
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
+      featureDir: 'test',
+      inputPath: 'test/test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -280,7 +291,8 @@ Feature: Testing feature
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
+      featureDir: 'test',
+      inputPath: 'test/test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -300,7 +312,8 @@ Featur: Testing feature
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,
@@ -329,7 +342,8 @@ Testing feature
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,
@@ -354,7 +368,8 @@ Testing feature
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,
@@ -380,7 +395,8 @@ Testing feature
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
+      featureDir: 'test',
+      inputPath: 'test/test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -398,7 +414,8 @@ Feature: Testing feature
 ''';
 
     final feature = FeatureFile(
-      featureDir: 'test.feature',
+      featureDir: 'test',
+      inputPath: 'test/test.feature',
       package: 'test',
       input: featureFile,
     );
@@ -415,7 +432,8 @@ Feature: Testing feature
 
     expect(
       () => FeatureFile(
-        featureDir: 'test.feature',
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
         package: 'test',
         input: featureFile,
       ).dartContent,

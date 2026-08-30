@@ -153,6 +153,7 @@ class FeatureBuilder implements Builder {
         packageRoot,
       ),
       input: contents,
+      inputPath: inputId.path,
       generatorOptions: options,
       includeIntegrationTestImport: isIntegrationTest,
       includeIntegrationTestBinding:
