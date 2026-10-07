@@ -248,4 +248,52 @@ Feature: Testing feature
       ),
     );
   });
+
+  // Tags attach to the keyword below them, so the tags above `After:` go with
+  // the block. Left behind, they would land on the next scenario instead.
+  test('Tags above After: stay with it, not the next scenario', () {
+    const featureFile = '''
+Feature: Testing feature
+  @scenarioParams: skip: true
+  After:
+    Then I clean up
+
+  @smoke
+  Scenario: Testing scenario
+    Given the app is running
+''';
+
+    final dartContent = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    ).dartContent;
+    expect(
+      dartContent,
+      allOf(
+        contains('await iCleanUp(tester);'),
+        contains("tags: ['smoke']"),
+        isNot(contains('skip: true')),
+      ),
+    );
+  });
+
+  test('Tags above an After: that ends the feature are not left dangling', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given the app is running
+
+  @cleanup
+  After:
+    Then I clean up
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, contains('await iCleanUp(tester);'));
+  });
 }

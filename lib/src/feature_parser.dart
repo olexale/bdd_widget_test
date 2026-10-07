@@ -276,6 +276,13 @@ messages.Feature? _parse(
 /// feature, rule, background or scenario keyword, a tag, or another `After:`.
 /// Inside a doc string nothing opens anything, so a `@` or a `Scenario:` there
 /// is still the block's.
+///
+/// The tag lines directly above an `After:` are the block's too. Gherkin
+/// attaches tags to the keyword below them, so left in the main parse they
+/// would land on whatever follows the blanked block — the next scenario, which
+/// a `@scenarioParams: skip: true` meant for the teardown would then skip — or,
+/// with nothing below, be a tag with no keyword to attach to, which Gherkin
+/// rejects.
 Set<int> _afterBlockLines(
   List<String> source,
   int start,
@@ -295,12 +302,21 @@ Set<int> _afterBlockLines(
     _afterMarker,
   ];
   final lines = <int>{};
+  final tags = <int>[];
   var inBlock = false;
   String? docString;
   for (var i = start; i < end; i++) {
     final line = source[i];
     if (docString == null && openers.any(line.startsWith)) {
       inBlock = line.startsWith(_afterMarker);
+      if (line.startsWith('@')) {
+        tags.add(i);
+        continue;
+      }
+      if (inBlock) {
+        lines.addAll(tags);
+      }
+      tags.clear();
     } else if (docString == null && _docStringFences.any(line.startsWith)) {
       docString = line.substring(0, 3);
     } else if (docString != null && line.startsWith(docString)) {
@@ -388,6 +404,13 @@ Never _rejectMissingFeature(
 /// (`Backround:`, say) in a feature that has steps elsewhere: those steps are
 /// still lost, but the block has steps and the lines read as prose. The test
 /// then fails on the missing step rather than the build failing on the typo.
+///
+/// A step keyword written with a colon — `Given: the app is running` — is the
+/// exception to the exception. Prose under a scenario or a background has no
+/// reason to read like that, so there it is reported even when the block has
+/// steps: it is a step Gherkin does not recognise, sitting above the ones it
+/// does, and would otherwise be dropped from a test that still runs the rest.
+/// A feature or rule description is free text above everything, and keeps it.
 void _rejectStepsInDescriptions(
   messages.Feature feature,
   List<String> source,
@@ -397,13 +420,13 @@ void _rejectStepsInDescriptions(
   required bool afterHasSteps,
 }) {
   for (final description in _descriptions(feature, afterHasSteps)) {
-    if (description.hasSteps) {
-      continue;
-    }
     for (final line in description.text.split('\n')) {
       final step = line.trim();
       final colon = _colonKeyword(step, stepMarkers);
       if (colon == null && !stepMarkers.any(step.startsWith)) {
+        continue;
+      }
+      if (description.hasSteps && (colon == null || !description.holdsSteps)) {
         continue;
       }
       // A description starts on the line after the keyword that owns it, so
@@ -412,14 +435,14 @@ void _rejectStepsInDescriptions(
       // parsed fine.
       final index = source.indexOf(step, description.keywordLine);
       final column = index == -1 ? 0 : raw[index].indexOf(step) + 1;
-      final advice = colon == null
-          ? 'check the keyword above it'
-          : 'a step keyword takes no colon, so write '
+      final problem = colon == null
+          ? 'is not part of a scenario — check the keyword above it'
+          : 'is not read as a step — a step keyword takes no colon, so write '
                 "'$colon${step.substring(colon.trimRight().length + 1).trimLeft()}'";
       throw FormatException(
         'Failed to parse $uri:\n'
         '  ${index == -1 ? '' : '(${index + 1}:$column): '}'
-        "step '$step' is not part of a scenario — $advice",
+        "step '$step' $problem",
       );
     }
   }
@@ -488,6 +511,10 @@ typedef _Description = ({
   String text,
   int keywordLine,
   bool hasSteps,
+  // Whether steps are written directly under the keyword — a scenario or a
+  // background — rather than under blocks nested in it, as for a feature or a
+  // rule.
+  bool holdsSteps,
 });
 
 Iterable<_Description> _descriptions(
@@ -500,6 +527,7 @@ Iterable<_Description> _descriptions(
     // `After:` blocks are parsed apart from the feature, so their steps are
     // not among its children, but they are steps of the feature all the same.
     hasSteps: afterHasSteps || _hasSteps(feature.children),
+    holdsSteps: false,
   );
   for (final child in feature.children) {
     final background = child.background;
@@ -508,6 +536,7 @@ Iterable<_Description> _descriptions(
         text: background.description,
         keywordLine: background.location.line,
         hasSteps: background.steps.isNotEmpty,
+        holdsSteps: true,
       );
     }
     final scenario = child.scenario;
@@ -516,6 +545,7 @@ Iterable<_Description> _descriptions(
         text: scenario.description,
         keywordLine: scenario.location.line,
         hasSteps: scenario.steps.isNotEmpty,
+        holdsSteps: true,
       );
     }
     final rule = child.rule;
@@ -524,6 +554,7 @@ Iterable<_Description> _descriptions(
         text: rule.description,
         keywordLine: rule.location.line,
         hasSteps: _ruleHasSteps(rule),
+        holdsSteps: false,
       );
       for (final ruleChild in rule.children) {
         final ruleBackground = ruleChild.background;
@@ -532,6 +563,7 @@ Iterable<_Description> _descriptions(
             text: ruleBackground.description,
             keywordLine: ruleBackground.location.line,
             hasSteps: ruleBackground.steps.isNotEmpty,
+            holdsSteps: true,
           );
         }
         final ruleScenario = ruleChild.scenario;
@@ -540,6 +572,7 @@ Iterable<_Description> _descriptions(
             text: ruleScenario.description,
             keywordLine: ruleScenario.location.line,
             hasSteps: ruleScenario.steps.isNotEmpty,
+            holdsSteps: true,
           );
         }
       }
