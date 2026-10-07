@@ -689,4 +689,108 @@ void main() {
     );
     expect(feature.dartContent, expectedFeatureDart);
   });
+
+  // Gherkin unescapes table cells — `\n` into a line break, `\\` into one
+  // backslash — but a cell holds Dart, whose escapes they are as well. The
+  // cell is generated as written, so the Dart string means what it says.
+  test('Data table cells keep the escapes they were written with', () {
+    const featureFile = r'''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given the following data
+    | 'icon' | 'value'          |
+    | '🚀'   | "line1\nline2"   |
+    | ''     | 'C:\\temp'       |
+    | ''     | r'\d+\t'         |
+''';
+
+    const expectedFeatureDart = r"""
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/the_following_data.dart';
+
+void main() {
+  group('''Testing feature''', () {
+    testWidgets('''Testing scenario''', (tester) async {
+      await theFollowingData(tester, const bdd.DataTable([['icon', 'value'], ['🚀', "line1\nline2"], ['', 'C:\\temp'], ['', r'\d+\t']]));
+    });
+  });
+}
+""";
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
+
+  // A bare pipe would end the cell, so `\|` is the one escape a cell needs
+  // Gherkin to resolve.
+  test('An escaped pipe in a data table cell is a pipe', () {
+    const featureFile = r'''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given the following data
+    | 'value'   |
+    | 'a \| b'  |
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(
+      feature.dartContent,
+      contains("const bdd.DataTable([['value'], ['a | b']])"),
+    );
+  });
+
+  test('Examples cells keep the escapes they were written with', () {
+    const featureFile = r'''
+Feature: Testing feature
+  Scenario Outline: Testing scenario
+    Then I see {<text>} text
+
+    Examples:
+      | text       |
+      | 'a\nb'     |
+      | 'C:\\temp' |
+''';
+
+    const expectedFeatureDart = r"""
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_see_text.dart';
+
+void main() {
+  group('''Testing feature''', () {
+    testWidgets('''Testing scenario ('a\\nb')''', (tester) async {
+      await iSeeText(tester, 'a\nb');
+    });
+    testWidgets('''Testing scenario ('C:\\\\temp')''', (tester) async {
+      await iSeeText(tester, 'C:\\temp');
+    });
+  });
+}
+""";
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
 }

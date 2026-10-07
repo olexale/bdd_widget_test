@@ -19,7 +19,9 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   same position — a scenario's first step, or a `Scenrio:` written directly under `Feature:` — is
   read as description too, and the steps under it are dropped without an error, unless the block ends
   up with no steps at all, in which case it is reported. Written anywhere below a block's first step,
-  a mistyped keyword is always reported.
+  a mistyped keyword is always reported. A step keyword written with a colon (`Given: the app is
+  running`) is no step in Gherkin either, and is reported the same way with the spelling to use;
+  such steps used to run.
 * **BREAKING CHANGE**: `Scenario Outline` test names no longer carry a fragment of the keyword.
   `Scenario Outline: eating` now generates `testWidgets('''eating (12, 5, 7)''')` rather than
   `testWidgets('''Outline: eating (12, 5, 7)''')`. Update any `--plain-name` filters, IDE run
@@ -41,6 +43,8 @@ package supports keeps working unchanged: `After:` sections, raw Dart lines abov
   scenarios with.
 * Fix a scenario outline with more than one `Examples:` block generating a spurious test case from
   the second block's header row.
+* Fix `\|` in a data table or `Examples:` cell generating `\,`. It is now a pipe inside the cell. Every
+  other backslash in a cell is generated as written, so `\n` and `\\` stay the Dart escapes they were.
 * Fix lines above `Feature:` being dropped when the feature file starts with a blank line, which
   silently removed custom imports from the generated file.
 * Fix several tags written on one line (`@integration @slow`) becoming a single tag named

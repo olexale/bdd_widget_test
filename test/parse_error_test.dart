@@ -641,4 +641,140 @@ Feature: Testing feature
       ),
     );
   });
+
+  // Step keywords take no colon, so `Given:` is no step to Gherkin: under a
+  // scenario keyword the line is description, and the scenario runs nothing
+  // but the background — a test that passes, testing nothing.
+  test('A step keyword written with a colon is reported, not dropped', () {
+    const featureFile = '''
+Feature: Testing feature
+  Background:
+    Given the setup is done
+
+  Scenario: Testing scenario
+    Given: the app is running
+    Then: I see {'0'} text
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('test/test.feature'),
+            contains('(6:5)'),
+            contains("step 'Given: the app is running'"),
+            contains("so write 'Given the app is running'"),
+          ),
+        ),
+      ),
+    );
+  });
+
+  test('A colon keyword with no space after it suggests the right step', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    When:I tap {Icons.add} icon
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains("so write 'When I tap {Icons.add} icon'"),
+        ),
+      ),
+    );
+  });
+
+  // A scenario's own steps do not excuse a colon step above them: the line is
+  // no step to Gherkin, so it would quietly drop out of a test that still runs.
+  test('A colon step is reported even when steps follow it', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given: the app is running
+    Then I see {'0'} text
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('(3:5)'),
+            contains("step 'Given: the app is running' is not read as a step"),
+            contains("so write 'Given the app is running'"),
+          ),
+        ),
+      ),
+    );
+  });
+
+  test('A colon step in a background is reported even when steps follow', () {
+    const featureFile = '''
+Feature: Testing feature
+  Background:
+    And: I am logged in
+    Given the app is running
+
+  Scenario: Testing scenario
+    Then I see {'0'} text
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains("so write 'And I am logged in'"),
+        ),
+      ),
+    );
+  });
+
+  // A feature description is free text above everything; a line reading like
+  // a colon step there is prose as long as the feature has steps.
+  test('A colon step in a feature description is prose', () {
+    const featureFile = '''
+Feature: Testing feature
+  Given: a logged-in user, the counter starts at zero.
+
+  Scenario: Testing scenario
+    Then I see {'0'} text
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, contains("await iSeeText(tester, '0');"));
+  });
 }

@@ -177,12 +177,38 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
   final starts = _chunkStarts(source, featureLines);
   for (var i = 0; i < starts.length; i++) {
     final end = i + 1 < starts.length ? starts[i + 1] : source.length;
-    final parsed = _parse(normalised, starts[i], end, languageLines, uri);
+    final afterLines = _afterBlockLines(source, starts[i], end, dialect);
+    final parsed = _parse(normalised, {
+      for (var line = starts[i]; line < end; line++)
+        if (!afterLines.contains(line)) line,
+      ...languageLines,
+    }, uri);
+    // The `After:` blocks are parsed on their own, under the feature's
+    // keyword line, so that a `Background:` written below one is not a
+    // background following a scenario — which Gherkin rejects, and which the
+    // block, rewritten into a scenario, would otherwise be.
+    final after = afterLines.isEmpty
+        ? null
+        : _parse(normalised, {
+            featureLines[i],
+            ...afterLines,
+            ...languageLines,
+          }, uri);
     if (parsed != null) {
-      _rejectStepsInDescriptions(parsed, source, raw, uri, stepMarkers);
-      _rejectUnnamedSteps(parsed, uri);
+      final afterHasSteps = after != null && _hasSteps(after.children);
+      for (final feature in [parsed, ?after]) {
+        _rejectStepsInDescriptions(
+          feature,
+          source,
+          raw,
+          uri,
+          stepMarkers,
+          afterHasSteps: afterHasSteps,
+        );
+        _rejectUnnamedSteps(feature, uri);
+      }
       tagLines.addAll(_tagLines(parsed.tags, source));
-      features.add(_toFeature(parsed, source));
+      features.add(_toFeature(parsed, after, source, raw));
     }
   }
   return FeatureFileModel(
@@ -207,21 +233,21 @@ List<int> _chunkStarts(List<String> source, List<int> featureLines) {
   return starts;
 }
 
-/// Parses the lines in `[start, end)` as one feature.
+/// Parses the [lines] of [normalised] as one feature. Every other line is
+/// blanked rather than dropped, so positions the parser reports are positions
+/// in the file.
 ///
 /// Anything the Gherkin parser rejects is an error. The lexer this replaced
 /// silently dropped every line it did not recognise, which turned a typo like
 /// `Scenrio:` into a test file quietly missing a scenario.
 messages.Feature? _parse(
   List<String> normalised,
-  int start,
-  int end,
-  Set<int> keep,
+  Set<int> lines,
   String uri,
 ) {
   final source = [
     for (var i = 0; i < normalised.length; i++)
-      if ((i >= start && i < end) || keep.contains(i)) normalised[i] else '',
+      if (lines.contains(i)) normalised[i] else '',
   ].join('\n');
 
   final envelopes = generateMessages(
@@ -244,6 +270,67 @@ messages.Feature? _parse(
       .nonNulls
       .firstOrNull;
 }
+
+/// The lines in `[start, end)` that make up `After:` blocks: each `After:` line
+/// and what follows it, up to the next line that opens something else — a
+/// feature, rule, background or scenario keyword, a tag, or another `After:`.
+/// Inside a doc string nothing opens anything, so a `@` or a `Scenario:` there
+/// is still the block's.
+///
+/// The tag lines directly above an `After:` are the block's too. Gherkin
+/// attaches tags to the keyword below them, so left in the main parse they
+/// would land on whatever follows the blanked block — the next scenario, which
+/// a `@scenarioParams: skip: true` meant for the teardown would then skip — or,
+/// with nothing below, be a tag with no keyword to attach to, which Gherkin
+/// rejects.
+Set<int> _afterBlockLines(
+  List<String> source,
+  int start,
+  int end,
+  GherkinLanguageKeywords dialect,
+) {
+  final openers = [
+    for (final keyword in [
+      ...dialect.feature,
+      ...dialect.rule,
+      ...dialect.background,
+      ...dialect.scenario,
+      ...dialect.scenarioOutline,
+    ])
+      '$keyword:',
+    '@',
+    _afterMarker,
+  ];
+  final lines = <int>{};
+  final tags = <int>[];
+  var inBlock = false;
+  String? docString;
+  for (var i = start; i < end; i++) {
+    final line = source[i];
+    if (docString == null && openers.any(line.startsWith)) {
+      inBlock = line.startsWith(_afterMarker);
+      if (line.startsWith('@')) {
+        tags.add(i);
+        continue;
+      }
+      if (inBlock) {
+        lines.addAll(tags);
+      }
+      tags.clear();
+    } else if (docString == null && _docStringFences.any(line.startsWith)) {
+      docString = line.substring(0, 3);
+    } else if (docString != null && line.startsWith(docString)) {
+      docString = null;
+    }
+    if (inBlock) {
+      lines.add(i);
+    }
+  }
+  return lines;
+}
+
+/// The two delimiters Gherkin opens and closes a doc string with.
+const List<String> _docStringFences = ['"""', '```'];
 
 /// The keywords a dialect spells a step with.
 List<String> _stepKeywords(GherkinLanguageKeywords dialect) => [
@@ -317,20 +404,29 @@ Never _rejectMissingFeature(
 /// (`Backround:`, say) in a feature that has steps elsewhere: those steps are
 /// still lost, but the block has steps and the lines read as prose. The test
 /// then fails on the missing step rather than the build failing on the typo.
+///
+/// A step keyword written with a colon — `Given: the app is running` — is the
+/// exception to the exception. Prose under a scenario or a background has no
+/// reason to read like that, so there it is reported even when the block has
+/// steps: it is a step Gherkin does not recognise, sitting above the ones it
+/// does, and would otherwise be dropped from a test that still runs the rest.
+/// A feature or rule description is free text above everything, and keeps it.
 void _rejectStepsInDescriptions(
   messages.Feature feature,
   List<String> source,
   List<String> raw,
   String uri,
-  List<String> stepMarkers,
-) {
-  for (final description in _descriptions(feature)) {
-    if (description.hasSteps) {
-      continue;
-    }
+  List<String> stepMarkers, {
+  required bool afterHasSteps,
+}) {
+  for (final description in _descriptions(feature, afterHasSteps)) {
     for (final line in description.text.split('\n')) {
       final step = line.trim();
-      if (!stepMarkers.any(step.startsWith)) {
+      final colon = _colonKeyword(step, stepMarkers);
+      if (colon == null && !stepMarkers.any(step.startsWith)) {
+        continue;
+      }
+      if (description.hasSteps && (colon == null || !description.holdsSteps)) {
         continue;
       }
       // A description starts on the line after the keyword that owns it, so
@@ -339,15 +435,29 @@ void _rejectStepsInDescriptions(
       // parsed fine.
       final index = source.indexOf(step, description.keywordLine);
       final column = index == -1 ? 0 : raw[index].indexOf(step) + 1;
+      final problem = colon == null
+          ? 'is not part of a scenario — check the keyword above it'
+          : 'is not read as a step — a step keyword takes no colon, so write '
+                "'$colon${step.substring(colon.trimRight().length + 1).trimLeft()}'";
       throw FormatException(
         'Failed to parse $uri:\n'
         '  ${index == -1 ? '' : '(${index + 1}:$column): '}'
-        "step '$step' is not part of a scenario — "
-        'check the keyword above it',
+        "step '$step' $problem",
       );
     }
   }
 }
+
+/// The step keyword [step] opens with when it is written with a colon, the
+/// way `Feature:` and `Scenario:` are — `Given: the app is running` — or null
+/// when it is not. Gherkin's step keywords take no colon, so such a line is
+/// not a step to it: under a scenario it reads as description, and the
+/// scenario runs nothing at all.
+String? _colonKeyword(String step, List<String> stepMarkers) =>
+    stepMarkers.firstWhereOrNull(
+      (keyword) =>
+          keyword.endsWith(' ') && step.startsWith('${keyword.trimRight()}:'),
+    );
 
 /// Rejects a step whose text names nothing a generated file can be built
 /// around.
@@ -401,13 +511,23 @@ typedef _Description = ({
   String text,
   int keywordLine,
   bool hasSteps,
+  // Whether steps are written directly under the keyword — a scenario or a
+  // background — rather than under blocks nested in it, as for a feature or a
+  // rule.
+  bool holdsSteps,
 });
 
-Iterable<_Description> _descriptions(messages.Feature feature) sync* {
+Iterable<_Description> _descriptions(
+  messages.Feature feature,
+  bool afterHasSteps,
+) sync* {
   yield (
     text: feature.description,
     keywordLine: feature.location.line,
-    hasSteps: _hasSteps(feature.children),
+    // `After:` blocks are parsed apart from the feature, so their steps are
+    // not among its children, but they are steps of the feature all the same.
+    hasSteps: afterHasSteps || _hasSteps(feature.children),
+    holdsSteps: false,
   );
   for (final child in feature.children) {
     final background = child.background;
@@ -416,6 +536,7 @@ Iterable<_Description> _descriptions(messages.Feature feature) sync* {
         text: background.description,
         keywordLine: background.location.line,
         hasSteps: background.steps.isNotEmpty,
+        holdsSteps: true,
       );
     }
     final scenario = child.scenario;
@@ -424,6 +545,7 @@ Iterable<_Description> _descriptions(messages.Feature feature) sync* {
         text: scenario.description,
         keywordLine: scenario.location.line,
         hasSteps: scenario.steps.isNotEmpty,
+        holdsSteps: true,
       );
     }
     final rule = child.rule;
@@ -432,6 +554,7 @@ Iterable<_Description> _descriptions(messages.Feature feature) sync* {
         text: rule.description,
         keywordLine: rule.location.line,
         hasSteps: _ruleHasSteps(rule),
+        holdsSteps: false,
       );
       for (final ruleChild in rule.children) {
         final ruleBackground = ruleChild.background;
@@ -440,6 +563,7 @@ Iterable<_Description> _descriptions(messages.Feature feature) sync* {
             text: ruleBackground.description,
             keywordLine: ruleBackground.location.line,
             hasSteps: ruleBackground.steps.isNotEmpty,
+            holdsSteps: true,
           );
         }
         final ruleScenario = ruleChild.scenario;
@@ -448,6 +572,7 @@ Iterable<_Description> _descriptions(messages.Feature feature) sync* {
             text: ruleScenario.description,
             keywordLine: ruleScenario.location.line,
             hasSteps: ruleScenario.steps.isNotEmpty,
+            holdsSteps: true,
           );
         }
       }
@@ -529,23 +654,38 @@ List<String> _headerLines(Iterable<String> lines) {
   return headers;
 }
 
-Feature _toFeature(messages.Feature feature, List<String> source) {
+/// Maps the parsed [feature] into the model. [after] is the parse of the
+/// feature's `After:` blocks alone — see [_afterBlockLines] — or null when it
+/// has none. [raw] is the file as written, which table cells are read back out
+/// of; see [_cellText].
+Feature _toFeature(
+  messages.Feature feature,
+  messages.Feature? after,
+  List<String> source,
+  List<String> raw,
+) {
   final children = feature.children;
   final rules = children.map((child) => child.rule).nonNulls.toList();
   return Feature(
     title: feature.name,
-    background: _backgroundSteps(children.map((child) => child.background)),
+    background: _backgroundSteps(
+      children.map((child) => child.background),
+      raw,
+    ),
     // `After:` applies to the whole feature wherever it was written, so a
-    // block inside a rule is hoisted out of it.
+    // block inside a rule is hoisted out of it — which the separate parse does
+    // by itself, since it holds no `Rule:` line to nest the block under.
     after: [
-      ..._afterSteps(children.map((child) => child.scenario)),
-      for (final rule in rules)
-        ..._afterSteps(rule.children.map((child) => child.scenario)),
+      for (final scenario in (after?.children ?? const []).map(
+        (child) => child.scenario,
+      ))
+        ...?scenario?.steps.map((step) => _toStep(step, raw)),
     ],
     scenarios: _scenarios(
       children.map((child) => child.scenario),
       const [],
       source,
+      raw,
     ),
     rules: [
       for (final rule in rules)
@@ -553,34 +693,35 @@ Feature _toFeature(messages.Feature feature, List<String> source) {
           title: rule.name,
           background: _backgroundSteps(
             rule.children.map((child) => child.background),
+            raw,
           ),
           // Gherkin hands a rule's tags down to the scenarios inside it.
           scenarios: _scenarios(
             rule.children.map((child) => child.scenario),
             _tagLines(rule.tags, source),
             source,
+            raw,
           ),
         ),
     ],
   );
 }
 
-List<Step> _backgroundSteps(Iterable<messages.Background?> backgrounds) => [
+List<Step> _backgroundSteps(
+  Iterable<messages.Background?> backgrounds,
+  List<String> raw,
+) => [
   for (final background in backgrounds.nonNulls)
-    ...background.steps.map(_toStep),
-];
-
-List<Step> _afterSteps(Iterable<messages.Scenario?> scenarios) => [
-  for (final scenario in scenarios.nonNulls.where(_isAfter))
-    ...scenario.steps.map(_toStep),
+    ...background.steps.map((step) => _toStep(step, raw)),
 ];
 
 List<Scenario> _scenarios(
   Iterable<messages.Scenario?> scenarios,
   List<String> inheritedTags,
   List<String> source,
+  List<String> raw,
 ) => [
-  for (final scenario in scenarios.nonNulls.where((s) => !_isAfter(s)))
+  for (final scenario in scenarios.nonNulls)
     Scenario(
       // A tag written on both the rule and the scenario reaches this point
       // twice — once inherited, once parsed — and would be generated twice.
@@ -589,14 +730,14 @@ List<Scenario> _scenarios(
         ..._tagLines(scenario.tags, source),
       ]),
       title: scenario.name,
-      steps: scenario.steps.map(_toStep).toList(),
-      examples: _examples(scenario.examples),
+      steps: scenario.steps.map((step) => _toStep(step, raw)).toList(),
+      examples: _examples(scenario.examples, raw),
     ),
 ];
 
-Step _toStep(messages.Step step) {
+Step _toStep(messages.Step step, List<String> raw) {
   final table = step.dataTable?.rows
-      .map((row) => row.cells.map((cell) => cell.value).toList())
+      .map((row) => row.cells.map((cell) => _cellText(cell, raw)).toList())
       .toList();
   return Step(
     step.text,
@@ -607,8 +748,41 @@ Step _toStep(messages.Step step) {
   );
 }
 
-bool _isAfter(messages.Scenario scenario) =>
-    scenario.name == _afterScenarioName;
+/// A table cell's text as it was written, with only `\|` unescaped.
+///
+/// Gherkin unescapes cells: `\n` becomes a line break, `\\` a single
+/// backslash, `\|` a pipe. A cell here holds Dart, though, where `\n` and
+/// `\\` are escapes of Dart's own, so the unescaped value is the wrong text
+/// to generate: `"a\nb"` came out as a string literal broken over two lines,
+/// which does not compile, and `'C:\\temp'` as `'C:\temp'`, which compiles to
+/// a tab. Nor can the value be escaped back — Gherkin keeps a backslash it has
+/// no escape for, so `\t` and `\\t` both arrive as `\t`. So the cell is read
+/// back from the line at the position the parser reports for it. Only the
+/// pipe stays unescaped, because a bare one would end the cell.
+///
+/// The column counts runes, not UTF-16 code units — an emoji earlier on the
+/// line moves it by one, not two — and the trailing whitespace is the same the
+/// parser trims.
+String _cellText(messages.TableCell cell, List<String> raw) {
+  final line = raw[cell.location.line - 1].runes.toList();
+  final text = StringBuffer();
+  for (var i = cell.location.column! - 1; i < line.length; i++) {
+    final char = String.fromCharCode(line[i]);
+    if (char == '|') {
+      break;
+    }
+    if (char == r'\' && i + 1 < line.length) {
+      final next = String.fromCharCode(line[++i]);
+      text.write(next == '|' ? next : '$char$next');
+    } else {
+      text.write(char);
+    }
+  }
+  return text.toString().replaceAll(_trailingCellWhitespace, '');
+}
+
+/// The whitespace Gherkin trims off the end of a table cell.
+final RegExp _trailingCellWhitespace = RegExp(r'[ \t\x0B\f\r\x85\xA0]+$');
 
 /// Tags, one entry per tag rather than one per line.
 ///
@@ -700,7 +874,10 @@ List<String> _unique(Iterable<String> values) => values.toSet().toList();
 
 /// Zips each `Examples:` block's header row with its body rows. Blocks are
 /// independent, so a scenario outline with two of them expands correctly.
-List<Map<String, String>>? _examples(List<messages.Examples> examples) {
+List<Map<String, String>>? _examples(
+  List<messages.Examples> examples,
+  List<String> raw,
+) {
   if (examples.isEmpty) {
     return null;
   }
@@ -709,8 +886,8 @@ List<Map<String, String>>? _examples(List<messages.Examples> examples) {
       if (example.tableHeader != null)
         for (final row in example.tableBody)
           Map.fromIterables(
-            example.tableHeader!.cells.map((cell) => cell.value),
-            row.cells.map((cell) => cell.value),
+            example.tableHeader!.cells.map((cell) => _cellText(cell, raw)),
+            row.cells.map((cell) => _cellText(cell, raw)),
           ),
   ];
 }
