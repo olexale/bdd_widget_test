@@ -77,8 +77,12 @@ Each feature file must have one or more `Feature:`s. Features become test groups
 
 Each feature group must have one or more `Scenario:`s (or `Example:`s). Scenario become widget tests.
 
-Each scenario must have one or more lines with steps. Each of them must start with `Given`, `When`, `Then`, `And`, or `But` keywords. Conventionally `Given` steps are used for test arrangements, `When` — for interaction, `Then` — for asserts. Keywords are not taken into account when looking for a step definition.
-You can have as many steps as you like, but it's recommended you keep the number at 3-5 per scenario. Having too many steps will cause it to lose it’s expressive power as specification and documentation. 
+Each scenario must have one or more lines with steps. Each of them must start with `Given`, `When`, `Then`, `And`, `But`, or `*` keywords. Conventionally `Given` steps are used for test arrangements, `When` — for interaction, `Then` — for asserts. Keywords are not taken into account when looking for a step definition.
+You can have as many steps as you like, but it's recommended you keep the number at 3-5 per scenario. Having too many steps will cause it to lose it’s expressive power as specification and documentation.
+
+Feature files are parsed with [`cucumber_gherkin`](https://pub.dev/packages/cucumber_gherkin), the official Dart Gherkin parser, so a file that is not valid Gherkin fails the build pointing at the offending file, line and column rather than being silently ignored. Stray text between scenarios, a second `Background:` in the same feature, and a keyword mistyped anywhere below a block's first step are all reported instead of quietly producing a test file that tests less than it appears to.
+
+A description is still a description, though. Gherkin treats the lines between a keyword and the first step under it as description text, where any non-keyword line is legal, so a bullet list or a sentence opening with `And` under a `Feature:` or `Rule:` is kept as documentation as long as that block has steps under it. The cost is that a keyword mistyped in that same position — a scenario's first step, or a `Scenrio:` written directly under `Feature:` — is read as description too, and the steps under it are dropped without an error, unless the block ends up with no steps at all, in which case it is reported. Proofread the top of a block; below the first step, a typo is always caught.
 
 The `Scenario Outline` keyword can be used to run the same `Scenario` multiple times, with different combinations of values.
 
@@ -101,6 +105,23 @@ Feature: Sample
     |    1  |   '1'  |
     |   42  |  '42'  |
 ```
+
+The `Rule` keyword groups related scenarios inside a feature. Each rule becomes a nested test group, and a rule may have a `Background` of its own that applies only to the scenarios it contains — it runs after the feature's `Background`, if there is one. Tags on a rule are inherited by its scenarios.
+```gherkin
+Feature: Counter
+
+  Background:
+    Given the app is running
+
+  Rule: The counter never goes below zero
+
+    Background:
+      Given the counter is {0}
+
+    Scenario: Minus button is disabled at zero
+      Then I see disabled {'-'} elevated button
+```
+Here `Minus button is disabled at zero` runs the feature background first, then the rule background, then its own steps.
 
 If you need to have the same step but with different parameters, you may use a `DataTable`-like syntax:
 ```gherkin
@@ -157,6 +178,22 @@ Use the `DataTable` parameter to get access to the data:
 final dataAsList = dataTable.asLists(); // [['artist', 'name'], ['The Doors', 'Riders on the storm'], ...]
 final dataAsMaps = dataTable.asMaps(); // [{'artist: 'The Doors', 'name: 'Riders on the storm'}, ...]
 ```
+
+## Other languages
+
+Gherkin keywords are available in 80 languages. Declare the language above the first feature keyword with a `# language:` header — below Dart header lines is fine — and write the keywords in that language:
+```gherkin
+# language: fr
+Fonctionnalité: Compteur
+
+  Contexte:
+    Soit the app is running
+
+  Scénario: La valeur initiale est 0
+    Alors I see {'0'} text
+```
+Written below the first feature keyword the header is an ordinary comment, and the file is read in English. Step text itself is still whatever you write — only the keywords are translated. The one thing that does not travel is the step's *name*: its Dart file and function are built from the ASCII letters and digits in the step text, so `Alors I see {'0'} text` still becomes `iSeeText` in `i_see_text.dart`. Accents are folded onto ASCII first (`los diacríticos son útil` → `los_diacriticos_son_util`), and other scripts are fine alongside some ASCII text (`Given アプリが起動している app is running` → `app_is_running`). A step whose text holds no ASCII letter or digit at all — `Given アプリが起動している` on its own — names nothing Dart can compile, and fails the build naming the file, line and column, rather than writing out a step file called `.dart`. Rename the step, or give it a word of ASCII in it. The same goes for text that opens with a digit (`Given 2FA is on` → `2faisOn`, which Dart refuses as a name), for text that opens with an underscore (`Given _debug mode is on` → `_debugModeIsOn`, a name Dart keeps private to the step file it is declared in, where the generated test cannot call it), and for a step named entirely by a parameter or an `<outline placeholder>`, since what is left once the parameters are out is nothing. The package's own extensions keep their spelling: `After:` is written in English in a French feature file as much as in an English one, and is rewritten internally into the keyword the file titles its scenarios with. See the [full list of dialects](https://cucumber.io/docs/gherkin/languages/) for the keywords of each language.
+
 ## Tags
 
 Tags are used to filter scenarios in the test runner. Here are some examples:
@@ -170,7 +207,12 @@ Feature: Sample
     Given the app is running
 ```
 
-Here we mark the test as `slow`, `integration`, and `important`. 
+Here we mark the test as `slow`, `integration`, and `important`.
+
+Tags may share a line, as Gherkin allows: `@slow @integration` marks a feature as both. The one
+exception is this package's own `@name: value` tags — `@testMethodName:`, `@testerType:`,
+`@testerName:` and `@scenarioParams:` — whose value runs to the end of the line, so write one of
+those on a line of its own. Tags written before it on the same line are read as tags.
 
 To run tests that are marked with `@important` tag, you can use the following command:
 ```sh
@@ -180,6 +222,37 @@ To exclude tests that are marked with `@slow` tag, you can use the following com
 ```sh
 flutter test --exclude-tags slow
 ```
+
+## Gherkin standard
+
+Feature files are parsed by [`cucumber_gherkin`](https://pub.dev/packages/cucumber_gherkin), the official Dart Gherkin parser, so anything valid in Gherkin is valid here — including `Rule:` and the keywords of all 80 languages. Doc strings (`"""`) are parsed but currently ignored.
+
+On top of the standard, this package adds a few extensions that make Flutter testing easier. They are not part of Gherkin, so other Cucumber tooling will not read them the way this package does:
+
+| Extension | What other Gherkin tools do with it |
+| --- | --- |
+| `After:` sections | Read as feature description text — **the steps are silently dropped** |
+| A table under a step, used to repeat that step | Read as a `DataTable` argument, so **the step runs once instead of once per row** |
+| Dart lines above `Feature:` | Parse error |
+| Tags containing a space, e.g. `@testMethodName: testGoldens` | Parse error — a tag may not contain whitespace |
+| Several `Feature:`s in one file | Parse error — Gherkin allows one feature per file |
+| `{}` parameters, e.g. `{'0'}` | Nothing — to a Gherkin parser these are ordinary step text |
+
+The first two are worth singling out: they produce no error anywhere, the file just means something different.
+
+### Keeping your feature files canonical
+
+If your feature files need to stay readable by other Cucumber tooling — a specification shared with a backend suite, a Gherkin editor plugin, a reporting tool — every extension except `{}` has a standard alternative this package already supports:
+
+| Instead of | Use |
+| --- | --- |
+| `After:` | [Hooks](#hooks) — `Hooks.afterEach` runs after every scenario, failures included |
+| Dart lines above `Feature:` | The [`customHeaders` option](#how-to-add-custom-headers-to-generated-files) in `build.yaml` |
+| `@testMethodName: testGoldens` | `@testMethodName:testGoldens` — same meaning, no space, a valid tag |
+| Several `Feature:`s in one file | One feature per file |
+| A table under a step | Write the repeated steps out in full, as shown [above](#feature-file-syntax) |
+
+`{}` parameters need no replacement. A Gherkin parser treats them as part of the step text, so a feature file that uses them is still a valid Gherkin document — only your step definitions are specific to this package.
 
 ## Predefined steps
 
@@ -205,6 +278,7 @@ List of predefined steps:
 * The app is running
 
 ## Hooks
+
 If you want to add hooks, you need to add the addHooks flag to the `build.yaml`. This will generate a file that allows you to handle a beforeAll, afterAll, beforeEach and afterEach call.
 These hooks will be generated per directory, just like the steps. Also like with the steps, you can define a directory in the build.yaml to define one set location for the hooks. These hooks will then be used everywhere.
 
@@ -218,7 +292,7 @@ targets:
           hookFolderName: bdd_hooks
 ```
 
-The beforeAll and afterAll do not take any properties, but the beforeEach and afterEach both provide the name and the tags of the feature. On top of this, the afterEach provides whether or not the test was successful. 
+The beforeAll and afterAll do not take any properties, but the beforeEach and afterEach both provide the name and the tags of the feature. On top of this, the afterEach provides whether or not the test was successful.
 
 ## FAQ
 
@@ -297,7 +371,7 @@ targets:
             - package:<your_package>/<your_step>.dart
 ```
 
-If you have many packages you might want to reuse the whole list of external steps. For that you'll have to create a `bdd_options.yaml` file in the root folder of your project with the following content: 
+If you have many packages you might want to reuse the whole list of external steps. For that you'll have to create a `bdd_options.yaml` file in the root folder of your project with the following content:
 ```yaml
 include: package:<package_a>/bdd_options.yaml # will include all steps defined in bdd_options.yaml of package_a
 externalSteps:
@@ -445,4 +519,5 @@ hookFolderName: integration_test/bdd_hooks # if you want to have hooks in the in
 If you find a bug or would like to request a new feature, just [open an issue](https://github.com/olexale/bdd_widget_test/issues/new). Your contributions are always welcome!
 
 ## License
+
 `bdd_widget_test` is released under a [MIT License](https://opensource.org/licenses/MIT). See `LICENSE` for details.

@@ -1,164 +1,120 @@
-import 'package:bdd_widget_test/src/bdd_line.dart';
+import 'package:bdd_widget_test/src/feature_model.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
+import 'package:bdd_widget_test/src/util/common.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
 
 void parseScenario(
   StringBuffer sb,
   String scenarioTitle,
-  List<BddLine> scenario,
-  bool hasSetUp,
+  List<String> steps,
+  List<String> setUps,
   bool hasTearDown,
   bool hasHooks,
   String testMethodName,
   String testerName,
   List<String> tags,
-  String scenarioParams,
-) {
+  String scenarioParams, {
+  String indent = '    ',
+}) {
   sb.writeln(
-    "    $testMethodName('''$scenarioTitle''', ($testerName) async {",
+    "$indent$testMethodName('''${escapeDartLiteral(scenarioTitle)}''', ($testerName) async {",
   );
   if (hasHooks) {
-    sb.writeln('      var $testSuccessVariableName = true;');
+    sb.writeln('$indent  var $testSuccessVariableName = true;');
   }
   if (hasTearDown || hasHooks) {
-    sb.writeln('      try {');
+    sb.writeln('$indent  try {');
   }
-  final spaces = hasTearDown ? '        ' : '      ';
+  final spaces = hasTearDown ? '$indent    ' : '$indent  ';
   if (hasHooks) {
     sb.writeln(
-      "${spaces}await $setUpHookName('''$scenarioTitle''' ${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});",
+      "${spaces}await $setUpHookName('''${escapeDartLiteral(scenarioTitle)}''' ${tags.isNotEmpty ? ', ${tagsToString(tags)}' : ''});",
     );
   }
-  if (hasSetUp) {
-    sb.writeln('${spaces}await $setUpMethodName($testerName);');
+  for (final setUp in setUps) {
+    sb.writeln('${spaces}await $setUp($testerName);');
   }
 
-  for (final step in scenario) {
-    sb.writeln('${spaces}await ${getStepMethodCall(step.value, testerName)};');
+  for (final step in steps) {
+    sb.writeln('${spaces}await ${getStepMethodCall(step, testerName)};');
   }
 
   if (hasHooks) {
-    sb.writeln('      } catch (_) {');
-    sb.writeln('        $testSuccessVariableName = false;');
-    sb.writeln('        rethrow;');
+    sb.writeln('$indent  } catch (_) {');
+    sb.writeln('$indent    $testSuccessVariableName = false;');
+    sb.writeln('$indent    rethrow;');
   }
 
-  if (hasTearDown | hasHooks) {
-    sb.writeln('      } finally {');
+  if (hasTearDown || hasHooks) {
+    sb.writeln('$indent  } finally {');
     if (hasTearDown) {
-      sb.writeln('        await $tearDownMethodName($testerName);');
+      sb.writeln('$indent    await $tearDownMethodName($testerName);');
     }
     if (hasHooks) {
-      sb.writeln('        await $tearDownHookName(');
-      sb.writeln("          '''$scenarioTitle''',");
-      sb.writeln('          $testSuccessVariableName,');
+      sb.writeln('$indent    await $tearDownHookName(');
+      sb.writeln("$indent      '''${escapeDartLiteral(scenarioTitle)}''',");
+      sb.writeln('$indent      $testSuccessVariableName,');
       if (tags.isNotEmpty) {
-        sb.writeln('          ${tagsToString(tags)},');
+        sb.writeln('$indent      ${tagsToString(tags)},');
       }
-      sb.writeln('        );');
+      sb.writeln('$indent    );');
     }
-    sb.writeln('      }');
+    sb.writeln('$indent  }');
   }
 
   sb.writeln(
-    '    }${tags.isNotEmpty ? ", tags: ${tagsToString(tags)}" : ''}${scenarioParams.isNotEmpty ? ',' : ');'}',
+    '$indent}${tags.isNotEmpty ? ", tags: ${tagsToString(tags)}" : ''}${scenarioParams.isNotEmpty ? ',' : ');'}',
   );
   if (scenarioParams.isNotEmpty) {
     for (final param in scenarioParams.split(', ')) {
-      sb.writeln('     $param,');
+      sb.writeln('$indent $param,');
     }
     sb.writeln(
-      '     );',
+      '$indent );',
     );
   }
 }
 
 String tagsToString(List<String> tags) {
-  return "['${tags.join("', '")}']";
+  return "['${tags.map(escapeDartSingleQuoted).join("', '")}']";
 }
 
-List<List<BddLine>> generateScenariosFromScenarioOutline(
-  List<BddLine> scenario,
-) {
-  final examples = _getExamples(scenario);
-  return examples
-      .map((e) => _processScenarioLines(scenario, e).toList())
-      .toList();
-}
+/// Repeats an outline once per row of its `Examples:` table, substituting the
+/// row's values for the `<placeholder>`s in the title and in every step.
+List<({String title, List<Step> steps})> expandOutline(Scenario scenario) => [
+  for (final values in scenario.examples!) _expand(scenario, values),
+];
 
-List<Map<String, String>> _getExamples(
-  List<BddLine> scenario,
-) {
-  final exampleLines = scenario
-      .skipWhile((l) => l.type != LineType.exampleTitle)
-      .where((l) => l.type == LineType.examples)
-      .map(
-        (e) => e.rawLine.substring(
-          // Remove the first and the last '|' separator
-          1,
-          e.rawLine.length - 1,
-        ),
-      )
-      .map(_parseExampleLine);
-  final names = exampleLines.first;
-  return exampleLines.skip(1).map((e) => Map.fromIterables(names, e)).toList();
-}
-
-List<String> _parseExampleLine(String line) =>
-    line.split('|').map((e) => e.trim()).toList();
-
-Iterable<BddLine> _processScenarioLines(
-  List<BddLine> lines,
-  Map<String, String> examples,
-) sync* {
-  final name = lines.first;
-  yield BddLine.fromValue(
-    name.type,
-    '${name.value} (${examples.values.join(', ')})',
-  );
-
-  for (final line in lines.skip(1)) {
-    yield BddLine.fromValue(
-      line.type,
-      _replacePlaceholders(
-        line.value,
-        line.type == LineType.dataTableStep,
-        examples,
+({String title, List<Step> steps}) _expand(
+  Scenario scenario,
+  Map<String, String> values,
+) => (
+  title: '${scenario.title} (${values.values.join(', ')})',
+  steps: [
+    for (final step in scenario.steps)
+      Step(
+        replacePlaceholders(step.text, values),
+        table: step.table
+            ?.map((row) => row.map((cell) => _inline(cell, values)).toList())
+            .toList(),
+        isDataTable: step.isDataTable,
       ),
-    );
-  }
-}
+  ],
+);
 
-String _replacePlaceholders(
-  String line,
-  bool isDataTableStep,
-  Map<String, String> example,
-) {
-  // For data table steps, we want placeholders in the step text
-  // to become parameters (wrapped with {}), but placeholders inside the
-  // DataTable argument should be inlined as raw values.
-  if (isDataTableStep) {
-    const marker = '{const bdd.DataTable(';
-    final dataTableIndex = line.indexOf(marker);
-    if (dataTableIndex != -1) {
-      final head = line.substring(0, dataTableIndex);
-      final tail = line.substring(dataTableIndex);
-      var headReplaced = head;
-      var tailReplaced = tail;
-      for (final e in example.keys) {
-        headReplaced = headReplaced.replaceAll('<$e>', '{${example[e]}}');
-        tailReplaced = tailReplaced.replaceAll('<$e>', '${example[e]}');
-      }
-      return headReplaced + tailReplaced;
-    }
+/// Placeholders inside a data table are always raw values — the table is a
+/// Dart expression, not step text.
+String _inline(String cell, Map<String, String> example) {
+  var result = cell;
+  for (final entry in example.entries) {
+    result = result.replaceAll('<${entry.key}>', entry.value);
   }
-
-  return _replacePlaceholdersWithContext(line, example);
+  return result;
 }
 
 // Placeholders inside {} blocks become raw values,
 // Placeholders outside {} blocks become parameters (wrapped with {})
-String _replacePlaceholdersWithContext(
+String replacePlaceholders(
   String line,
   Map<String, String> example,
 ) {

@@ -17,8 +17,8 @@ Map<String, String> getExistingStepSubfolders(
   final absFeatureDir = featureDir.underPackageRoot(packageRoot);
   final basePath =
       stepFolderName.startsWith('./') || stepFolderName.startsWith('../')
-          ? absFeatureDir
-          : getPathToStepFolder(options, packageRoot: packageRoot);
+      ? absFeatureDir
+      : getPathToStepFolder(options, packageRoot: packageRoot);
 
   final stepFolder = p.join(basePath, stepFolderName);
 

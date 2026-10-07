@@ -1,4 +1,8 @@
 const setUpMethodName = 'bddSetUp';
+
+/// A rule's background lives in a nested group, so it needs a name of its own
+/// rather than shadowing the feature's [setUpMethodName].
+const ruleSetUpMethodName = 'bddRuleSetUp';
 const tearDownMethodName = 'bddTearDown';
 const testSuccessVariableName = 'success';
 

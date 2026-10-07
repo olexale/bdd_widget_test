@@ -8,7 +8,8 @@ void main() {
   test('The app is running pre-built step generated', () {
     const path = 'test';
 
-    const expectedSteps = '''
+    const expectedSteps =
+        '''
 import 'package:flutter_test/flutter_test.dart';
 import 'package:$path/main.dart';
 

@@ -43,10 +43,9 @@ class GeneratorOptions {
         relativeToTestFolder: json['relativeToTestFolder'] as bool?,
         addHooks: json['addHooks'] as bool?,
         hookFolderName: json['hookFolderName'] as String?,
-        include:
-            json['include'] is String
-                ? [(json['include'] as String)]
-                : (json['include'] as List?)?.cast<String>(),
+        include: json['include'] is String
+            ? [(json['include'] as String)]
+            : (json['include'] as List?)?.cast<String>(),
         includeIntegrationTestBinding:
             json['includeIntegrationTestBinding'] as bool?,
         customHeaders: (json['customHeaders'] as List?)?.cast<String>() ?? [],
@@ -109,18 +108,18 @@ GeneratorOptions merge(
   GeneratorOptions a,
   GeneratorOptions b,
 ) => GeneratorOptions(
-  testMethodName:
-      a.testMethodName != _defaultTestMethodName
-          ? a.testMethodName
-          : b.testMethodName,
+  testMethodName: a.testMethodName != _defaultTestMethodName
+      ? a.testMethodName
+      : b.testMethodName,
   testerType: a.testerType != _defaultTesterType ? a.testerType : b.testerType,
   testerName: a.testerName != _defaultTesterName ? a.testerName : b.testerName,
   stepFolderName: a.stepFolder != _stepFolderName ? a.stepFolder : b.stepFolder,
   relativeToTestFolder: a.relativeToTestFolder && b.relativeToTestFolder,
   externalSteps: [...a.externalSteps, ...b.externalSteps],
   addHooks: a.addHooks || b.addHooks,
-  hookFolderName:
-      a.hookFolderName != _hookFolderName ? a.hookFolderName : b.hookFolderName,
+  hookFolderName: a.hookFolderName != _hookFolderName
+      ? a.hookFolderName
+      : b.hookFolderName,
   include: b.include,
   includeIntegrationTestBinding:
       a.includeIntegrationTestBinding || b.includeIntegrationTestBinding,

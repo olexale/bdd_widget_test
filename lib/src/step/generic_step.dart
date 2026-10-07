@@ -24,10 +24,9 @@ class GenericStep implements BddStep {
   @override
   String get content {
     final hasCustomHeaders = generatorOptions.customHeaders.isNotEmpty;
-    final headerSection =
-        hasCustomHeaders
-            ? generatorOptions.customHeaders.join('\n')
-            : "import 'package:flutter_test/flutter_test.dart';";
+    final headerSection = hasCustomHeaders
+        ? generatorOptions.customHeaders.join('\n')
+        : "import 'package:flutter_test/flutter_test.dart';";
 
     return '${hasDataTable ? "import 'package:bdd_widget_test/data_table.dart' as bdd;\n" : ''}'
         '''
