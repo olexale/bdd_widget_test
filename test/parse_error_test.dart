@@ -641,4 +641,63 @@ Feature: Testing feature
       ),
     );
   });
+
+  // Step keywords take no colon, so `Given:` is no step to Gherkin: under a
+  // scenario keyword the line is description, and the scenario runs nothing
+  // but the background — a test that passes, testing nothing.
+  test('A step keyword written with a colon is reported, not dropped', () {
+    const featureFile = '''
+Feature: Testing feature
+  Background:
+    Given the setup is done
+
+  Scenario: Testing scenario
+    Given: the app is running
+    Then: I see {'0'} text
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        inputPath: 'test/test.feature',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('test/test.feature'),
+            contains('(6:5)'),
+            contains("step 'Given: the app is running'"),
+            contains("so write 'Given the app is running'"),
+          ),
+        ),
+      ),
+    );
+  });
+
+  test('A colon keyword with no space after it suggests the right step', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    When:I tap {Icons.add} icon
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test',
+        package: 'test',
+        input: featureFile,
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains("so write 'When I tap {Icons.add} icon'"),
+        ),
+      ),
+    );
+  });
 }
