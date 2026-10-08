@@ -612,8 +612,8 @@ String _normalise(String line, String afterKeyword) {
   final trimmed = line.trim();
   final indent = line.substring(0, line.length - line.trimLeft().length);
   if (trimmed.startsWith('@')) {
-    // A tag may not contain whitespace, so `@testMethodName: testGoldens`
-    // becomes `@testMethodName:testGoldens`. Ordinary tags are reported back to
+    // A tag may not contain whitespace, so `@testMethodName: goldenTest`
+    // becomes `@testMethodName:goldenTest`. Ordinary tags are reported back to
     // the generators in this form; the custom ones the rewrite is named after
     // are not, and [_tagLines] reads those out of the untouched source.
     final tags = trimmed
@@ -815,7 +815,7 @@ List<String> _tagLines(List<messages.Tag> tags, List<String> source) {
 /// the generators read. From such a tag to the end of the line the text is one
 /// value as far as this package is concerned, so it is handed over untouched.
 /// What stands before it was read as ordinary tags by Gherkin and is emitted one
-/// by one — which is what a line like `@smoke @testMethodName: testGoldens`,
+/// by one — which is what a line like `@smoke @testMethodName: goldenTest`,
 /// whose `@smoke` used to be lost along with the line it sat on, needs.
 ///
 /// What a custom tag swallows after its value — a second custom tag, or a plain

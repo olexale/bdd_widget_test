@@ -234,7 +234,7 @@ On top of the standard, this package adds a few extensions that make Flutter tes
 | `After:` sections | Read as feature description text — **the steps are silently dropped** |
 | A table under a step, used to repeat that step | Read as a `DataTable` argument, so **the step runs once instead of once per row** |
 | Dart lines above `Feature:` | Parse error |
-| Tags containing a space, e.g. `@testMethodName: testGoldens` | Parse error — a tag may not contain whitespace |
+| Tags containing a space, e.g. `@testMethodName: goldenTest` | Parse error — a tag may not contain whitespace |
 | Several `Feature:`s in one file | Parse error — Gherkin allows one feature per file |
 | `{}` parameters, e.g. `{'0'}` | Nothing — to a Gherkin parser these are ordinary step text |
 
@@ -248,7 +248,7 @@ If your feature files need to stay readable by other Cucumber tooling — a spec
 | --- | --- |
 | `After:` | [Hooks](#hooks) — `Hooks.afterEach` runs after every scenario, failures included |
 | Dart lines above `Feature:` | The [`customHeaders` option](#how-to-add-custom-headers-to-generated-files) in `build.yaml` |
-| `@testMethodName: testGoldens` | `@testMethodName:testGoldens` — same meaning, no space, a valid tag |
+| `@testMethodName: goldenTest` | `@testMethodName:goldenTest` — same meaning, no space, a valid tag |
 | Several `Feature:`s in one file | One feature per file |
 | A table under a step | Write the repeated steps out in full, as shown [above](#feature-file-syntax) |
 
@@ -332,18 +332,18 @@ Sure, you may find a [BDD in Flutter playlist](https://www.youtube.com/playlist?
 
 ### How to test the UI? (golden tests)
 
-BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts the simplest option would be to combine BDD widget tests with [golden_toolkit](https://pub.dev/packages/golden_toolkit) plugin.
+BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts the simplest option would be to combine BDD widget tests with the [alchemist](https://pub.dev/packages/alchemist) package.
 
-Everything will stay pretty much the same, but you'll need to tell the plugin to name test methods `testGoldens` instead of `testWidgets`.
+Everything will stay pretty much the same, but you'll need to tell the plugin to name test methods `goldenTest` instead of `testWidgets`.
 There are three ways on how you can do that:
 1. If you have only few golden test scenarios per feature, you may mark them with the `testMethodName` tag like that:
 ```gherkin
-@testMethodName: testGoldens
+@testMethodName: goldenTest
 Scenario: My golden scenario
 ```
 2. For features full of golden tests you may move the `testMethodName` tag above the `Feature` declaration like that:
 ```gherkin
-@testMethodName: testGoldens
+@testMethodName: goldenTest
 Feature: My golden feature
 ```
 3. If you plan to have golden tests only, you may want to override `testMethodName` for the whole plugin. For that modify your `build.yaml` file like that:
@@ -353,7 +353,7 @@ targets:
     builders:
       bdd_widget_test|featureBuilder:
         options:
-          testMethodName: testGoldens
+          testMethodName: goldenTest
 ```
 
 You may refer to a video from [BDD in Flutter playlist](https://www.youtube.com/playlist?list=PLjaSBcAZ8TqFx51f30aRi_A2szelttOpq) for a live demo.
