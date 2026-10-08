@@ -27,7 +27,7 @@ import 'package:yaml/yaml.dart';
 ///     builders:
 ///       bdd_widget_test|featureBuilder:
 ///         options:
-///           testMethodName: testGoldens
+///           testMethodName: goldenTest
 ///           stepFolderName: ./custom_steps
 /// ```
 ///
@@ -88,7 +88,7 @@ class FeatureBuilder implements Builder {
   ///
   /// The [generatorOptions] parameter defines how the builder should generate
   /// test code, including:
-  /// - Test method names (e.g., `testWidgets`, `testGoldens`)
+  /// - Test method names (e.g., `testWidgets`, `goldenTest`)
   /// - Tester types and names (e.g., `WidgetTester`, `PatrolIntegrationTester`)
   /// - Step folder locations and naming conventions
   /// - Hook configurations for setup and teardown
@@ -102,7 +102,7 @@ class FeatureBuilder implements Builder {
   /// ```dart
   /// final builder = FeatureBuilder(
   ///   GeneratorOptions(
-  ///     testMethodName: 'testGoldens',
+  ///     testMethodName: 'goldenTest',
   ///     stepFolderName: './custom_steps',
   ///     testerType: 'PatrolIntegrationTester',
   ///   ),

@@ -234,7 +234,7 @@ On top of the standard, this package adds a few extensions that make Flutter tes
 | `After:` sections | Read as feature description text — **the steps are silently dropped** |
 | A table under a step, used to repeat that step | Read as a `DataTable` argument, so **the step runs once instead of once per row** |
 | Dart lines above `Feature:` | Parse error |
-| Tags containing a space, e.g. `@testMethodName: testGoldens` | Parse error — a tag may not contain whitespace |
+| Tags containing a space, e.g. `@testMethodName: goldenTest` | Parse error — a tag may not contain whitespace |
 | Several `Feature:`s in one file | Parse error — Gherkin allows one feature per file |
 | `{}` parameters, e.g. `{'0'}` | Nothing — to a Gherkin parser these are ordinary step text |
 
@@ -248,7 +248,7 @@ If your feature files need to stay readable by other Cucumber tooling — a spec
 | --- | --- |
 | `After:` | [Hooks](#hooks) — `Hooks.afterEach` runs after every scenario, failures included |
 | Dart lines above `Feature:` | The [`customHeaders` option](#how-to-add-custom-headers-to-generated-files) in `build.yaml` |
-| `@testMethodName: testGoldens` | `@testMethodName:testGoldens` — same meaning, no space, a valid tag |
+| `@testMethodName: goldenTest` | `@testMethodName:goldenTest` — same meaning, no space, a valid tag |
 | Several `Feature:`s in one file | One feature per file |
 | A table under a step | Write the repeated steps out in full, as shown [above](#feature-file-syntax) |
 
@@ -332,29 +332,75 @@ Sure, you may find a [BDD in Flutter playlist](https://www.youtube.com/playlist?
 
 ### How to test the UI? (golden tests)
 
-BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts the simplest option would be to combine BDD widget tests with [golden_toolkit](https://pub.dev/packages/golden_toolkit) plugin.
+BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts the simplest option would be to combine BDD widget tests with the [alchemist](https://pub.dev/packages/alchemist) package.
 
-Everything will stay pretty much the same, but you'll need to tell the plugin to name test methods `testGoldens` instead of `testWidgets`.
+Alchemist's own `goldenTest` takes a `fileName` and a widget `builder` rather than a `(tester) async { ... }` callback, so the generated code can't call it directly. Add a small `goldenTest` function with the same shape as `testWidgets` to your `test` folder that forwards to alchemist. Alchemist pumps your app, the scenario's steps run against it, and the final frame is compared with `goldens/ci/<file name>.png` and `goldens/<platform>/<file name>.png` (e.g. `goldens/windows/`), next to the generated test. The file name is the scenario title in snake_case — `Initial counter` becomes `initial_counter`:
+```dart
+// test/golden.dart — don't end the name with `_test.dart`, or `flutter test` will try to run it.
+import 'package:alchemist/alchemist.dart' as alchemist;
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:my_app/main.dart';
+
+Future<void> goldenTest(
+  String description,
+  Future<void> Function(WidgetTester tester) callback, {
+  List<String> tags = const [],
+  bool skip = false,
+  Widget Function() builder = MyApp.new,
+  BoxConstraints constraints = const BoxConstraints.tightFor(
+    width: 400,
+    height: 800,
+  ),
+}) => alchemist.goldenTest(
+  description,
+  fileName: description.toLowerCase().replaceAll(RegExp('[^a-z0-9]+'), '_'),
+  tags: ['golden', ...tags],
+  skip: skip,
+  constraints: constraints,
+  builder: builder,
+  whilePerforming: (tester) async {
+    await callback(tester);
+    return null;
+  },
+);
+```
+Things to keep in mind:
+- Alchemist pumps the widget itself, so a golden scenario must not run a step that calls `tester.pumpWidget` — such as `Given the app is running`, also when it comes from a `Background:`. That replaces alchemist's widget tree and the golden comparison fails.
+- Golden files are named after the scenario title, so keep golden scenario titles unique per folder.
+- A scenario may pick a different widget with `@scenarioParams: builder: () => const MyPage()`.
+- Each scenario runs twice, once for alchemist's readable platform golden and once for its CI golden, where text is drawn as blocks.
+
+Then import the function at the top of the feature file and tell the plugin to name test methods `goldenTest` instead of `testWidgets`.
 There are three ways on how you can do that:
 1. If you have only few golden test scenarios per feature, you may mark them with the `testMethodName` tag like that:
 ```gherkin
-@testMethodName: testGoldens
-Scenario: My golden scenario
+import 'golden.dart';
+
+Feature: My feature
+  @testMethodName: goldenTest
+  Scenario: My golden scenario
+    When I tap {Icons.add} icon
+    Then I see {'1'} text
 ```
 2. For features full of golden tests you may move the `testMethodName` tag above the `Feature` declaration like that:
 ```gherkin
-@testMethodName: testGoldens
+import 'golden.dart';
+
+@testMethodName: goldenTest
 Feature: My golden feature
 ```
-3. If you plan to have golden tests only, you may want to override `testMethodName` for the whole plugin. For that modify your `build.yaml` file like that:
+3. If you plan to have golden tests only, you may want to override `testMethodName` for the whole plugin. For that modify your `build.yaml` file like that (every feature file still needs the `import` line):
 ```yaml
 targets:
   $default:
     builders:
       bdd_widget_test|featureBuilder:
         options:
-          testMethodName: testGoldens
+          testMethodName: goldenTest
 ```
+
+Run `flutter test --update-goldens` once to create the golden files, then `flutter test` to compare against them.
 
 You may refer to a video from [BDD in Flutter playlist](https://www.youtube.com/playlist?list=PLjaSBcAZ8TqFx51f30aRi_A2szelttOpq) for a live demo.
 
