@@ -334,7 +334,7 @@ Sure, you may find a [BDD in Flutter playlist](https://www.youtube.com/playlist?
 
 BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts the simplest option would be to combine BDD widget tests with the [alchemist](https://pub.dev/packages/alchemist) package.
 
-Alchemist's own `goldenTest` takes a `fileName` and a widget `builder` rather than a `(tester) async { ... }` callback, so the generated code can't call it directly. Add a small `goldenTest` function with the same shape as `testWidgets` to your `test` folder that forwards to alchemist. Alchemist pumps your app, the scenario's steps run against it, and the final frame is compared with `goldens/<scenario title>.png`:
+Alchemist's own `goldenTest` takes a `fileName` and a widget `builder` rather than a `(tester) async { ... }` callback, so the generated code can't call it directly. Add a small `goldenTest` function with the same shape as `testWidgets` to your `test` folder that forwards to alchemist. Alchemist pumps your app, the scenario's steps run against it, and the final frame is compared with `goldens/ci/<file name>.png` and `goldens/<platform>/<file name>.png` (e.g. `goldens/windows/`), next to the generated test. The file name is the scenario title in snake_case — `Initial counter` becomes `initial_counter`:
 ```dart
 // test/golden.dart — don't end the name with `_test.dart`, or `flutter test` will try to run it.
 import 'package:alchemist/alchemist.dart' as alchemist;

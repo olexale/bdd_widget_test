@@ -8,7 +8,7 @@ Feature: Counter
         # See the list of built-in step below.
         And I do not see {'surprise'} text 
     
-    # @testMethodName: goldenTest
+    # @testMethodName: testWidgets
     Scenario: Initial counter value is 0
         Then I see {'0'} text
 
