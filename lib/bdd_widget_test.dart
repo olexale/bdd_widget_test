@@ -157,7 +157,7 @@ class FeatureBuilder implements Builder {
       generatorOptions: options,
       includeIntegrationTestImport: isIntegrationTest,
       includeIntegrationTestBinding:
-          isIntegrationTest && generatorOptions.includeIntegrationTestBinding,
+          isIntegrationTest && options.includeIntegrationTestBinding,
       packageRoot: packageRoot,
     );
 

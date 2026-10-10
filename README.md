@@ -275,6 +275,7 @@ List of predefined steps:
 * I see {..} text
 * I tap {..} icon
 * I tap {..} text
+* I wait
 * The app is running
 
 ## Hooks
@@ -512,6 +513,15 @@ You may set a relative path in the `build.yaml` file (see the `example` folder):
 relativeToTestFolder: false
 stepFolderName: integration_test/steps # if you want to have steps in the integration_test folder
 hookFolderName: integration_test/bdd_hooks # if you want to have hooks in the integration_test folder
+```
+
+### Can AI coding agents learn this dialect?
+
+Yes. The package ships an [agent skill](https://dart.dev/ai/package-skills), `bdd-widget-test-gherkin`, in
+its `skills/` folder. It covers feature file syntax, step reuse, tables, tags, step files, hooks,
+configuration, and golden and Patrol setups. Install it into your project with:
+```sh
+dart run skills@ get -p bdd_widget_test
 ```
 
 ## Contributing
