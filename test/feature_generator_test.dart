@@ -1,4 +1,5 @@
 import 'package:bdd_widget_test/bdd_widget_test.dart';
+import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/util/fs.dart';
 import 'package:bdd_widget_test/src/util/isolate_helper.dart';
 import 'package:build/build.dart';
@@ -318,6 +319,71 @@ dev_dependencies:
     await generate(scenario, expected, null, 'integration_test');
   });
 
+  group('includeIntegrationTestBinding: false skips the binding', () {
+    const scenario = 'integration';
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+        '// ignore_for_file: type=lint, type=warning\n'
+        '\n'
+        "import 'package:flutter/material.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
+        "import 'package:integration_test/integration_test.dart';\n"
+        '\n'
+        "import './step/the_app_is_running.dart';\n"
+        '\n'
+        'void main() {\n'
+        "  group('''Testing feature''', () {\n"
+        "    testWidgets('''Testing scenario''', (tester) async {\n"
+        '      await theAppIsRunning(tester);\n'
+        '    });\n'
+        '  });\n'
+        '}\n';
+
+    setUp(() {
+      fs.file('pubspec.yaml')
+        ..createSync()
+        ..writeAsStringSync('''
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+''');
+    });
+
+    test('when set in bdd_options.yaml', () async {
+      fs.file('bdd_options.yaml')
+        ..createSync()
+        ..writeAsStringSync('includeIntegrationTestBinding: false');
+
+      await generate(scenario, expected, null, 'integration_test');
+    });
+
+    test('when set in a file included by bdd_options.yaml', () async {
+      fs.file('bdd_options.yaml')
+        ..createSync()
+        ..writeAsStringSync('include: external_options.yaml');
+      fs.file('external_options.yaml')
+        ..createSync()
+        ..writeAsStringSync('includeIntegrationTestBinding: false');
+
+      await generate(scenario, expected, null, 'integration_test');
+    });
+
+    test('when set in build.yaml while bdd_options.yaml exists', () async {
+      fs.file('bdd_options.yaml')
+        ..createSync()
+        ..writeAsStringSync('addHooks: false');
+
+      await generate(
+        scenario,
+        expected,
+        const BuilderOptions(<String, dynamic>{
+          'includeIntegrationTestBinding': false,
+        }),
+        'integration_test',
+      );
+    });
+  });
+
   test('Integration test without integration_test dependency', () async {
     fs.file('pubspec.yaml')
       ..createSync()
@@ -372,6 +438,31 @@ This line belongs nowhere
       logs.join(),
       contains('Failed to parse $path/sample.feature:'),
     );
+  });
+
+  group('merge', () {
+    const defaults = GeneratorOptions();
+
+    test('keeps the defaults when neither side changes them', () {
+      final merged = merge(defaults, defaults);
+      expect(merged.addHooks, isFalse);
+      expect(merged.relativeToTestFolder, isTrue);
+      expect(merged.includeIntegrationTestBinding, isTrue);
+    });
+
+    test('a non-default boolean from either side wins', () {
+      const changed = GeneratorOptions(
+        addHooks: true,
+        relativeToTestFolder: false,
+        includeIntegrationTestBinding: false,
+      );
+      for (final (a, b) in [(changed, defaults), (defaults, changed)]) {
+        final merged = merge(a, b);
+        expect(merged.addHooks, isTrue);
+        expect(merged.relativeToTestFolder, isFalse);
+        expect(merged.includeIntegrationTestBinding, isFalse);
+      }
+    });
   });
 }
 

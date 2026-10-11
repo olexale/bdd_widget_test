@@ -122,6 +122,6 @@ GeneratorOptions merge(
       : b.hookFolderName,
   include: b.include,
   includeIntegrationTestBinding:
-      a.includeIntegrationTestBinding || b.includeIntegrationTestBinding,
+      a.includeIntegrationTestBinding && b.includeIntegrationTestBinding,
   customHeaders: [...a.customHeaders, ...b.customHeaders],
 );

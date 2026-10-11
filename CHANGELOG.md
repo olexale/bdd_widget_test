@@ -1,3 +1,10 @@
+## [3.0.1] - Agent skill
+
+* Ship an [agent skill](https://dart.dev/ai/package-skills) for writing feature files and implementing
+  steps. Install it with `dart run skills@ get -p bdd_widget_test`.
+* Fix `includeIntegrationTestBinding: false` being ignored when set in `bdd_options.yaml` (or a file
+  it includes). It was only honoured in `build.yaml`.
+
 ## [3.0.0] - Official Gherkin parser
 
 Feature files are now parsed by [`cucumber_gherkin`](https://pub.dev/packages/cucumber_gherkin), the
