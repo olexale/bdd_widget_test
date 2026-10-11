@@ -65,9 +65,13 @@ description: Write `.feature` files and implement step definitions for the bdd_w
   Dart too. A `<placeholder>` outside `{}` is substituted as `{value}`, and one inside `{}` is
   substituted raw. So `| result |` with a cell `'0'` passes a String, and `0` passes a number.
 - **Proofread the top of each block.** Gherkin reads every line between `Feature:`/`Rule:`/
-  `Scenario:` and the block's first step as description text. A mistyped keyword there
-  (`Scenrio:`, `Gven the app is running`) is silently dropped along with its steps. Below the first
-  step, typos fail the build with file, line and column.
+  `Scenario:` and the block's first step as description text. Typos that leave a block with no
+  steps (`Scenrio:` swallowing the steps under it), step keywords written with a colon
+  (`Given: the app is running`) under a scenario or background, and typos below the first step
+  fail the build with file, line and column. A `Feature:`/`Rule:` description stays free text, so
+  a colon step there is not reported. And a mistyped *first* step of a block that still has other
+  steps (`Gven the app is running` followed by `When ...`) is read as description and silently
+  dropped, and so is a mistyped `Backround:` in a feature that has steps elsewhere.
 
 ### Tables under a step: two meanings
 
@@ -87,16 +91,20 @@ Read [tables.md](references/tables.md) before putting a table under a step.
 - The package's own value tags go **on their own line**, because their value runs to the end of the
   line and swallows any tag written after it: `@testMethodName: testGoldens`,
   `@testerType: PatrolIntegrationTester`, `@testerName: $`,
-  `@scenarioParams: nativeAutomation: true`. Put them above `Feature:` to apply them to the whole
-  file, or above one scenario to apply them to that scenario only.
+  `@scenarioParams: nativeAutomation: true`. Their scopes differ:
   - `@testMethodName: testGoldens` makes the scenario call `testGoldens(...)` instead of
-    `testWidgets(...)`.
-  - `@testerType:` and `@testerName:` change the tester parameter's type and name, in both the test
-    and newly generated step stubs.
+    `testWidgets(...)`. Above `Feature:` it applies to every scenario in the file, above one
+    scenario to that scenario only.
+  - `@testerType:` and `@testerName:` change the tester parameter's type and name in newly
+    generated step stubs and in the `Background:`/`After:` functions. The test callback itself is
+    untyped, so there only the name changes. They are **file-level only**: one value is picked from
+    all tags in the file and used for every scenario and step. Put them above `Feature:`, never
+    above a scenario, where they would also leak into that test's ordinary tag list.
   - `@scenarioParams:` takes comma-separated named arguments, which are appended to the test method
-    call, e.g. `@scenarioParams: skip: true, timeout: Timeout(Duration(seconds: 5))`. The value is
-    split into arguments at every `, ` (comma followed by a space), so no single argument may
-    contain `, `. Write inner commas without the space: `size: Size(400,800)`.
+    call. It is read per scenario, so put it above the scenario it configures, e.g.
+    `@scenarioParams: skip: true, timeout: Timeout(Duration(seconds: 5))`. The value is split into
+    arguments at every `, ` (comma followed by a space), so no single argument may contain `, `.
+    Write inner commas without the space: `size: Size(400,800)`.
 
 ### Package extensions
 
@@ -106,7 +114,8 @@ Use these freely:
   `finally`, so they run even when the scenario fails. Writing it inside a `Rule:` does not scope
   it to that rule. It still runs after every scenario of the feature.
 - Dart lines above `Feature:` are copied to the top of the generated test. Use them for imports
-  needed by `{}` parameters and for `// ignore_for_file:` lint suppressions.
+  needed by `{}` parameters and for `// ignore_for_file:` lint suppressions. They are not copied
+  into step files: add imports a step needs to the step file itself.
 - A file may hold several `Feature:`s.
 - Value tags and tables that repeat a step, both described above.
 

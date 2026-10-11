@@ -38,7 +38,7 @@ If both exist, they are merged:
 | `addHooks` | `false` | Generate a `hooks.dart` file with a `Hooks` class and call it from every test. |
 | `hookFolderName` | `./hook` | Where `hooks.dart` lives. Resolved the same way as `stepFolderName`. |
 | `testMethodName` | `testWidgets` | The function each scenario is generated as, e.g. `testGoldens` or `patrolTest`. Overridden per feature or scenario by `@testMethodName:`. |
-| `testerType` | `WidgetTester` | The tester parameter's type in tests and new stubs. Overridden by `@testerType:`. |
+| `testerType` | `WidgetTester` | The tester parameter's type in new step stubs and `Background:`/`After:` functions (the test callback is untyped). Overridden by `@testerType:`. |
 | `testerName` | `tester` | The tester parameter's name. Overridden by `@testerName:`. |
 | `includeIntegrationTestBinding` | `true` | For features under `integration_test/` (when `integration_test` is a dev dependency), call `IntegrationTestWidgetsFlutterBinding.ensureInitialized()`. Set it to `false` for Patrol 3+. A `false` from any source wins. |
 | `customHeaders` | `[]` | Lines that replace the default imports at the top of generated tests and new generic step stubs (after the DataTable import). Include `flutter_test` yourself when you set this. Predefined step files ignore it and always import `flutter_test`. |

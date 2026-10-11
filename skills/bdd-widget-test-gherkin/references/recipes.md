@@ -11,6 +11,8 @@ hookFolderName: bdd_hooks   # optional: one shared folder instead of ./hook per 
 This generates the following file once. The project owns it afterwards:
 
 ```dart
+import 'dart:async';
+
 abstract class Hooks {
   const Hooks._();
   static FutureOr<void> beforeEach(String title, [List<String>? tags]) {}
@@ -30,12 +32,13 @@ abstract class Hooks {
 Pick the narrowest scope:
 
 - One scenario: put `@testMethodName: testGoldens` on its own line above `Scenario:`.
-- A whole feature: put the same tag above `Feature:`.
+- A whole file (every `Feature:` in it): put the same tag above `Feature:`.
 - Every test: set `testMethodName: testGoldens` in options.
 
-Then import the golden package where the steps need it (`customHeaders`, or a Dart line above
-`Feature:`). Implement a step such as `Then the screen matches {'name'} golden` with the golden
-package's API.
+Then implement a step such as `Then the screen matches {'name'} golden` with the golden package's
+API, and add the golden package's import to that step file. Dart lines above `Feature:` reach only
+the generated test, not step files. `customHeaders` also covers step stubs, but only ones generated
+after it was configured.
 
 ## Integration tests
 
@@ -60,29 +63,31 @@ package's API.
 ## Patrol
 
 ```yaml
-options:
-  testMethodName: patrolTest
-  testerName: $
-  testerType: PatrolIntegrationTester
-  includeIntegrationTestBinding: false   # Patrol 3+ must not call ensureInitialized
-  customHeaders:
-    - "import 'package:flutter_test/flutter_test.dart';"
-    - "import 'package:patrol/patrol.dart';"
+# build.yaml → bdd_widget_test|featureBuilder → options, or top level of bdd_options.yaml
+testMethodName: patrolTest
+testerName: $
+testerType: PatrolIntegrationTester
+includeIntegrationTestBinding: false   # Patrol 3+ must not call ensureInitialized
+customHeaders:
+  - "import 'package:flutter_test/flutter_test.dart';"
+  - "import 'package:patrol/patrol.dart';"
 ```
 
 - Steps then take `PatrolIntegrationTester $` and use Patrol finders (`await $('Login').tap();`).
 - Turn on native automation per scenario with
   `@scenarioParams: nativeAutomation: true` on its own line.
-- To use Patrol for only some features, use the `@testMethodName:`, `@testerType:` and
-  `@testerName:` tags on those features instead of the global options.
+- To use Patrol for only some feature files, put the `@testMethodName:`, `@testerType:` and
+  `@testerName:` tags above `Feature:` in those files instead of using the global options. The
+  tester tags apply to the whole file, so don't mix Patrol and widget-test features in one file.
 - Predefined steps are always generated for `WidgetTester`, and they ignore `customHeaders`, so they
   never import Patrol. When `testerType` changes, rewrite them (or supply your own files first) for
   the new tester, and add the Patrol import yourself.
 
 ## Sharing steps across packages
 
-In a shared package (e.g. `common_bdd_steps`), put step files under `lib/step/` and publish a
-`bdd_options.yaml`:
+In a shared package (e.g. `common_bdd_steps`), put step files under `lib/step/` and publish
+`lib/bdd_options.yaml`. A `package:` URI resolves under `lib/`, so a `bdd_options.yaml` in the
+package root (where a project's own local config lives) can't be included this way:
 
 ```yaml
 externalSteps:
@@ -90,11 +95,10 @@ externalSteps:
   - package:common_bdd_steps/step/i_wait.dart
 ```
 
-In the consuming app:
+In the consuming app's `bdd_options.yaml` (top-level keys):
 
 ```yaml
-options:
-  include: package:common_bdd_steps/bdd_options.yaml
+include: package:common_bdd_steps/bdd_options.yaml
 ```
 
 or list the `externalSteps` directly. A local step file with the same name takes priority over an
