@@ -35,10 +35,15 @@ Pick the narrowest scope:
 - A whole file (every `Feature:` in it): put the same tag above `Feature:`.
 - Every test: set `testMethodName: testGoldens` in options.
 
-Then implement a step such as `Then the screen matches {'name'} golden` with the golden package's
-API, and add the golden package's import to that step file. Dart lines above `Feature:` reach only
-the generated test, not step files. `customHeaders` also covers step stubs, but only ones generated
-after it was configured.
+The golden package must be imported in two places, because Dart imports are not transitive:
+
+- **The generated test**, which calls `testGoldens(...)`. For one scenario or one file, add the
+  import as a Dart line above `Feature:`. For every test, use `customHeaders`. It replaces the
+  default imports, so list `package:flutter/material.dart` and
+  `package:flutter_test/flutter_test.dart` in it too.
+- **The step file** that uses the golden API, e.g. `Then the screen matches {'name'} golden`. Dart
+  lines above `Feature:` don't reach step files, so add the import there yourself. `customHeaders`
+  covers generic step stubs, but only ones generated after it was configured.
 
 ## Integration tests
 

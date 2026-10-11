@@ -229,10 +229,10 @@ Feature: Checkout
     Scenario: Pay button is disabled without an address
       Then I see disabled elevated button
 
-    @testMethodName: testGoldens
-    Scenario: Address form matches the golden
+    @important
+    Scenario: Address form opens from the payment step
       When I tap {'Add address'} text
-      Then the screen matches {'address_form'} golden
+      Then I see {'Street'} text
 ```
 
 Data tables, one repeating a step and one passed as an argument:
