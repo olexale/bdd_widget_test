@@ -273,6 +273,7 @@ List of predefined steps:
 * I see multiple {..} widgets
 * I see {..} rich text
 * I see {..} text
+* I see {..} widget
 * I tap {..} icon
 * I tap {..} text
 * I wait
