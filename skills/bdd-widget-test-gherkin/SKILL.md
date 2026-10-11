@@ -82,7 +82,8 @@ Read [tables.md](references/tables.md) before putting a table under a step.
 - **DataTable argument**: any other table is passed as a `bdd.DataTable` parameter. **Every cell is
   a Dart expression**, so quote strings in every row, the header included:
   `| 'artist' | 'name' |`.
-- Doc strings (`"""`) are parsed but ignored, so don't use them to pass data.
+- Doc strings, opened with `"""` or with three backticks, are parsed but their
+  content is ignored. Don't put a table or data inside one.
 
 ### Tags
 
