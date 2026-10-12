@@ -28,6 +28,7 @@ on the behaviour described below, read the step file in the project's step folde
 | `I see disabled elevated button` | `iSeeDisabledElevatedButton` | — | the first `ElevatedButton` is disabled |
 | `I wait` | `iWait` | — | `pumpAndSettle()` |
 | `I dismiss the page` | `iDismissThePage` | — | `pageBack()`, then `pumpAndSettle()` |
+| `the screen matches golden {'home'}` | `theScreenMatchesGolden` | `String` | `matchesGoldenFile('goldens/<name>.png')` on the whole app |
 
 Notes:
 

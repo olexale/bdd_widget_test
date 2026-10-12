@@ -1,3 +1,12 @@
+## [3.0.2] - Golden step
+
+* Replace the discontinued `golden_toolkit` recipe in the README and the agent skill with the new
+  step (thanks @Fried-man).
+* Add the predefined `Then the screen matches golden {'name'}` step. It compares the whole app with
+  `goldens/<name>.png` using Flutter's own `matchesGoldenFile`, so golden scenarios stay ordinary
+  `testWidgets` tests and need no extra package or `testMethodName` override.
+* Document loading real fonts for goldens and keeping one golden set per OS. The example does both.
+
 ## [3.0.1] - Agent skill
 
 * Ship an [agent skill](https://dart.dev/ai/package-skills) for writing feature files and implementing

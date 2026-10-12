@@ -11,10 +11,9 @@ Feature: Counter
     Scenario: Initial counter value is 0
         Then I see {'0'} text
 
-    # A golden test is just a regular step, see test/step/the_screen_matches_golden.dart.
-    # test/flutter_test_config.dart loads real fonts, so the golden is OS-specific: it is
-    # generated on Linux and is expected to fail elsewhere (on Windows, use WSL). Run
-    # `flutter test --update-goldens` on Linux to (re)create test/goldens/initial_counter.png.
+    # A golden test is just a built-in step. test/flutter_test_config.dart loads real fonts,
+    # so goldens are OS-specific, and keeps one set per OS: test/goldens/<os>/initial_counter.png.
+    # macOS and Linux sets are committed. On another OS, run `flutter test --update-goldens` first.
     Scenario: Initial counter screen
         Then the screen matches golden {'initial_counter'}
 

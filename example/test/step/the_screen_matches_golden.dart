@@ -1,12 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Usage: the screen matches golden {'initial_counter'}
+/// Example: Then the screen matches golden {'home'}
 ///
-/// The path is resolved relative to the generated `*_test.dart` file, so the
-/// golden for `test/sample.feature` is `test/goldens/initial_counter.png`.
-Future<void> theScreenMatchesGolden(WidgetTester tester, String name) =>
-    expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/$name.png'),
-    );
+/// The path is resolved relative to the generated `*_test.dart` file, so in a
+/// feature file in `test/` this step compares with `test/goldens/home.png`.
+Future<void> theScreenMatchesGolden(
+  WidgetTester tester,
+  String name,
+) async {
+  await expectLater(
+    find.byType(WidgetsApp),
+    matchesGoldenFile('goldens/$name.png'),
+  );
+}

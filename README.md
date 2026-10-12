@@ -278,6 +278,7 @@ List of predefined steps:
 * I tap {..} text
 * I wait
 * The app is running
+* The screen matches golden {..}
 
 ## Hooks
 
@@ -334,7 +335,7 @@ Sure, you may find a [BDD in Flutter playlist](https://www.youtube.com/playlist?
 
 ### How to test the UI? (golden tests)
 
-BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts, a golden check is just another assertion, so write it as a regular `Then` step on top of Flutter's own [`matchesGoldenFile`](https://api.flutter.dev/flutter/flutter_test/matchesGoldenFile.html):
+BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts, a golden check is just another assertion, so the library comes with a predefined `Then` step on top of Flutter's own [`matchesGoldenFile`](https://api.flutter.dev/flutter/flutter_test/matchesGoldenFile.html):
 ```gherkin
 Feature: Counter
 
@@ -344,26 +345,49 @@ Feature: Counter
   Scenario: Initial counter screen
     Then the screen matches golden {'initial_counter'}
 ```
-```dart
-// test/step/the_screen_matches_golden.dart
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-/// Usage: the screen matches golden {'initial_counter'}
-Future<void> theScreenMatchesGolden(WidgetTester tester, String name) =>
-    expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/$name.png'),
-    );
-```
-The scenario stays an ordinary `testWidgets` test, so `Background:`, `After:` and hooks work as usual, and no extra dependency or `testMethodName` override is needed. Run `flutter test --update-goldens` once to create the golden files, then `flutter test` to compare against them. See the `example` folder for a working setup.
+The generated step compares the whole screen with `goldens/initial_counter.png`. The scenario stays an ordinary `testWidgets` test, so `Background:`, `After:` and hooks work as usual, and no extra dependency or `testMethodName` override is needed. Run `flutter test --update-goldens` once to create the golden files, then `flutter test` to compare against them. See the `example` folder for a working setup.
 
 Things to keep in mind:
-- The golden path is resolved relative to the generated `*_test.dart` file, not to the step file. The step above writes `test/goldens/initial_counter.png` for `test/sample.feature`.
+- The golden path is resolved relative to the generated `*_test.dart` file, not to the step file. In `test/sample.feature`, the scenario above compares with `test/goldens/initial_counter.png`.
 - Golden names must be unique among the features of one folder.
+- The predefined step takes a `WidgetTester`, like every predefined step, so it doesn't fit features with `@testerType: PatrolIntegrationTester`. For those, write your own `the_screen_matches_golden.dart` in the step folder. The body doesn't use the tester, so it is the same with a `PatrolIntegrationTester $` parameter. A step file that already exists always wins over the predefined one.
+- The step captures the whole app. To capture a single widget, wrap it in a `RepaintBoundary` with a `Key` and write your own step that targets the boundary with `find.byKey`. Finding the widget alone usually still captures the whole screen, because the image is taken from the nearest `RepaintBoundary` at or above it.
 - On a mismatch Flutter writes diff images to a `failures/` folder next to the test. You will probably want to add it to `.gitignore`.
 - By default Flutter tests draw every glyph as a box and load no icon fonts, so goldens show boxes instead of text and icons. To get real text, load fonts in a [`flutter_test_config.dart`](https://api.flutter.dev/flutter/flutter_test/flutter_test-library.html) next to your tests. The example's `test/flutter_test_config.dart` loads the Roboto and Material Icons fonts that ship with the Flutter SDK, and hides the debug banner.
-- Real fonts render slightly differently on each operating system, so pick one OS for your goldens, e.g. the one your CI runs on. The example's goldens are generated on Linux and are expected to fail elsewhere. On Windows you can run them in WSL.
+- Real fonts render slightly differently on each operating system. Either pick one OS for your goldens, e.g. the one your CI runs on, or keep one set per OS. For the latter, add a comparator that puts the OS in the path to your `flutter_test_config.dart`, and install it in `testExecutable` before `await testMain();` with `goldenFileComparator = _PerOsComparator(goldenFileComparator);`. With it, `goldens/initial_counter.png` is stored as `goldens/macos/initial_counter.png`, `goldens/linux/initial_counter.png` and so on. See the example's [`test/flutter_test_config.dart`](example/test/flutter_test_config.dart), which does this next to loading fonts.
+  ```dart
+  import 'dart:io';
+  import 'dart:typed_data';
+
+  import 'package:flutter_test/flutter_test.dart';
+
+  class _PerOsComparator extends GoldenFileComparator {
+    _PerOsComparator(this._delegate);
+
+    final GoldenFileComparator _delegate;
+
+    // Rewrite the path only here: matchesGoldenFile passes the result to
+    // compare and update, and shows it in failure messages.
+    @override
+    Uri getTestUri(Uri key, int? version) {
+      final golden = _delegate.getTestUri(key, version);
+      return golden.replace(pathSegments: [
+        ...golden.pathSegments.take(golden.pathSegments.length - 1),
+        Platform.operatingSystem,
+        golden.pathSegments.last,
+      ]);
+    }
+
+    @override
+    Future<bool> compare(Uint8List imageBytes, Uri golden) =>
+        _delegate.compare(imageBytes, golden);
+
+    @override
+    Future<void> update(Uri golden, Uint8List imageBytes) =>
+        _delegate.update(golden, imageBytes);
+  }
+  ```
+  `flutter test` sets up a comparator for each test file before it calls `testExecutable`, so wrapping it keeps the paths relative to the test file. Run `flutter test --update-goldens` on every OS to create its set; an OS without one fails with "Could not be compared against non-existent file". `dart:io` isn't available on the web, so this doesn't work with `flutter test --platform chrome`. The example works this way and ships macOS and Linux goldens.
 
 ### How to reuse steps between projects?
 

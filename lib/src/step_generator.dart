@@ -21,6 +21,7 @@ import 'package:bdd_widget_test/src/step/i_tap_icon.dart';
 import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
+import 'package:bdd_widget_test/src/step/the_screen_matches_golden.dart';
 import 'package:bdd_widget_test/src/util/string_utils.dart';
 import 'package:diacritic/diacritic.dart';
 
@@ -181,6 +182,7 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
   'iTapIcon': (_, _) => ITapIcon(),
   'iTapText': (_, _) => ITapText(),
   'iWait': (_, _) => IWait(),
+  'theScreenMatchesGolden': (_, _) => TheScreenMatchesGolden(),
 };
 
 /// Return an array of Strings where first element is the step name and the rest
