@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import './step/common/the_app_is_running.dart';
 import './step/i_do_not_see_text.dart';
 import './step/i_see_text.dart';
+import './step/the_screen_matches_golden.dart';
 import './step/i_tap_icon.dart';
 import './step/i_tap_icon_times.dart';
 
@@ -24,6 +25,14 @@ void main() {
       try {
         await bddSetUp(tester);
         await iSeeText(tester, '0');
+      } finally {
+        await bddTearDown(tester);
+      }
+    });
+    testWidgets('''Initial counter screen''', (tester) async {
+      try {
+        await bddSetUp(tester);
+        await theScreenMatchesGolden(tester, 'initial_counter');
       } finally {
         await bddTearDown(tester);
       }

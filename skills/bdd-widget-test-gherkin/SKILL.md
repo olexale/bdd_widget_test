@@ -90,10 +90,10 @@ Read [tables.md](references/tables.md) before putting a table under a step.
 - Tags filter runs (`flutter test --tags important`) and are inherited from `Feature:` and `Rule:`
   by their scenarios. Plain tags may share a line: `@slow @integration`.
 - The package's own value tags go **on their own line**, because their value runs to the end of the
-  line and swallows any tag written after it: `@testMethodName: testGoldens`,
+  line and swallows any tag written after it: `@testMethodName: patrolTest`,
   `@testerType: PatrolIntegrationTester`, `@testerName: $`,
   `@scenarioParams: nativeAutomation: true`. Their scopes differ:
-  - `@testMethodName: testGoldens` makes the scenario call `testGoldens(...)` instead of
+  - `@testMethodName: patrolTest` makes the scenario call `patrolTest(...)` instead of
     `testWidgets(...)`. Above `Feature:` it applies to every scenario in the file, above one
     scenario to that scenario only.
   - `@testerType:` and `@testerName:` change the tester parameter's type and name in newly
@@ -275,10 +275,10 @@ Given available songs
   | The Doors | Riders    |
 
 # BAD: value tag first, so `@slow` becomes part of the method name
-@testMethodName: testGoldens @slow
+@testMethodName: patrolTest @slow
 # GOOD
 @slow
-@testMethodName: testGoldens
+@testMethodName: patrolTest
 ```
 
 A stub as generated for `When I add {'Coffee'} items {3} times`:

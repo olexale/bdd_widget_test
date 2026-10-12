@@ -31,6 +31,9 @@
 .pub/
 /build/
 
+# Golden test diff images written by `flutter test` on a mismatch
+**/failures/
+
 # Web related
 lib/generated_plugin_registrant.dart
 
