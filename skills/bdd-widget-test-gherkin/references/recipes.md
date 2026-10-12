@@ -29,7 +29,7 @@ abstract class Hooks {
 
 ## Golden tests
 
-A golden check is an assertion, so write it as an ordinary `Then` step on top of Flutter's
+A golden check is an assertion, so use the predefined `Then` step built on Flutter's
 `matchesGoldenFile`. The scenario stays a plain `testWidgets` test. Don't change `testMethodName`,
 don't wrap the test, and don't add a golden package.
 
@@ -39,30 +39,20 @@ Scenario: Initial counter screen
   Then the screen matches golden {'initial_counter'}
 ```
 
-```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-/// Usage: the screen matches golden {'initial_counter'}
-Future<void> theScreenMatchesGolden(WidgetTester tester, String name) =>
-    expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/$name.png'),
-    );
-```
-
 - `Background:`, `After:` and hooks apply as in any other scenario. Steps before the golden step may
   pump, tap and navigate freely.
-- The finder must match exactly one widget. The image is taken from its nearest `RepaintBoundary`
-  ancestor, so `find.byType(MaterialApp)` captures the whole screen. To capture one widget, find it
-  instead (or wrap it in a `RepaintBoundary`).
+- The predefined step captures the whole app (`find.byType(WidgetsApp)`). The image is taken from
+  the nearest `RepaintBoundary` at or above the found widget, so finding a smaller widget usually
+  still captures the whole screen. To capture one widget, wrap it in a `RepaintBoundary` with a
+  `Key` and write a project step that targets the boundary with `find.byKey`.
 - The path is resolved relative to the generated `*_test.dart`, not the step file, so goldens land
   in `goldens/` next to the feature. Keep golden names unique among the features of one folder.
 - Create or update the images with `flutter test --update-goldens`, then compare with
   `flutter test`. Mismatches write diff images to `failures/` next to the test. Keep that folder
   out of version control.
-- By default tests draw every glyph as a box and load no icon fonts. For real text, load fonts in
-  `test/flutter_test_config.dart`, which runs before every test below it. The Flutter SDK ships
+- By default tests draw every glyph as a box and load no icon fonts, which keeps goldens identical
+  on every OS. For real text, load fonts in `test/flutter_test_config.dart`, which runs before
+  every test below it. The Flutter SDK ships
   Roboto and Material Icons, which the default Material theme and `Icons` use:
 
   ```dart
@@ -91,8 +81,44 @@ Future<void> theScreenMatchesGolden(WidgetTester tester, String name) =>
   Fonts the app declares in `pubspec.yaml` load the same way from their files. Don't create a
   custom test binding there: it replaces the binding for every test, and `patrolTest` then fails
   to load.
-- Real fonts render slightly differently on each OS, so generate and compare goldens on one OS,
-  usually the CI's (Linux). On Windows, run them in WSL.
+- Real fonts render slightly differently on each OS. Generate and compare goldens on one OS,
+  usually the CI's (Linux; on Windows, run them in WSL), or keep one set per OS. For a set per OS,
+  wrap the comparator in the same `testExecutable`, before `testMain()`, so every golden gets the OS
+  in its path:
+
+  ```dart
+  goldenFileComparator = _PerOsComparator(goldenFileComparator);
+
+  /// goldens/home.png -> goldens/macos/home.png
+  class _PerOsComparator extends GoldenFileComparator {
+    _PerOsComparator(this._delegate);
+
+    final GoldenFileComparator _delegate;
+
+    Uri _perOs(Uri golden) => golden.replace(pathSegments: [
+          ...golden.pathSegments.take(golden.pathSegments.length - 1),
+          Platform.operatingSystem,
+          golden.pathSegments.last,
+        ]);
+
+    @override
+    Future<bool> compare(Uint8List imageBytes, Uri golden) =>
+        _delegate.compare(imageBytes, _perOs(golden));
+
+    @override
+    Future<void> update(Uri golden, Uint8List imageBytes) =>
+        _delegate.update(_perOs(golden), imageBytes);
+
+    @override
+    Uri getTestUri(Uri key, int? version) => _delegate.getTestUri(key, version);
+  }
+  ```
+
+  It needs `import 'package:flutter_test/flutter_test.dart';`. Wrap the existing comparator rather
+  than creating a `LocalFileComparator`: `flutter test` sets one up per test file, relative to it.
+  Use `Platform.operatingSystem` (the host), never `defaultTargetPlatform`, which is `android` in
+  every widget test. Each OS needs its own `--update-goldens` run; an OS without its set fails with
+  "Could not be compared against non-existent file".
 
 ## Integration tests
 
