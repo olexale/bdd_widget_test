@@ -29,21 +29,70 @@ abstract class Hooks {
 
 ## Golden tests
 
-Pick the narrowest scope:
+A golden check is an assertion, so write it as an ordinary `Then` step on top of Flutter's
+`matchesGoldenFile`. The scenario stays a plain `testWidgets` test. Don't change `testMethodName`,
+don't wrap the test, and don't add a golden package.
 
-- One scenario: put `@testMethodName: testGoldens` on its own line above `Scenario:`.
-- A whole file (every `Feature:` in it): put the same tag above `Feature:`.
-- Every test: set `testMethodName: testGoldens` in options.
+```gherkin
+Scenario: Initial counter screen
+  Given the app is running
+  Then the screen matches golden {'initial_counter'}
+```
 
-The golden package must be imported in two places, because Dart imports are not transitive:
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-- **The generated test**, which calls `testGoldens(...)`. For one scenario or one file, add the
-  import as a Dart line above `Feature:`. For every test, use `customHeaders`. It replaces the
-  default imports, so list `package:flutter/material.dart` and
-  `package:flutter_test/flutter_test.dart` in it too.
-- **The step file** that uses the golden API, e.g. `Then the screen matches {'name'} golden`. Dart
-  lines above `Feature:` don't reach step files, so add the import there yourself. `customHeaders`
-  covers generic step stubs, but only ones generated after it was configured.
+/// Usage: the screen matches golden {'initial_counter'}
+Future<void> theScreenMatchesGolden(WidgetTester tester, String name) =>
+    expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/$name.png'),
+    );
+```
+
+- `Background:`, `After:` and hooks apply as in any other scenario. Steps before the golden step may
+  pump, tap and navigate freely.
+- The finder must match exactly one widget. The image is taken from its nearest `RepaintBoundary`
+  ancestor, so `find.byType(MaterialApp)` captures the whole screen. To capture one widget, find it
+  instead (or wrap it in a `RepaintBoundary`).
+- The path is resolved relative to the generated `*_test.dart`, not the step file, so goldens land
+  in `goldens/` next to the feature. Keep golden names unique among the features of one folder.
+- Create or update the images with `flutter test --update-goldens`, then compare with
+  `flutter test`. Mismatches write diff images to `failures/` next to the test. Keep that folder
+  out of version control.
+- By default tests draw every glyph as a box and load no icon fonts. For real text, load fonts in
+  `test/flutter_test_config.dart`, which runs before every test below it. The Flutter SDK ships
+  Roboto and Material Icons, which the default Material theme and `Icons` use:
+
+  ```dart
+  import 'dart:async';
+  import 'dart:io';
+
+  import 'package:flutter/services.dart';
+  import 'package:flutter/widgets.dart';
+
+  Future<void> testExecutable(FutureOr<void> Function() testMain) async {
+    WidgetsApp.debugAllowBannerOverride = false; // no DEBUG ribbon in goldens
+    final dir = '${Platform.environment['FLUTTER_ROOT']}/bin/cache/artifacts/material_fonts';
+    final roboto = FontLoader('Roboto');
+    final icons = FontLoader('MaterialIcons');
+    for (final file in Directory(dir).listSync().whereType<File>()) {
+      final name = file.uri.pathSegments.last.toLowerCase();
+      final font = Future.value(ByteData.sublistView(file.readAsBytesSync()));
+      if (name.startsWith('roboto-')) roboto.addFont(font);
+      if (name == 'materialicons-regular.otf') icons.addFont(font);
+    }
+    await Future.wait([roboto.load(), icons.load()]);
+    await testMain();
+  }
+  ```
+
+  Fonts the app declares in `pubspec.yaml` load the same way from their files. Don't create a
+  custom test binding there: it replaces the binding for every test, and `patrolTest` then fails
+  to load.
+- Real fonts render slightly differently on each OS, so generate and compare goldens on one OS,
+  usually the CI's (Linux). On Windows, run them in WSL.
 
 ## Integration tests
 

@@ -234,7 +234,7 @@ On top of the standard, this package adds a few extensions that make Flutter tes
 | `After:` sections | Read as feature description text — **the steps are silently dropped** |
 | A table under a step, used to repeat that step | Read as a `DataTable` argument, so **the step runs once instead of once per row** |
 | Dart lines above `Feature:` | Parse error |
-| Tags containing a space, e.g. `@testMethodName: testGoldens` | Parse error — a tag may not contain whitespace |
+| Tags containing a space, e.g. `@testMethodName: patrolTest` | Parse error — a tag may not contain whitespace |
 | Several `Feature:`s in one file | Parse error — Gherkin allows one feature per file |
 | `{}` parameters, e.g. `{'0'}` | Nothing — to a Gherkin parser these are ordinary step text |
 
@@ -248,7 +248,7 @@ If your feature files need to stay readable by other Cucumber tooling — a spec
 | --- | --- |
 | `After:` | [Hooks](#hooks) — `Hooks.afterEach` runs after every scenario, failures included |
 | Dart lines above `Feature:` | The [`customHeaders` option](#how-to-add-custom-headers-to-generated-files) in `build.yaml` |
-| `@testMethodName: testGoldens` | `@testMethodName:testGoldens` — same meaning, no space, a valid tag |
+| `@testMethodName: patrolTest` | `@testMethodName:patrolTest` — same meaning, no space, a valid tag |
 | Several `Feature:`s in one file | One feature per file |
 | A table under a step | Write the repeated steps out in full, as shown [above](#feature-file-syntax) |
 
@@ -334,31 +334,36 @@ Sure, you may find a [BDD in Flutter playlist](https://www.youtube.com/playlist?
 
 ### How to test the UI? (golden tests)
 
-BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts the simplest option would be to combine BDD widget tests with [golden_toolkit](https://pub.dev/packages/golden_toolkit) plugin.
-
-Everything will stay pretty much the same, but you'll need to tell the plugin to name test methods `testGoldens` instead of `testWidgets`.
-There are three ways on how you can do that:
-1. If you have only few golden test scenarios per feature, you may mark them with the `testMethodName` tag like that:
+BDD is UI agnostic, the main focus is on the requirements. If you need to test colors and layouts, a golden check is just another assertion, so write it as a regular `Then` step on top of Flutter's own [`matchesGoldenFile`](https://api.flutter.dev/flutter/flutter_test/matchesGoldenFile.html):
 ```gherkin
-@testMethodName: testGoldens
-Scenario: My golden scenario
-```
-2. For features full of golden tests you may move the `testMethodName` tag above the `Feature` declaration like that:
-```gherkin
-@testMethodName: testGoldens
-Feature: My golden feature
-```
-3. If you plan to have golden tests only, you may want to override `testMethodName` for the whole plugin. For that modify your `build.yaml` file like that:
-```yaml
-targets:
-  $default:
-    builders:
-      bdd_widget_test|featureBuilder:
-        options:
-          testMethodName: testGoldens
-```
+Feature: Counter
 
-You may refer to a video from [BDD in Flutter playlist](https://www.youtube.com/playlist?list=PLjaSBcAZ8TqFx51f30aRi_A2szelttOpq) for a live demo.
+  Background:
+    Given the app is running
+
+  Scenario: Initial counter screen
+    Then the screen matches golden {'initial_counter'}
+```
+```dart
+// test/step/the_screen_matches_golden.dart
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+/// Usage: the screen matches golden {'initial_counter'}
+Future<void> theScreenMatchesGolden(WidgetTester tester, String name) =>
+    expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/$name.png'),
+    );
+```
+The scenario stays an ordinary `testWidgets` test, so `Background:`, `After:` and hooks work as usual, and no extra dependency or `testMethodName` override is needed. Run `flutter test --update-goldens` once to create the golden files, then `flutter test` to compare against them. See the `example` folder for a working setup.
+
+Things to keep in mind:
+- The golden path is resolved relative to the generated `*_test.dart` file, not to the step file. The step above writes `test/goldens/initial_counter.png` for `test/sample.feature`.
+- Golden names must be unique among the features of one folder.
+- On a mismatch Flutter writes diff images to a `failures/` folder next to the test. You will probably want to add it to `.gitignore`.
+- By default Flutter tests draw every glyph as a box and load no icon fonts, so goldens show boxes instead of text and icons. To get real text, load fonts in a [`flutter_test_config.dart`](https://api.flutter.dev/flutter/flutter_test/flutter_test-library.html) next to your tests. The example's `test/flutter_test_config.dart` loads the Roboto and Material Icons fonts that ship with the Flutter SDK, and hides the debug banner.
+- Real fonts render slightly differently on each operating system, so pick one OS for your goldens, e.g. the one your CI runs on. The example's goldens are generated on Linux and are expected to fail elsewhere. On Windows you can run them in WSL.
 
 ### How to reuse steps between projects?
 

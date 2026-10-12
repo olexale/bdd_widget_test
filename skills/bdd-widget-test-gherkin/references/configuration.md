@@ -37,7 +37,7 @@ If both exist, they are merged:
 | `include` | — | A `package:` URI or a path relative to the package root (or a list of them) of another `bdd_options.yaml` to merge in. Includes can be nested. |
 | `addHooks` | `false` | Generate a `hooks.dart` file with a `Hooks` class and call it from every test. |
 | `hookFolderName` | `./hook` | Where `hooks.dart` lives. Resolved the same way as `stepFolderName`. |
-| `testMethodName` | `testWidgets` | The function each scenario is generated as, e.g. `testGoldens` or `patrolTest`. Overridden per feature or scenario by `@testMethodName:`. |
+| `testMethodName` | `testWidgets` | The function each scenario is generated as, e.g. `patrolTest`. Overridden per feature or scenario by `@testMethodName:`. |
 | `testerType` | `WidgetTester` | The tester parameter's type in new step stubs and `Background:`/`After:` functions (the test callback is untyped). Overridden by `@testerType:`. |
 | `testerName` | `tester` | The tester parameter's name. Overridden by `@testerName:`. |
 | `includeIntegrationTestBinding` | `true` | For features under `integration_test/` (when `integration_test` is a dev dependency), call `IntegrationTestWidgetsFlutterBinding.ensureInitialized()`. Set it to `false` for Patrol 3+. A `false` from any source wins. |

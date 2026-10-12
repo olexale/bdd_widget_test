@@ -8,9 +8,15 @@ Feature: Counter
         # See the list of built-in step below.
         And I do not see {'surprise'} text 
     
-    # @testMethodName: testGoldens
     Scenario: Initial counter value is 0
         Then I see {'0'} text
+
+    # A golden test is just a regular step, see test/step/the_screen_matches_golden.dart.
+    # test/flutter_test_config.dart loads real fonts, so the golden is OS-specific: it is
+    # generated on Linux and is expected to fail elsewhere (on Windows, use WSL). Run
+    # `flutter test --update-goldens` on Linux to (re)create test/goldens/initial_counter.png.
+    Scenario: Initial counter screen
+        Then the screen matches golden {'initial_counter'}
 
     Scenario: Add button increments the counter
         When I tap {Icons.add} icon
