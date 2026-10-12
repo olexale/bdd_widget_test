@@ -61,9 +61,38 @@ Future<void> theScreenMatchesGolden(WidgetTester tester, String name) =>
 - Create or update the images with `flutter test --update-goldens`, then compare with
   `flutter test`. Mismatches write diff images to `failures/` next to the test. Keep that folder
   out of version control.
-- Tests draw text with a box-glyph test font and don't load app or icon fonts. Load real fonts in
-  `flutter_test_config.dart` if the goldens need them. Rendering can differ between operating
-  systems, so generate and compare goldens on the same OS.
+- By default tests draw every glyph as a box and load no icon fonts. For real text, load fonts in
+  `test/flutter_test_config.dart`, which runs before every test below it. The Flutter SDK ships
+  Roboto and Material Icons, which the default Material theme and `Icons` use:
+
+  ```dart
+  import 'dart:async';
+  import 'dart:io';
+
+  import 'package:flutter/services.dart';
+  import 'package:flutter/widgets.dart';
+
+  Future<void> testExecutable(FutureOr<void> Function() testMain) async {
+    WidgetsApp.debugAllowBannerOverride = false; // no DEBUG ribbon in goldens
+    final dir = '${Platform.environment['FLUTTER_ROOT']}/bin/cache/artifacts/material_fonts';
+    final roboto = FontLoader('Roboto');
+    final icons = FontLoader('MaterialIcons');
+    for (final file in Directory(dir).listSync().whereType<File>()) {
+      final name = file.uri.pathSegments.last.toLowerCase();
+      final font = Future.value(ByteData.sublistView(file.readAsBytesSync()));
+      if (name.startsWith('roboto-')) roboto.addFont(font);
+      if (name == 'materialicons-regular.otf') icons.addFont(font);
+    }
+    await Future.wait([roboto.load(), icons.load()]);
+    await testMain();
+  }
+  ```
+
+  Fonts the app declares in `pubspec.yaml` load the same way from their files. Don't create a
+  custom test binding there: it replaces the binding for every test, and `patrolTest` then fails
+  to load.
+- Real fonts render slightly differently on each OS, so generate and compare goldens on one OS,
+  usually the CI's (Linux). On Windows, run them in WSL.
 
 ## Integration tests
 

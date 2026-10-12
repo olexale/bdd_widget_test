@@ -362,8 +362,8 @@ Things to keep in mind:
 - The golden path is resolved relative to the generated `*_test.dart` file, not to the step file. The step above writes `test/goldens/initial_counter.png` for `test/sample.feature`.
 - Golden names must be unique among the features of one folder.
 - On a mismatch Flutter writes diff images to a `failures/` folder next to the test. You will probably want to add it to `.gitignore`.
-- Flutter tests draw text with a test font that renders every glyph as a box, and don't load your app's fonts or icon fonts. Load them in a `flutter_test_config.dart` if your goldens need real text.
-- Rendering can differ slightly between operating systems, so create and compare goldens on the same OS, e.g. your CI.
+- By default Flutter tests draw every glyph as a box and load no icon fonts, so goldens show boxes instead of text and icons. To get real text, load fonts in a [`flutter_test_config.dart`](https://api.flutter.dev/flutter/flutter_test/flutter_test-library.html) next to your tests. The example's `test/flutter_test_config.dart` loads the Roboto and Material Icons fonts that ship with the Flutter SDK, and hides the debug banner.
+- Real fonts render slightly differently on each operating system, so pick one OS for your goldens, e.g. the one your CI runs on. The example's goldens are generated on Linux and are expected to fail elsewhere. On Windows you can run them in WSL.
 
 ### How to reuse steps between projects?
 

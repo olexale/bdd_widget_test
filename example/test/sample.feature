@@ -12,7 +12,9 @@ Feature: Counter
         Then I see {'0'} text
 
     # A golden test is just a regular step, see test/step/the_screen_matches_golden.dart.
-    # Run `flutter test --update-goldens` to (re)create test/goldens/initial_counter.png.
+    # test/flutter_test_config.dart loads real fonts, so the golden is OS-specific: it is
+    # generated on Linux and is expected to fail elsewhere (on Windows, use WSL). Run
+    # `flutter test --update-goldens` on Linux to (re)create test/goldens/initial_counter.png.
     Scenario: Initial counter screen
         Then the screen matches golden {'initial_counter'}
 
