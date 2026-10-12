@@ -41,6 +41,11 @@ Scenario: Initial counter screen
 
 - `Background:`, `After:` and hooks apply as in any other scenario. Steps before the golden step may
   pump, tap and navigate freely.
+- The predefined step takes a `WidgetTester`, like every predefined step, so its generated call
+  doesn't compile in features with `@testerType: PatrolIntegrationTester`. There, write
+  `the_screen_matches_golden.dart` in the step folder yourself. The body doesn't use the tester,
+  so it is the same with a `PatrolIntegrationTester $` parameter. A step file that already exists
+  always wins over the predefined one.
 - The predefined step captures the whole app (`find.byType(WidgetsApp)`). The image is taken from
   the nearest `RepaintBoundary` at or above the found widget, so finding a smaller widget usually
   still captures the whole screen. To capture one widget, wrap it in a `RepaintBoundary` with a
@@ -95,30 +100,36 @@ Scenario: Initial counter screen
 
     final GoldenFileComparator _delegate;
 
-    Uri _perOs(Uri golden) => golden.replace(pathSegments: [
-          ...golden.pathSegments.take(golden.pathSegments.length - 1),
-          Platform.operatingSystem,
-          golden.pathSegments.last,
-        ]);
+    // Rewrite the path only here: matchesGoldenFile passes the result to
+    // compare and update, and shows it in failure messages.
+    @override
+    Uri getTestUri(Uri key, int? version) {
+      final golden = _delegate.getTestUri(key, version);
+      return golden.replace(pathSegments: [
+        ...golden.pathSegments.take(golden.pathSegments.length - 1),
+        Platform.operatingSystem,
+        golden.pathSegments.last,
+      ]);
+    }
 
     @override
     Future<bool> compare(Uint8List imageBytes, Uri golden) =>
-        _delegate.compare(imageBytes, _perOs(golden));
+        _delegate.compare(imageBytes, golden);
 
     @override
     Future<void> update(Uri golden, Uint8List imageBytes) =>
-        _delegate.update(_perOs(golden), imageBytes);
-
-    @override
-    Uri getTestUri(Uri key, int? version) => _delegate.getTestUri(key, version);
+        _delegate.update(golden, imageBytes);
   }
   ```
 
-  It needs `import 'package:flutter_test/flutter_test.dart';`. Wrap the existing comparator rather
-  than creating a `LocalFileComparator`: `flutter test` sets one up per test file, relative to it.
-  Use `Platform.operatingSystem` (the host), never `defaultTargetPlatform`, which is `android` in
-  every widget test. Each OS needs its own `--update-goldens` run; an OS without its set fails with
-  "Could not be compared against non-existent file".
+  It needs `import 'dart:io';`, `import 'dart:typed_data';` and
+  `import 'package:flutter_test/flutter_test.dart';`. Wrap the existing comparator rather than
+  creating a `LocalFileComparator`: `flutter test` sets one up per test file, relative to it.
+  Rewrite the path in `getTestUri` only; doing it in `compare` and `update` as well puts the OS in
+  twice. Use `Platform.operatingSystem` (the host), never `defaultTargetPlatform`, which is
+  `android` in every widget test. `dart:io` is unavailable on the web, so this doesn't work with
+  `flutter test --platform chrome`. Each OS needs its own `--update-goldens` run; an OS without its
+  set fails with "Could not be compared against non-existent file".
 
 ## Integration tests
 

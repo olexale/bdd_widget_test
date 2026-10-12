@@ -46,28 +46,30 @@ Future<void> _loadMaterialFonts() async {
 ///
 /// `flutter test` sets up a comparator for each test file before calling
 /// [testExecutable], so this one only rewrites the path and leaves the rest to
-/// it.
+/// it. The path is rewritten once, in [getTestUri]: `matchesGoldenFile` passes
+/// its result to [compare] and [update], and shows it in failure messages.
 class _PerOsComparator extends GoldenFileComparator {
   _PerOsComparator(this._delegate);
 
   final GoldenFileComparator _delegate;
 
-  Uri _perOs(Uri golden) => golden.replace(
-        pathSegments: [
-          ...golden.pathSegments.take(golden.pathSegments.length - 1),
-          Platform.operatingSystem,
-          golden.pathSegments.last,
-        ],
-      );
+  @override
+  Uri getTestUri(Uri key, int? version) {
+    final golden = _delegate.getTestUri(key, version);
+    return golden.replace(
+      pathSegments: [
+        ...golden.pathSegments.take(golden.pathSegments.length - 1),
+        Platform.operatingSystem,
+        golden.pathSegments.last,
+      ],
+    );
+  }
 
   @override
   Future<bool> compare(Uint8List imageBytes, Uri golden) =>
-      _delegate.compare(imageBytes, _perOs(golden));
+      _delegate.compare(imageBytes, golden);
 
   @override
   Future<void> update(Uri golden, Uint8List imageBytes) =>
-      _delegate.update(_perOs(golden), imageBytes);
-
-  @override
-  Uri getTestUri(Uri key, int? version) => _delegate.getTestUri(key, version);
+      _delegate.update(golden, imageBytes);
 }
