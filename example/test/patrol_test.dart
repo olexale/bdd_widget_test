@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:patrol/patrol.dart';
+import 'package:patrol_finders/patrol_finders.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,11 +11,11 @@ import './step/i_see_label.dart';
 
 void main() {
   group('''Counter''', () {
-    Future<void> bddSetUp(PatrolIntegrationTester $) async {
+    Future<void> bddSetUp(PatrolTester $) async {
       await thePatrolAppIsRunning($);
     }
 
-    patrolTest(
+    patrolWidgetTest(
       '''Initial counter value is 0''',
       ($) async {
         await bddSetUp($);
