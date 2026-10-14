@@ -11,6 +11,12 @@ on:
     paths-ignore:
       - '**/README.md'
 
+  # The daily run catches breakages caused by new Flutter releases, not by our commits.
+  schedule:
+    - cron: '34 5 * * *'
+
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,7 +43,7 @@ jobs:
         run: dart pub global run coverage:test_with_coverage --fail-under 100
 
       - name: 🥇 Update coverage badge
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'push'
         uses: coverallsapp/github-action@v2.3.6
         with:
           github-token: ${{ secrets.github_token }}
@@ -49,3 +55,41 @@ jobs:
           echo "score: $PANA_SCORE"
           IFS='/'; read -a SCORE_ARR <<< "$PANA_SCORE"; SCORE=SCORE_ARR[0]; TOTAL=SCORE_ARR[1]
           if (( $SCORE < $TOTAL )); then echo "minimum score not met!"; exit 1; fi
+
+  # Runs the example app against current Flutter releases, the way users consume
+  # the package: next to flutter_test and test, which pin many shared dependencies.
+  example:
+    needs: build
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        channel: [ stable, beta ]
+
+    name: example (${{ matrix.channel }})
+
+    defaults:
+      run:
+        working-directory: example
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🐦 Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ matrix.channel }}
+          cache: true
+
+      - name: 🛠 Install dependencies
+        run: flutter pub get
+
+      - name: 🏗 Generate tests
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: 🕵️‍♀️ Analyze tests
+        run: flutter analyze test
+
+      - name: 🧪 Run tests
+        run: flutter test
