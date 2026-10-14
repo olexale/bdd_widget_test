@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
+import 'package:dummy_yaml/main.dart';
+import 'package:patrol_finders/patrol_finders.dart';
 
-Future<void> thePatrolAppIsRunning(PatrolIntegrationTester $) async {
-  throw UnimplementedError();
+Future<void> thePatrolAppIsRunning(PatrolTester $) async {
+  await $.pumpWidgetAndSettle(const MyApp());
 }

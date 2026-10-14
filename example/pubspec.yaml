@@ -17,4 +17,5 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  patrol: ^3.19.0
+  patrol_finders: ^3.6.0
+  test: ^1.31.1

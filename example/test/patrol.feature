@@ -1,8 +1,8 @@
-import 'package:patrol/patrol.dart';
+import 'package:patrol_finders/patrol_finders.dart';
 
-@testMethodName: patrolTest
+@testMethodName: patrolWidgetTest
 @testerName: $
-@testerType: PatrolIntegrationTester
+@testerType: PatrolTester
 Feature: Counter
     
     Background:
