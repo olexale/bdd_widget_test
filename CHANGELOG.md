@@ -1,3 +1,9 @@
+## [3.0.3] - Flutter stable compatibility
+
+* Widen the `package_config` constraint to `>=2.1.0 <4.0.0`. Flutter stable pins `test_api`, which
+  holds `test` to versions that need `package_config` 2.x, so apps depending on both `test` and this
+  package could not resolve dependencies.
+
 ## [3.0.2] - Golden step
 
 * Replace the discontinued `golden_toolkit` recipe in the README and the agent skill with the new
