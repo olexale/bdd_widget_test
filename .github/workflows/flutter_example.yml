@@ -1,0 +1,57 @@
+name: Flutter example
+
+# Runs the example app against current Flutter releases, the way users consume
+# the package: next to flutter_test and test, which pin many shared dependencies.
+# The daily run catches breakages caused by new Flutter releases, not by our commits.
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**/README.md'
+
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**/README.md'
+
+  schedule:
+    - cron: '34 5 * * *'
+
+  workflow_dispatch:
+
+jobs:
+  example:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        channel: [ stable, beta ]
+
+    name: example (${{ matrix.channel }})
+
+    defaults:
+      run:
+        working-directory: example
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🐦 Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ matrix.channel }}
+          cache: true
+
+      - name: 🛠 Install dependencies
+        run: flutter pub get
+
+      - name: 🏗 Generate tests
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: 🕵️‍♀️ Analyze tests
+        run: flutter analyze test
+
+      - name: 🧪 Run tests
+        run: flutter test
