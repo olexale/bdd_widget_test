@@ -3,7 +3,7 @@ import 'package:bdd_widget_test/src/step/bdd_step.dart';
 class IEnterIntoInputField implements BddStep {
   @override
   String get content => '''
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Example: When I enter {'text'} into {1} input field

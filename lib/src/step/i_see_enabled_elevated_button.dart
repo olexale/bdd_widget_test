@@ -3,7 +3,7 @@ import 'package:bdd_widget_test/src/step/bdd_step.dart';
 class ISeeEnabledElevatedButton implements BddStep {
   @override
   String get content => '''
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Example: Then I see enabled elevated button

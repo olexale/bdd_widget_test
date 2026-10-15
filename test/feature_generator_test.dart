@@ -26,7 +26,7 @@ void main() {
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
-        "import 'package:flutter/material.dart';\n"
+        "import 'package:material_ui/material_ui.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
         "import './step/the_app_is_running.dart';\n"
@@ -95,7 +95,7 @@ relativeToTestFolder: false
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
-        "import 'package:flutter/material.dart';\n"
+        "import 'package:material_ui/material_ui.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
         "import '$expectedImportPath';\n"
@@ -209,7 +209,7 @@ stepFolderName: ./scenarios
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
-        "import 'package:flutter/material.dart';\n"
+        "import 'package:material_ui/material_ui.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
         "import './scenarios/the_app_is_running.dart';\n"
@@ -263,7 +263,7 @@ stepFolderName: ./scenarios
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
-        "import 'package:flutter/material.dart';\n"
+        "import 'package:material_ui/material_ui.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
         "import './scenarios/the_app_is_running.dart';\n"
@@ -299,7 +299,7 @@ dev_dependencies:
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
-        "import 'package:flutter/material.dart';\n"
+        "import 'package:material_ui/material_ui.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         "import 'package:integration_test/integration_test.dart';\n"
         '\n'
@@ -325,7 +325,7 @@ dev_dependencies:
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
-        "import 'package:flutter/material.dart';\n"
+        "import 'package:material_ui/material_ui.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         "import 'package:integration_test/integration_test.dart';\n"
         '\n'
@@ -395,7 +395,7 @@ dev_dependencies:
         '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
         '// ignore_for_file: type=lint, type=warning\n'
         '\n'
-        "import 'package:flutter/material.dart';\n"
+        "import 'package:material_ui/material_ui.dart';\n"
         "import 'package:flutter_test/flutter_test.dart';\n"
         '\n'
         "import './step/the_app_is_running.dart';\n"

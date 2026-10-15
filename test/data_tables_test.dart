@@ -21,7 +21,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_users_exist.dart';
@@ -78,7 +78,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_songs.dart';
@@ -126,7 +126,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_songs.dart';
@@ -174,7 +174,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_users_exist.dart';
@@ -226,7 +226,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_users_exist.dart';
@@ -282,7 +282,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_songs.dart';
@@ -344,7 +344,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/i_wait.dart';
@@ -402,7 +402,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/i_wait.dart';
@@ -451,7 +451,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_songs.dart';
@@ -506,7 +506,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -554,7 +554,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/i_load_the_splash_screen.dart';
@@ -591,7 +591,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_songs.dart';
@@ -630,7 +630,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_data.dart';
@@ -668,7 +668,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_items.dart';
@@ -709,7 +709,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 import 'package:bdd_widget_test/data_table.dart' as bdd;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_following_data.dart';
@@ -769,7 +769,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/i_see_text.dart';
