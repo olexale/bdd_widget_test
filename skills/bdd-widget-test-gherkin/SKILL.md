@@ -295,7 +295,7 @@ Future<void> iAddItemsTimes(WidgetTester tester, String param1, num param2) asyn
 The same step implemented, with types and names tightened:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Usage: I add {'Coffee'} items {3} times

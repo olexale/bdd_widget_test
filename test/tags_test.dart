@@ -16,7 +16,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 @Tags(['integration', 'slow'])
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -56,7 +56,7 @@ Feature: Testing feature
 @Tags(['integration', 'slow'])
 import 'package:my_package/my_package.dart';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -91,7 +91,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -130,7 +130,7 @@ Feature: Second testing feature
 // ignore_for_file: type=lint, type=warning
 
 @Tags(['beta'])
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -170,7 +170,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 @Tags(['integration', 'slow'])
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -204,7 +204,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -240,7 +240,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -278,7 +278,7 @@ Feature: Testing feature
 // ignore_for_file: type=lint, type=warning
 
 @Tags(['integration', 'slow'])
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -312,7 +312,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running.dart';
@@ -346,7 +346,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running_with_patrol.dart';
@@ -383,7 +383,7 @@ Feature: Testing feature
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './step/the_app_is_running_with_patrol.dart';

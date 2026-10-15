@@ -58,7 +58,7 @@ String generateFeatureDart(
   if (generatorOptions.customHeaders.isNotEmpty) {
     generatorOptions.customHeaders.forEach(sb.writeln);
   } else {
-    sb.writeln("import 'package:flutter/material.dart';");
+    sb.writeln("import 'package:material_ui/material_ui.dart';");
     sb.writeln("import 'package:flutter_test/flutter_test.dart';");
   }
 

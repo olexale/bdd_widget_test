@@ -444,7 +444,7 @@ This is useful when you need to:
 - Add custom comments or documentation to generated files
 
 The custom headers will be added to:
-- **Feature files**: After any data table imports, replacing the default flutter/material and flutter_test imports
+- **Feature files**: After any data table imports, replacing the default material_ui and flutter_test imports
 - **Step files**: After any data table imports, replacing the default flutter_test import
 
 ### How to group steps in a single project?

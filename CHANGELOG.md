@@ -1,3 +1,10 @@
+## [3.0.4] - `material_ui` imports
+
+* Generated tests and predefined steps now import `package:material_ui/material_ui.dart` instead of
+  `package:flutter/material.dart`, which is deprecated since Flutter 3.47. Add `material_ui` to your
+  app's dependencies (`flutter pub add material_ui`). Projects that set `customHeaders` keep their own
+  imports.
+
 ## [3.0.3] - Flutter stable compatibility
 
 * Widen the `package_config` constraint to `>=2.1.0 <4.0.0`. Flutter stable pins `test_api`, which

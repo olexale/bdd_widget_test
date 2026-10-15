@@ -32,7 +32,7 @@ Feature: Counter 2
 // ignore_for_file: type=lint, type=warning
 
 @Tags(['customFeatureTag'])
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import './hooksFolder/hooks.dart';
