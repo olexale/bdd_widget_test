@@ -1,239 +1,196 @@
+import 'package:bdd_widget_test/src/feature_file.dart';
 import 'package:bdd_widget_test/src/generator_options.dart';
-import 'package:bdd_widget_test/src/literal_parameters.dart';
 import 'package:bdd_widget_test/src/step_file.dart';
+import 'package:bdd_widget_test/src/util/dart_formatter.dart';
 import 'package:test/test.dart';
 
-import 'escaping_test.dart' show expectValidDart, featureFrom;
+void main() {
+  test('Strings and whole-word numbers become parameters', () {
+    const featureFile = r'''
+Feature: Testing feature
+  Scenario Outline: literals
+    Then I see "Hello" text
+    And I see "a" and "b" text
+    And I see "" text
+    And I see "42" text
+    And I see "Don't panic" text
+    And I see "say \"hi\"" text
+    And I see "C:\\" text
+    And I see "C:\temp" text
+    And I see "cost $0" text
+    And I see "use {braces}" text
+    And I see "a{b" text
+    And I see "a}b" text
+    And I see "}{" text
+    And I don't see "Hello" text
+    And I tap "OK" text
+    And I enter "x" into 1 input field
+    And I see 'Hello' text
+    And I see 42
+    And I see 1.5
+    And I see -3
+    And I see (-3)
+    And I see 1, 2 and 3
+    And I see 10: 3 left
+    And I see a/2 and 3/
+    And I see the 42' mark
+    And I see 2FA
+    And I see v1
+    And I see é3
+    And I see ٣
+    And I see 1.0.1
+    And I see 19-20
+    And I see 1,000
+    And I see 1,5
+    And I see 1:30
+    And I see 1/2
+    And I see 1'000
+    And I see 3’000
+    And I see 3+4
+    And I see 1e3
+    And I see .5
+    And I see +7
+    And I see 3.
+    And I see --3
+    And I see {get("a")} text
+    And I see {const {'a': 1}} map
+    And I see {const {"k": "v"}} and 2
+    And I see {() {print('hey');}} code 3
+    And I see {42} text
+    And I see } and 3
+    And I see {'a{b'} and 2
+    And I see {'}'} and 2
+    And I see <count> items
+    And I see <item1> and <1>
+    And I see "<greeting>" loudly
+    And I see "Hello <name>" and 2
+    And I see {Icons.add} icon <times> times and "x" label
+    And I see {"a
+    Examples:
+      | count | item1 | 1 | greeting | name | times |
+      | 5     | 6     | 7 | Hi       | Bob  | 2     |
+''';
 
-const _on = GeneratorOptions(literalParameters: true);
+    const expectedFeatureDart = r"""
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-String _rewrite(String stepText) {
-  final result = rewriteLiteralParameters(stepText);
-  expect(result, isNotNull, reason: stepText);
-  return result!;
-}
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-/// The generated feature's `testWidgets` body for [steps], one scenario.
-String _calls(String steps, {GeneratorOptions options = _on}) {
-  final feature = featureFrom('''
-Feature: Literals
-  Scenario: Testing scenario
-$steps''', options: options);
-  expectValidDart(feature.dartContent);
-  return RegExp(
-    'await (.*);',
-  ).allMatches(feature.dartContent).map((m) => m.group(1)).join('\n');
-}
-
-/// The generated stubs, keyed by import path.
-Map<String, String> _stubs(String feature) => {
-  for (final step in featureFrom(
-    feature,
-    options: _on,
-  ).getStepFiles().whereType<NewStepFile>())
-    step.import: step.dartContent,
-};
+import './step/i_see_text.dart';
+import './step/i_see_and_text.dart';
+import './step/i_dont_see_text.dart';
+import './step/i_tap_text.dart';
+import './step/i_enter_into_input_field.dart';
+import './step/i_see_hello_text.dart';
+import './step/i_see.dart';
+import './step/i_see_and.dart';
+import './step/i_see_left.dart';
+import './step/i_see_a_and.dart';
+import './step/i_see_the_mark.dart';
+import './step/i_see2fa.dart';
+import './step/i_see_v1.dart';
+import './step/i_see_e3.dart';
+import './step/i_see101.dart';
+import './step/i_see1920.dart';
+import './step/i_see1000.dart';
+import './step/i_see15.dart';
+import './step/i_see130.dart';
+import './step/i_see12.dart';
+import './step/i_see3000.dart';
+import './step/i_see34.dart';
+import './step/i_see1e3.dart';
+import './step/i_see5.dart';
+import './step/i_see7.dart';
+import './step/i_see3.dart';
+import './step/i_see_map.dart';
+import './step/i_see_code.dart';
+import './step/i_see_items.dart';
+import './step/i_see_loudly.dart';
+import './step/i_see_icon_times_and_label.dart';
 
 void main() {
-  group('rewriteLiteralParameters', () {
-    group('strings', () {
-      const cases = {
-        'I see "Hello" text': "I see {'Hello'} text",
-        'I see "Don\'t panic" text': r"I see {'Don\'t panic'} text",
-        r'I see "say \"hi\"" text': '''I see {'say "hi"'} text''',
-        r'I see "C:\\" text': r"I see {'C:\\'} text",
-        r'I see "C:\temp" text': r"I see {'C:\\temp'} text",
-        r'I see "cost $0" text': r"I see {'cost \$0'} text",
-        'I see "use {braces}" text': "I see {'use {braces}'} text",
-        'I see "a{b" text': "I see {'a{b'} text",
-        'I see "a}b" text': "I see {'a}b'} text",
-        'I see "}{" text': "I see {'}{'} text",
-        'I see "a" and "b" text': "I see {'a'} and {'b'} text",
-        'I see "" text': "I see {''} text",
-        'I see "42" text': "I see {'42'} text",
-        "I don't see \"Hello\" text": "I don't see {'Hello'} text",
-        "I see 'Hello' text": "I see 'Hello' text",
-      };
-      cases.forEach((input, expected) {
-        test(input, () => expect(_rewrite(input), expected));
-      });
-    });
-
-    group('numbers', () {
-      const cases = {
-        'the counter is 42': 'the counter is {42}',
-        'the price is 1.5': 'the price is {1.5}',
-        'the balance is -3': 'the balance is {-3}',
-        'count is (-3)': 'count is ({-3})',
-        'I see 42 text': 'I see {42} text',
-        'I see 1, 2 and 3': 'I see {1}, {2} and {3}',
-        '2FA is on': '2FA is on',
-        'v1 release': 'v1 release',
-        'release 1.0.1': 'release 1.0.1',
-        'version 1.5.0': 'version 1.5.0',
-        'score 19-20': 'score 19-20',
-        'total 1,000': 'total 1,000',
-        'I wait 1:30': 'I wait 1:30',
-        'the score is 19:20': 'the score is 19:20',
-        'I split 1/2 way': 'I split 1/2 way',
-        "total 1'000": "total 1'000",
-        'total 3’000': 'total 3’000',
-        'at 10: 3 left': 'at {10}: {3} left',
-        'a/2 and 3/': 'a/{2} and {3}/',
-        "the 42' mark": "the {42}' mark",
-        'ratio 1,5': 'ratio 1,5',
-        'is 1e3': 'is 1e3',
-        'offset .5': 'offset .5',
-        'I see +7': 'I see +7',
-        'I see 3.': 'I see 3.',
-        'I see 3+4': 'I see 3+4',
-        'I see --3': 'I see --3',
-        'I see é3': 'I see é3',
-        'I see ٣': 'I see ٣',
-      };
-      cases.forEach((input, expected) {
-        test(input, () => expect(_rewrite(input), expected));
-      });
-    });
-
-    group('{} and placeholders are left alone', () {
-      const cases = {
-        'I see {get("a")} text': 'I see {get("a")} text',
-        "I see {const {'a': 1}} map": "I see {const {'a': 1}} map",
-        'I see {"k": "v"} and 2': 'I see {"k": "v"} and {2}',
-        "I run {func foo(){} func bar() {print('hey');}} code 3":
-            "I run {func foo(){} func bar() {print('hey');}} code {3}",
-        'I see {42} text': 'I see {42} text',
-        // A brace inside a string in {} does not end the block.
-        "I see {'a{b'} and 2": "I see {'a{b'} and {2}",
-        "I see {'}'} and 2": "I see {'}'} and {2}",
-        'I see } and 3': 'I see } and {3}',
-        'I count <count> items': 'I count <count> items',
-        'I see <item1> and <1>': 'I see <item1> and <1>',
-        'I greet "<greeting>" loudly': "I greet {'<greeting>'} loudly",
-        'I greet "Hello <name>" and 2': "I greet {'Hello <name>'} and {2}",
-        'I tap {Icons.add} icon <times> times and "x" label':
-            "I tap {Icons.add} icon <times> times and {'x'} label",
-      };
-      cases.forEach((input, expected) {
-        test(input, () => expect(_rewrite(input), expected));
-      });
-    });
-
-    test('an unclosed quote returns null', () {
-      expect(
-        rewriteLiteralParameters('I say "a" and "hello'),
-        isNull,
-      );
-      expect(rewriteLiteralParameters(r'I say "hello\"'), isNull);
-      // A backslash as the last character escapes nothing.
-      expect(rewriteLiteralParameters(r'I see "a\'), isNull);
-    });
-
-    test('a quote inside an unclosed {} is not a delimiter', () {
-      expect(_rewrite('I see {"a'), 'I see {"a');
+  group('''Testing feature''', () {
+    testWidgets('''literals (5, 6, 7, Hi, Bob, 2)''', (tester) async {
+      await iSeeText(tester, 'Hello');
+      await iSeeAndText(tester, 'a', 'b');
+      await iSeeText(tester, '');
+      await iSeeText(tester, '42');
+      await iSeeText(tester, 'Don\'t panic');
+      await iSeeText(tester, 'say "hi"');
+      await iSeeText(tester, 'C:\\');
+      await iSeeText(tester, 'C:\\temp');
+      await iSeeText(tester, 'cost \$0');
+      await iSeeText(tester, 'use {braces}');
+      await iSeeText(tester, 'a{b');
+      await iSeeText(tester, 'a}b');
+      await iSeeText(tester, '}{');
+      await iDontSeeText(tester, 'Hello');
+      await iTapText(tester, 'OK');
+      await iEnterIntoInputField(tester, 'x', 1);
+      await iSeeHelloText(tester);
+      await iSee(tester, 42);
+      await iSee(tester, 1.5);
+      await iSee(tester, -3);
+      await iSee(tester, -3);
+      await iSeeAnd(tester, 1, 2, 3);
+      await iSeeLeft(tester, 10, 3);
+      await iSeeAAnd(tester, 2, 3);
+      await iSeeTheMark(tester, 42);
+      await iSee2fa(tester);
+      await iSeeV1(tester);
+      await iSeeE3(tester);
+      await iSee(tester);
+      await iSee101(tester);
+      await iSee1920(tester);
+      await iSee1000(tester);
+      await iSee15(tester);
+      await iSee130(tester);
+      await iSee12(tester);
+      await iSee1000(tester);
+      await iSee3000(tester);
+      await iSee34(tester);
+      await iSee1e3(tester);
+      await iSee5(tester);
+      await iSee7(tester);
+      await iSee3(tester);
+      await iSee3(tester);
+      await iSeeText(tester, get("a"));
+      await iSeeMap(tester, const {'a': 1});
+      await iSeeAnd(tester, const {"k": "v"}, 2);
+      await iSeeCode(tester, () {print('hey');}, 3);
+      await iSeeText(tester, 42);
+      await iSeeAnd(tester, 3);
+      await iSeeAnd(tester, 'a{b', 2);
+      await iSeeAnd(tester, '}', 2);
+      await iSeeItems(tester, 5);
+      await iSeeAnd(tester, 6, 7);
+      await iSeeLoudly(tester, 'Hi');
+      await iSeeAnd(tester, 'Hello Bob', 2);
+      await iSeeIconTimesAndLabel(tester, Icons.add, 2, 'x');
+      await iSee(tester);
     });
   });
+}
+""";
 
-  group('generation', () {
-    test('predefined steps take quoted strings', () {
-      expect(
-        _calls('''
-    Then I see "Hello" text
-    And I don't see "Bye" text
-    When I tap "OK" text
-    And I enter "x" into 1 input field
-'''),
-        "iSeeText(tester, 'Hello')\n"
-        "iDontSeeText(tester, 'Bye')\n"
-        "iTapText(tester, 'OK')\n"
-        "iEnterIntoInputField(tester, 'x', 1)",
-      );
-      final steps = featureFrom('''
-Feature: Literals
-  Scenario: Testing scenario
-    Then I see "Hello" text
-''', options: _on).getStepFiles();
-      expect(steps.single.import, './step/i_see_text.dart');
-    });
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+      generatorOptions: const GeneratorOptions(literalParameters: true),
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+    expect(() => formatDartCode(feature.dartContent), returnsNormally);
+  });
 
-    test(r'$, \ and quotes compile to themselves', () {
-      expect(
-        _calls(r'''
-    Then I see "cost $0" text
-    And I see "C:\temp" text
-    And I see "say \"hi\"" text
-    And I see "Don't" text
-    And I see "C:\\" text
-'''),
-        r"iSeeText(tester, 'cost \$0')"
-        '\n'
-        r"iSeeText(tester, 'C:\\temp')"
-        '\n'
-        '''iSeeText(tester, 'say "hi"')'''
-        '\n'
-        r"iSeeText(tester, 'Don\'t')"
-        '\n'
-        r"iSeeText(tester, 'C:\\')",
-      );
-    });
-
-    test('braces in a quoted string reach the step as written', () {
-      // Unescaped, `"a{b"` dropped its argument and still compiled:
-      // `iSee(tester)`.
-      expect(
-        _calls('''
-    Then I see "a{b" text
-    And I see "a}b" text
-    When I invoke "a{b" and "c}d"
-'''),
-        "iSeeText(tester, 'a{b')\n"
-        "iSeeText(tester, 'a}b')\n"
-        "iInvokeAnd(tester, 'a{b', 'c}d')",
-      );
-      expect(
-        _stubs('''
-Feature: Literals
-  Scenario: Testing scenario
-    When I invoke "a{b" and "c}d"
-''')['./step/i_invoke_and.dart'],
-        contains(
-          'iInvokeAnd(WidgetTester tester, String param1, String param2)',
-        ),
-      );
-    });
-
-    test('braces in a quoted outline cell reach the step as written', () {
-      // Unfixed, the cell `a{b` generated `iSee(tester)`: the argument was
-      // dropped and the test still compiled.
-      const feature = '''
-Feature: Literals
-  Scenario Outline: braces
-    Then I see "<v>" text
-    And I see {'<v>'} label
-    Examples:
-      | v   |
-      | a{b |
-      | a}b |
-      | {}  |
-''';
-      final generated = featureFrom(feature, options: _on).dartContent;
-      expectValidDart(generated);
-      for (final value in ['a{b', 'a}b', '{}']) {
-        expect(generated, contains("await iSeeText(tester, '$value');"));
-        expect(generated, contains("await iSeeLabel(tester, '$value');"));
-      }
-      expect(
-        _stubs(feature)['./step/i_see_label.dart'],
-        contains('iSeeLabel(WidgetTester tester, String param1)'),
-      );
-    });
-
-    test('a value inside a string literal arrives as written', () {
-      // Unfixed, `Don't panic` generated `iSeeText(tester, 'Don't panic')`,
-      // which failed the build with a Dart parse error.
-      const feature = r'''
-Feature: Literals
+  test('An outline value inside a string arrives as written', () {
+    // Unfixed, `Don't panic` generated `iSeeText(tester, 'Don't panic')`,
+    // which failed the build with a Dart parse error, and `a{b` generated
+    // `iSee(tester)`: the argument was dropped and the test still compiled.
+    const featureFile = r'''
+Feature: Testing feature
   Scenario Outline: text cells
     Then I see "<v>" text
     And I see {'<v>'} label
@@ -244,288 +201,510 @@ Feature: Literals
       | cost $5     |
       | C:\temp     |
       | say "hi"    |
+      | a{b         |
+      | a}b         |
+      | {}          |
 ''';
-      final generated = featureFrom(feature, options: _on).dartContent;
-      expectValidDart(generated);
-      const expected = {
-        "Don't panic": (r"'Don\'t panic'", '''"Don't panic"'''),
-        r'cost $5': (r"'cost \$5'", r'"cost \$5"'),
-        r'C:\temp': (r"'C:\\temp'", r'"C:\\temp"'),
-        'say "hi"': ('\'say "hi"\'', r'"say \"hi\""'),
-      };
-      expected.forEach((cell, literals) {
-        final (single, double) = literals;
-        expect(generated, contains('await iSeeText(tester, $single);'));
-        expect(generated, contains('await iSeeLabel(tester, $single);'));
-        expect(generated, contains('await iSeeTitle(tester, $double);'));
-      });
-    });
 
-    test('an inline table escapes a value inside a string literal', () {
-      expect(
-        _calls('''
-    Given user "<name>" exists
-      | name    |
-      | O'Brien |
-'''),
-        r"userExists(tester, 'O\'Brien')",
-      );
-    });
+    const expectedFeatureDart = r"""
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-    test('a value outside a string literal stays Dart', () {
-      const feature = '''
-Feature: Literals
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_see_text.dart';
+import './step/i_see_label.dart';
+import './step/i_see_title.dart';
+
+void main() {
+  group('''Testing feature''', () {
+    testWidgets('''text cells (Don't panic)''', (tester) async {
+      await iSeeText(tester, 'Don\'t panic');
+      await iSeeLabel(tester, 'Don\'t panic');
+      await iSeeTitle(tester, "Don't panic");
+    });
+    testWidgets('''text cells (cost \$5)''', (tester) async {
+      await iSeeText(tester, 'cost \$5');
+      await iSeeLabel(tester, 'cost \$5');
+      await iSeeTitle(tester, "cost \$5");
+    });
+    testWidgets('''text cells (C:\\temp)''', (tester) async {
+      await iSeeText(tester, 'C:\\temp');
+      await iSeeLabel(tester, 'C:\\temp');
+      await iSeeTitle(tester, "C:\\temp");
+    });
+    testWidgets('''text cells (say "hi")''', (tester) async {
+      await iSeeText(tester, 'say "hi"');
+      await iSeeLabel(tester, 'say "hi"');
+      await iSeeTitle(tester, "say \"hi\"");
+    });
+    testWidgets('''text cells (a{b)''', (tester) async {
+      await iSeeText(tester, 'a{b');
+      await iSeeLabel(tester, 'a{b');
+      await iSeeTitle(tester, "a{b");
+    });
+    testWidgets('''text cells (a}b)''', (tester) async {
+      await iSeeText(tester, 'a}b');
+      await iSeeLabel(tester, 'a}b');
+      await iSeeTitle(tester, "a}b");
+    });
+    testWidgets('''text cells ({})''', (tester) async {
+      await iSeeText(tester, '{}');
+      await iSeeLabel(tester, '{}');
+      await iSeeTitle(tester, "{}");
+    });
+  });
+}
+""";
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+      generatorOptions: const GeneratorOptions(literalParameters: true),
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+    expect(() => formatDartCode(feature.dartContent), returnsNormally);
+  });
+
+  test('An outline value outside a string stays Dart', () {
+    const featureFile = '''
+Feature: Testing feature
   Scenario Outline: code cells
     Then I see {<v>} value
     And I see {[<v>, 'x']} list
     Examples:
-      | v     |
-      | 'a'   |
+      | v   |
+      | 'a' |
 ''';
-      final generated = featureFrom(feature, options: _on).dartContent;
-      expectValidDart(generated);
-      expect(generated, contains("await iSeeValue(tester, 'a');"));
-      expect(generated, contains("await iSeeList(tester, ['a', 'x']);"));
-    });
 
-    test('with the option off, a value inside a {} string stays raw', () {
-      // Cells there are Dart, so a hand-escaped `\'` keeps working.
-      const feature = r'''
-Feature: Literals
-  Scenario Outline: raw cells
-    Then I see {'<v>'} label
-    Examples:
-      | v      |
-      | Don\'t |
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_see_value.dart';
+import './step/i_see_list.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'code cells ('a')\'\'\', (tester) async {
+      await iSeeValue(tester, 'a');
+      await iSeeList(tester, ['a', 'x']);
+    });
+  });
+}
 ''';
-      final generated = featureFrom(feature).dartContent;
-      expectValidDart(generated);
-      expect(generated, contains(r"await iSeeLabel(tester, 'Don\'t');"));
-    });
 
-    test('numbers joined by : / or an apostrophe stay in the name', () {
-      expect(
-        _calls('''
-    Then I wait 1:30
-    And the score is 19:20
-    When I split 1/2 way
-    Then I see total 1'000
-    And I see total 3’000
-'''),
-        'iWait130(tester)\n'
-        'theScoreIs1920(tester)\n'
-        'iSplit12Way(tester)\n'
-        'iSeeTotal1000(tester)\n'
-        'iSeeTotal3000(tester)',
-      );
-    });
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+      generatorOptions: const GeneratorOptions(literalParameters: true),
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+    expect(() => formatDartCode(feature.dartContent), returnsNormally);
+  });
 
-    test('a generic stub infers String and num', () {
-      const feature = '''
-Feature: Literals
+  test('A generic step infers String and num parameters', () {
+    const featureFile = '''
+Feature: Testing feature
   Scenario: Testing scenario
-    When I invoke test with "a" and 1.5
+    When I invoke test with "a{b" and 1.5
 ''';
-      expect(
-        _stubs(feature)['./step/i_invoke_test_with_and.dart'],
-        contains(
-          'Future<void> iInvokeTestWithAnd(WidgetTester tester, '
-          'String param1, num param2) async {',
-        ),
-      );
-    });
 
-    test('outline placeholders inside quotes are one String parameter', () {
-      const feature = '''
-Feature: Literals
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_invoke_test_with_and.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
+      await iInvokeTestWithAnd(tester, 'a{b', 1.5);
+    });
+  });
+}
+''';
+
+    const expectedStep = '''
+import 'package:flutter_test/flutter_test.dart';
+
+/// Usage: I invoke test with {'a{b'} and {1.5}
+Future<void> iInvokeTestWithAnd(WidgetTester tester, String param1, num param2) async {
+  throw UnimplementedError();
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+      generatorOptions: const GeneratorOptions(literalParameters: true),
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+    expect(
+      feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
+      expectedStep,
+    );
+  });
+
+  test('Outline placeholders inside quotes take one String parameter', () {
+    const featureFile = '''
+Feature: Testing feature
   Scenario Outline: greeting
-    Then I greet "<greeting>" loudly
-    And I greet "Hello <name>" twice
-    And I count <count> items
+    Then I greet "Hello <name>" twice
     Examples:
-      | greeting | name | count |
-      | Hello    | Bob  | 3     |
+      | name |
+      | Bob  |
 ''';
-      final generated = featureFrom(feature, options: _on).dartContent;
-      expectValidDart(generated);
-      expect(generated, contains("await iGreetLoudly(tester, 'Hello');"));
-      expect(generated, contains("await iGreetTwice(tester, 'Hello Bob');"));
-      expect(generated, contains('await iCountItems(tester, 3);'));
 
-      final stubs = _stubs(feature);
-      expect(
-        stubs['./step/i_greet_loudly.dart'],
-        contains('iGreetLoudly(WidgetTester tester, String param1)'),
-      );
-      expect(
-        stubs['./step/i_greet_twice.dart'],
-        contains('iGreetTwice(WidgetTester tester, String param1)'),
-      );
-      expect(
-        stubs['./step/i_count_items.dart'],
-        contains('iCountItems(WidgetTester tester, dynamic count)'),
-      );
-    });
+    const expectedStep = '''
+import 'package:flutter_test/flutter_test.dart';
 
-    test('an inline table repeating a step fills quoted placeholders', () {
-      const feature = '''
-Feature: Literals
+/// Usage: I greet {'Hello <name>'} twice
+Future<void> iGreetTwice(WidgetTester tester, String param1) async {
+  throw UnimplementedError();
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+      generatorOptions: const GeneratorOptions(literalParameters: true),
+    );
+    expect(
+      feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
+      expectedStep,
+    );
+  });
+
+  test('An inline table fills quoted placeholders once per row', () {
+    const featureFile = '''
+Feature: Testing feature
   Scenario: Testing scenario
     Given user "<name>" exists
-      | name  |
-      | alice |
-      | bob   |
+      | name    |
+      | alice   |
+      | O'Brien |
 ''';
-      expect(
-        _calls('''
-    Given user "<name>" exists
-      | name  |
-      | alice |
-      | bob   |
-'''),
-        "userExists(tester, 'alice')\nuserExists(tester, 'bob')",
-      );
-      expect(
-        _stubs(feature)['./step/user_exists.dart'],
-        contains('userExists(WidgetTester tester, String param1)'),
-      );
-    });
 
-    test('a data table stays the last argument', () {
-      const feature = '''
-Feature: Literals
+    const expectedFeatureDart = r"""
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/user_exists.dart';
+
+void main() {
+  group('''Testing feature''', () {
+    testWidgets('''Testing scenario''', (tester) async {
+      await userExists(tester, 'alice');
+      await userExists(tester, 'O\'Brien');
+    });
+  });
+}
+""";
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+      generatorOptions: const GeneratorOptions(literalParameters: true),
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+    expect(() => formatDartCode(feature.dartContent), returnsNormally);
+  });
+
+  test('A data table stays the last argument', () {
+    const featureFile = '''
+Feature: Testing feature
   Scenario: Testing scenario
     Given the users "admins"
       | name  |
       | "x"   |
 ''';
-      expect(
-        _calls('''
-    Given the users "admins"
-      | name  |
-      | "x"   |
-'''),
-        """theUsers(tester, 'admins', const bdd.DataTable([[name], ["x"]]))""",
-      );
-      expect(
-        _stubs(feature)['./step/the_users.dart'],
-        contains(
-          'theUsers(WidgetTester tester, String param1, '
-          'bdd.DataTable dataTable)',
-        ),
-      );
-    });
 
-    test('a placeholder inside {} adds no parameter of its own', () {
-      // Independent of the option: `{<name>}` is passed as one argument.
-      const feature = '''
-Feature: Literals
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/the_users.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
+      await theUsers(tester, 'admins', const bdd.DataTable([[name], ["x"]]));
+    });
+  });
+}
+''';
+
+    const expectedStep = '''
+import 'package:bdd_widget_test/data_table.dart' as bdd;
+import 'package:flutter_test/flutter_test.dart';
+
+/// Usage: the users {'admins'}
+Future<void> theUsers(WidgetTester tester, String param1, bdd.DataTable dataTable) async {
+  throw UnimplementedError();
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+      generatorOptions: const GeneratorOptions(literalParameters: true),
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+    expect(
+      feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
+      expectedStep,
+    );
+  });
+
+  test('A placeholder inside {} adds no parameter of its own', () {
+    // Independent of the option: `{<name>}` is passed as one argument.
+    const featureFile = '''
+Feature: Testing feature
   Scenario Outline: greeting
     Then I greet {<name>} loudly
     Examples:
       | name    |
       | 'Hello' |
 ''';
-      final step = featureFrom(
-        feature,
-      ).getStepFiles().whereType<NewStepFile>().single;
-      expect(
-        step.dartContent,
-        contains('iGreetLoudly(WidgetTester tester, dynamic param1) async'),
-      );
-    });
 
-    test('with the option off, a brace inside a {} string is text', () {
-      expect(
-        _calls('''
-    Then I see {'a{b'} text
-    And I see {"}"} and {'{'} text
-''', options: const GeneratorOptions()),
-        "iSeeText(tester, 'a{b')\n"
-        '''iSeeAndText(tester, "}", '{')''',
-      );
-    });
+    const expectedStep = '''
+import 'package:flutter_test/flutter_test.dart';
 
-    test('with the option off, literals stay in the name', () {
-      expect(
-        _calls('''
-    Then I see "Hello" text
-    And the counter is 42
-''', options: const GeneratorOptions()),
-        'iSeeHelloText(tester)\ntheCounterIs42(tester)',
-      );
-    });
+/// Usage: I greet {<name>} loudly
+Future<void> iGreetLoudly(WidgetTester tester, dynamic param1) async {
+  throw UnimplementedError();
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(
+      feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
+      expectedStep,
+    );
   });
 
-  group('errors', () {
-    test('an unclosed quote fails with its location', () {
-      expect(
-        () => featureFrom('''
-Feature: Literals
+  test('With the option off, an outline value in a {} string stays raw', () {
+    // Values there are Dart, so a hand-escaped `\'` keeps working.
+    const featureFile = r'''
+Feature: Testing feature
+  Scenario Outline: raw cells
+    Then I see {'<v>'} label
+    Examples:
+      | v      |
+      | Don\'t |
+''';
+
+    const expectedFeatureDart = r"""
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_see_label.dart';
+
+void main() {
+  group('''Testing feature''', () {
+    testWidgets('''raw cells (Don\\'t)''', (tester) async {
+      await iSeeLabel(tester, 'Don\'t');
+    });
+  });
+}
+""";
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+    expect(() => formatDartCode(feature.dartContent), returnsNormally);
+  });
+
+  test('With the option off, a brace inside a {} string is text', () {
+    const featureFile = r"""
+Feature: Testing feature
+  Scenario: Testing scenario
+    Then I see {'a{b'} text
+    And I see {"}"} and {'{'} text
+    And I see {"it's }"} text
+    And I see {'it\'s }'} text
+    And I see {'a\\'} text
+""";
+
+    const expectedFeatureDart = r"""
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_see_text.dart';
+import './step/i_see_and_text.dart';
+
+void main() {
+  group('''Testing feature''', () {
+    testWidgets('''Testing scenario''', (tester) async {
+      await iSeeText(tester, 'a{b');
+      await iSeeAndText(tester, "}", '{');
+      await iSeeText(tester, "it's }");
+      await iSeeText(tester, 'it\'s }');
+      await iSeeText(tester, 'a\\');
+    });
+  });
+}
+""";
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
+
+  test('With the option off, literals stay in the name', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Then I see "Hello" text
+    And the counter is 42
+    And I say "hello
+''';
+
+    const expectedFeatureDart = '''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_see_hello_text.dart';
+import './step/the_counter_is42.dart';
+import './step/i_say_hello.dart';
+
+void main() {
+  group(\'\'\'Testing feature\'\'\', () {
+    testWidgets(\'\'\'Testing scenario\'\'\', (tester) async {
+      await iSeeHelloText(tester);
+      await theCounterIs42(tester);
+      await iSayHello(tester);
+    });
+  });
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
+
+  test('An unclosed quote is reported with its location', () {
+    const featureFile = '''
+Feature: Testing feature
   Scenario: Testing scenario
     Then I say "hello
-''', options: _on),
-        throwsA(
-          isA<FormatException>().having(
-            (e) => e.message,
-            'message',
-            'Failed to parse test.feature:\n'
-                '  (3:5): step \'I say "hello\' has a " with no closing " — '
-                "close the string, or write the quote inside a {'...'} "
-                'parameter',
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+        generatorOptions: const GeneratorOptions(literalParameters: true),
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('test.feature'),
+            contains('(3:5)'),
+            contains('I say "hello'),
+            contains('has a " with no closing "'),
           ),
         ),
-      );
-    });
+      ),
+    );
+  });
 
-    test('an unclosed quote is prose with the option off', () {
-      expect(
-        _calls(
-          '    Then I say "hello\n',
-          options: const GeneratorOptions(),
-        ),
-        'iSayHello(tester)',
-      );
-    });
-
-    test('a step that is only a literal names nothing', () {
-      for (final step in ['"Hello"', '"a" 42']) {
-        expect(
-          () => featureFrom('''
-Feature: Literals
+  test('A step that is only literals names nothing', () {
+    const featureFile = '''
+Feature: Testing feature
   Scenario: Testing scenario
-    Then $step
-''', options: _on),
-          throwsA(
-            isA<FormatException>().having(
-              (e) => e.message,
-              'message',
-              'Failed to parse test.feature:\n'
-                  "  (3:5): step '$step' produces no valid Dart identifier: "
-                  'its text is parameters and nothing else, so the step has '
-                  'no name. Put a word of ASCII around the parameter, as in '
-                  '\'I see "Hello" text\'',
-            ),
-          ),
-        );
-      }
-    });
+    Then "a" 42
+''';
 
-    test('a step that names nothing without the option keeps its message', () {
-      expect(
-        () => featureFrom('''
-Feature: Literals
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+        generatorOptions: const GeneratorOptions(literalParameters: true),
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(
+            contains('(3:5)'),
+            contains('produces no valid Dart identifier'),
+            contains('its text is parameters and nothing else'),
+          ),
+        ),
+      ),
+    );
+  });
+
+  test('A bare number that names nothing keeps its own message', () {
+    const featureFile = '''
+Feature: Testing feature
   Scenario: Testing scenario
     Then 42
-''', options: _on),
-        throwsA(
-          isA<FormatException>().having(
-            (e) => e.message,
-            'message',
-            contains("'42' is not a name Dart accepts"),
-          ),
+''';
+
+    expect(
+      () => FeatureFile(
+        featureDir: 'test.feature',
+        package: 'test',
+        input: featureFile,
+        generatorOptions: const GeneratorOptions(literalParameters: true),
+      ).dartContent,
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains("'42' is not a name Dart accepts"),
         ),
-      );
-    });
+      ),
+    );
   });
 }
