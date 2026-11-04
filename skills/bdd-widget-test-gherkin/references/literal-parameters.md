@@ -44,6 +44,9 @@ are never overwritten, so:
    implementation. Other renamed steps get a new stub throwing `UnimplementedError`: move the old
    implementation into it.
 3. Delete the old step files nothing imports any more (`i_see_hello_text.dart`).
+4. Remove the hand-written escapes from outline cells used inside a string in `{}`
+   (`{'<v>'}`, `{"<v>"}`): a `Don\'t` cell, needed with the option off, now arrives as the text
+   `Don\'t`, backslash included. Nothing fails to compile; the tests fail when they compare text.
 
 ## Compile errors to expect
 
@@ -54,4 +57,5 @@ as with `{}`:
   `I see "Hello" text` are both `iSeeText`. Rename one.
 - A literal that turns a step into a predefined one with another signature: `I see 1 widget`
   becomes `iSeeWidget`, which takes a `Type`, and `I wait 2` becomes `iWait`, which takes nothing.
-  Rephrase the step or write the value in `{}`.
+  Rephrase the step (`I see one widget`). Writing the value in `{}` does not help: `I see {1} widget`
+  is still `iSeeWidget`.

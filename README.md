@@ -338,7 +338,9 @@ A `"double-quoted string"` and a number written as its own word then become para
 * A `"` with no closing `"` fails the build with its line and column.
 * In a `Scenario Outline`, `Then I see "<greeting>" text` passes each row's cell as a string, written as plain text: `Don't panic` arrives as written. The same goes for a placeholder inside a string in `{}`, such as `{'<greeting>'}`. For anything other than a string, use `{<greeting>}` and write the cell as Dart.
 
-**Turning the option on renames steps.** `Then I see "Hello" text` was `iSeeHelloText` and is now `iSeeText`, and `Given the counter is 42` was `theCounterIs42`. The generator never overwrites a step file, so after enabling it delete the step files that no longer match a step, and re-implement any renamed step that has no predefined implementation (its new stub throws `UnimplementedError`). Steps written with `{}` are not affected.
+**Turning the option on renames steps.** `Then I see "Hello" text` was `iSeeHelloText` and is now `iSeeText`, and `Given the counter is 42` was `theCounterIs42`. The generator never overwrites a step file, so after enabling it delete the step files that no longer match a step, and re-implement any renamed step that has no predefined implementation (its new stub throws `UnimplementedError`). Steps written with `{}` keep their names.
+
+**Turning the option on also changes outline cells inside a string in `{}`.** With the option off, `{'<greeting>'}` copies the cell into the Dart literal unchanged, so a `Don't panic` cell has to be written `Don\'t panic`. With the option on, the cell is plain text, and `Don\'t panic` arrives with its backslash. Remove those escapes when you enable the option: nothing fails to compile, but the tests fail when they compare the text.
 
 ### How to add additional imports to test files?
 
