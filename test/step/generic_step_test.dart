@@ -122,4 +122,37 @@ Future<void> theFollowingSongs(WidgetTester tester, bdd.DataTable dataTable) asy
       expectedSteps,
     );
   });
+
+  test('Generic step parameters keep the order they are written in', () {
+    const path = 'test';
+    const featureFile = '''
+Feature: Testing feature
+  Scenario Outline: Testing scenario
+    When I add <count> {'apples'}
+    Examples:
+      | count |
+      | 3     |
+''';
+
+    const expectedSteps = '''
+import 'package:flutter_test/flutter_test.dart';
+
+/// Usage: I add <count> {'apples'}
+Future<void> iAdd(WidgetTester tester, dynamic count, String param1) async {
+  throw UnimplementedError();
+}
+''';
+
+    final feature = FeatureFile(
+      featureDir: '$path.feature',
+      package: path,
+      input: featureFile,
+    );
+
+    expect(feature.dartContent, contains("await iAdd(tester, 3, 'apples');"));
+    expect(
+      feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
+      expectedSteps,
+    );
+  });
 }

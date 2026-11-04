@@ -1,11 +1,13 @@
 /// The `{}` block opening at [open] in [text]: `end`, the index just past its
-/// closing `}`, and `strings`, the text of every `'…'` and `"…"` inside it
-/// (between the quotes), with the quote that delimits it.
+/// closing `}`, and `strings`, the text of every string literal inside it.
 ///
 /// A brace inside a string is text, so `{'a{b'}` is one block and `{'}'}`
-/// does not end at its first `}`. In a string, `\` escapes the next
-/// character. Nothing else of Dart is known: raw strings and `${}` read as
-/// plain strings, which is all a one-line step parameter needs.
+/// does not end at its first `}`. Strings are read as Dart reads them: `'…'`,
+/// `"…"`, `'''…'''` and `"""…"""`, raw (`r'C:\'`, where `\` escapes nothing)
+/// or not (where `\` escapes the next character). In a string that is not
+/// raw, a `${…}` interpolation is Dart again: it is not part of the string's
+/// text, and a string inside it is a string of its own. A string's text is
+/// therefore listed as one [DartString] per run between interpolations.
 ///
 /// When a string in the block never closes (`{it's}`), its quotes cannot be
 /// trusted, so the block is read by counting braces alone, with no `strings`.
@@ -23,12 +25,14 @@ DartBlock? readDartBlock(String text, int open) {
 
 typedef DartBlock = ({int end, List<DartString> strings});
 
-/// The text of a string literal, from `start` up to `end`, and its `quote`.
-typedef DartString = ({int start, int end, String quote});
+/// A run of a string literal's text, from `start` up to `end`. `quote` is the
+/// literal's delimiter (`'`, `"`, `'''` or `"""`), and `prefix` is the index
+/// of its `r` when it is raw, or null when it is not.
+typedef DartString = ({int start, int end, String quote, int? prefix});
 
 /// The index just past the `}` closing the block at [open], or null. With
-/// [strings], quotes are read and each string is added to it; a string that
-/// never closes returns null. Without, braces are only counted.
+/// [strings], quotes are read and each string's text is added to it; a string
+/// that never closes returns null. Without, braces are only counted.
 int? _blockEnd(String text, int open, List<DartString>? strings) {
   var depth = 0;
   var i = open;
@@ -42,26 +46,56 @@ int? _blockEnd(String text, int open, List<DartString>? strings) {
         return i + 1;
       }
     } else if (strings != null && (c == "'" || c == '"')) {
-      final close = _stringClose(text, i);
-      if (close == null) {
+      final end = _stringEnd(text, i, strings);
+      if (end == null) {
         return null;
       }
-      strings.add((start: i + 1, end: close, quote: c));
-      i = close;
+      i = end;
+      continue;
     }
     i++;
   }
   return null;
 }
 
-/// The index of the quote closing the string opening at [open], or null.
-int? _stringClose(String text, int open) {
-  for (var i = open + 1; i < text.length; i++) {
-    if (text[i] == r'\') {
+/// The index just past the string literal whose opening quote is at [open],
+/// or null when nothing closes it. Its text is added to [strings].
+int? _stringEnd(String text, int open, List<DartString> strings) {
+  final c = text[open];
+  final quote = text.startsWith(c * 3, open) ? c * 3 : c;
+  final prefix = _rawPrefix(text, open);
+  var start = open + quote.length;
+  var i = start;
+  while (i < text.length) {
+    if (text.startsWith(quote, i)) {
+      strings.add((start: start, end: i, quote: quote, prefix: prefix));
+      return i + quote.length;
+    }
+    if (prefix == null && text[i] == r'\') {
+      i += 2;
+    } else if (prefix == null && text.startsWith(r'${', i)) {
+      strings.add((start: start, end: i, quote: quote, prefix: null));
+      final end = _blockEnd(text, i + 1, strings);
+      if (end == null) {
+        return null;
+      }
+      i = start = end;
+    } else {
       i++;
-    } else if (text[i] == text[open]) {
-      return i;
     }
   }
   return null;
 }
+
+/// The index of the `r` making the string that opens at [open] raw, or null
+/// when it is not raw: an `r` is a prefix only when it is not the end of a
+/// longer name, as in `bar'…'`.
+int? _rawPrefix(String text, int open) {
+  final r = open - 1;
+  if (r < 0 || (text[r] != 'r' && text[r] != 'R')) {
+    return null;
+  }
+  return r > 0 && _identifierPart.hasMatch(text[r - 1]) ? null : r;
+}
+
+final _identifierPart = RegExp(r'[\w$]');

@@ -12,6 +12,9 @@
   when it comes from an outline cell.
 * Fix generated step stubs for outline steps with a placeholder inside `{}`: `Then I greet {<name>}`
   declared an extra `dynamic name` parameter that the generated call never passed.
+* Fix generated step stubs for outline steps with a placeholder before a `{}` parameter:
+  `When I add <count> {'apples'}` declared `(tester, String param1, dynamic count)` while the call
+  passed `iAdd(tester, 3, 'apples')`. Parameters are now declared in the order they are written.
 
 ## [3.0.4] - `material_ui` imports
 

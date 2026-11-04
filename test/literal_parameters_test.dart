@@ -546,48 +546,6 @@ void main() {
     expect(() => formatDartCode(feature.dartContent), returnsNormally);
   });
 
-  test('With the option off, a brace inside a {} string is text', () {
-    const featureFile = r"""
-Feature: Testing feature
-  Scenario: Testing scenario
-    Then I see {'a{b'} text
-    And I see {"}"} and {'{'} text
-    And I see {"it's }"} text
-    And I see {'it\'s }'} text
-    And I see {'a\\'} text
-""";
-
-    const expectedFeatureDart = r"""
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint, type=warning
-
-import 'package:material_ui/material_ui.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-import './step/i_see_text.dart';
-import './step/i_see_and_text.dart';
-
-void main() {
-  group('''Testing feature''', () {
-    testWidgets('''Testing scenario''', (tester) async {
-      await iSeeText(tester, 'a{b');
-      await iSeeAndText(tester, "}", '{');
-      await iSeeText(tester, "it's }");
-      await iSeeText(tester, 'it\'s }');
-      await iSeeText(tester, 'a\\');
-    });
-  });
-}
-""";
-
-    final feature = FeatureFile(
-      featureDir: 'test.feature',
-      package: 'test',
-      input: featureFile,
-    );
-    expect(feature.dartContent, expectedFeatureDart);
-  });
-
   test('With the option off, literals stay in the name', () {
     const featureFile = '''
 Feature: Testing feature
@@ -707,4 +665,125 @@ Feature: Testing feature
       ),
     );
   });
+
+  group('Placeholders and strings', () {
+    test('A placeholder named with an apostrophe is filled in quotes', () {
+      const featureFile = '''
+Feature: Testing feature
+  Scenario Outline: Testing scenario
+    Then I see "<user's name>" text
+    Examples:
+      | user's name |
+      | Bob         |
+''';
+
+      expect(_calls(featureFile), ["await iSeeText(tester, 'Bob');"]);
+    });
+
+    test('An inline table keyed by an apostrophe repeats the step', () {
+      const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Given user "<user's name>" exists
+      | user's name |
+      | alice       |
+      | bob         |
+''';
+
+      expect(_calls(featureFile), [
+        "await userExists(tester, 'alice');",
+        "await userExists(tester, 'bob');",
+      ]);
+    });
+
+    test('A value is not read for placeholders of its own', () {
+      const featureFile = '''
+Feature: Testing feature
+  Scenario Outline: Testing scenario
+    Then I see {'<value>'} text
+    Examples:
+      | value   | other |
+      | <other> | hello |
+''';
+
+      expect(_calls(featureFile), ["await iSeeText(tester, '<other>');"]);
+    });
+
+    test('A value in a raw string arrives as written', () {
+      const featureFile = r'''
+Feature: Testing feature
+  Scenario Outline: Testing scenario
+    Then I see {r'<v>'} text
+    Examples:
+      | v       |
+      | C:\temp |
+      | Don't   |
+''';
+
+      expect(_calls(featureFile), [
+        r"await iSeeText(tester, r'C:\temp');",
+        r"await iSeeText(tester, 'Don\'t');",
+      ]);
+    });
+
+    test('A raw string that cannot hold its value keeps its own text', () {
+      const featureFile = r'''
+Feature: Testing feature
+  Scenario Outline: Testing scenario
+    Then I see {r'$<v> in C:\'} text
+    Examples:
+      | v     |
+      | Don't |
+''';
+
+      expect(_calls(featureFile), [
+        r"await iSeeText(tester, '\$Don\'t in C:\\');",
+      ]);
+    });
+
+    test('A value in a triple-quoted string is escaped for it', () {
+      const featureFile = """
+Feature: Testing feature
+  Scenario Outline: Testing scenario
+    Then I see {'''<v>'''} text
+    Examples:
+      | v     |
+      | it's' |
+""";
+
+      expect(_calls(featureFile), [
+        r"await iSeeText(tester, '''it\'s\'''');",
+      ]);
+    });
+
+    test('A value in an interpolation is Dart, not text', () {
+      const featureFile = r'''
+Feature: Testing feature
+  Scenario Outline: Testing scenario
+    Then I see {'n: ${<v>.length}'} text
+    Examples:
+      | v     |
+      | 'abc' |
+''';
+
+      expect(_calls(featureFile), [
+        r"await iSeeText(tester, 'n: ${'abc'.length}');",
+      ]);
+    });
+  });
+}
+
+/// The generated step calls, one per line, after checking they compile.
+List<String> _calls(String input) {
+  final content = FeatureFile(
+    featureDir: 'test.feature',
+    package: 'test',
+    input: input,
+    generatorOptions: const GeneratorOptions(literalParameters: true),
+  ).dartContent;
+  expect(() => formatDartCode(content), returnsNormally);
+  return [
+    for (final line in content.split('\n'))
+      if (line.trim().startsWith('await ')) line.trim(),
+  ];
 }

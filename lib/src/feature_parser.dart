@@ -802,8 +802,10 @@ Step _toStep(messages.Step step, List<String> raw, _StepText stepText) {
     text,
     table: table,
     // A table whose headers cover every `<placeholder>` in the step repeats the
-    // step once per row; any other table is a Dart `DataTable` argument.
-    isDataTable: table != null && !isExamplesTable(text, table),
+    // step once per row; any other table is a Dart `DataTable` argument. The
+    // placeholders are read as written: a rewritten `"<user's name>"` spells
+    // its name `user\'s name`, which no header does.
+    isDataTable: table != null && !isExamplesTable(step.text, table),
   );
 }
 

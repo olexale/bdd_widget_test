@@ -115,12 +115,23 @@ List<({String title, List<Step> steps})> expandOutline(
 
 /// Placeholders inside a data table are always raw values — the table is a
 /// Dart expression, not step text.
+///
+/// One pass: a value is never read for placeholders of its own, so a cell
+/// holding `<other>` arrives as `<other>`.
 String _inline(String cell, Map<String, String> example) {
-  var result = cell;
-  for (final entry in example.entries) {
-    result = result.replaceAll('<${entry.key}>', entry.value);
+  final result = StringBuffer();
+  var i = 0;
+  while (i < cell.length) {
+    final key = _placeholderAt(cell, i, example);
+    if (key == null) {
+      result.write(cell[i]);
+      i++;
+    } else {
+      result.write(example[key]);
+      i += key.length + 2;
+    }
   }
-  return result;
+  return result.toString();
 }
 
 // Placeholders inside {} blocks become raw values,
@@ -166,37 +177,97 @@ String replacePlaceholders(
 
 /// [_inline] for the [block] opening at [open] in [line], escaping a value
 /// that lands inside one of its strings for that string.
+///
+/// In a string that is not raw, a placeholder may be written the way Dart
+/// writes its name there: `'<user\'s name>'` is `<user's name>`, which is what
+/// `"<user's name>"` is rewritten to. A raw string takes its values as they
+/// are, unless one holds the string's quote, which nothing in a raw string
+/// can escape: that string is then written as one that is not raw.
 String _inlineAsText(
   String line,
   int open,
   DartBlock block,
   Map<String, String> example,
 ) {
+  final unraw = {
+    for (final string in block.strings)
+      if (string.prefix != null &&
+          _placeholdersIn(line, string, example).any(
+            (key) => example[key]!.contains(string.quote[0]),
+          ))
+        string,
+  };
   final result = StringBuffer();
   var i = open;
   while (i < block.end) {
-    final key = _placeholderAt(line, i, example);
-    if (key == null) {
-      result.write(line[i]);
+    if (unraw.any((string) => string.prefix == i)) {
       i++;
       continue;
     }
-    final value = example[key]!;
     final string = block.strings
         .where((string) => string.start <= i && i < string.end)
         .firstOrNull;
-    result.write(string == null ? value : _escapeFor(value, string.quote));
-    i += key.length + 2;
+    final escaped =
+        string != null && (string.prefix == null || unraw.contains(string));
+    final placeholder = _placeholderIn(line, i, example, string);
+    if (placeholder == null) {
+      final c = line[i];
+      result.write(
+        string != null && unraw.contains(string)
+            ? _escapeFor(c, string.quote)
+            : c,
+      );
+      i++;
+    } else {
+      final value = example[placeholder.key]!;
+      result.write(escaped ? _escapeFor(value, string.quote) : value);
+      i += placeholder.length;
+    }
   }
   return result.toString();
+}
+
+/// The `<placeholder>` starting at [i] in [line]: its name, and how many
+/// characters it is written in. Inside [string], when that is not raw, the
+/// name may be written escaped for it.
+({String key, int length})? _placeholderIn(
+  String line,
+  int i,
+  Map<String, String> example,
+  DartString? string,
+) {
+  final escaped = string != null && string.prefix == null;
+  for (final key in example.keys) {
+    for (final name in [key, if (escaped) _escapeFor(key, string.quote)]) {
+      if (line.startsWith('<$name>', i)) {
+        return (key: key, length: name.length + 2);
+      }
+    }
+  }
+  return null;
+}
+
+/// The names of the placeholders written in [string].
+Iterable<String> _placeholdersIn(
+  String line,
+  DartString string,
+  Map<String, String> example,
+) sync* {
+  for (var i = string.start; i < string.end; i++) {
+    final placeholder = _placeholderIn(line, i, example, string);
+    if (placeholder != null) {
+      yield placeholder.key;
+    }
+  }
 }
 
 /// The name of the `<placeholder>` starting at [i] in [line], if any.
 String? _placeholderAt(String line, int i, Map<String, String> example) =>
     example.keys.where((key) => line.startsWith('<$key>', i)).firstOrNull;
 
-/// [value] as the text of a string delimited by [quote].
+/// [value] as the text of a string delimited by [quote], one of `'`, `"`,
+/// `'''` and `"""`.
 String _escapeFor(String value, String quote) => value
     .replaceAll(r'\', r'\\')
     .replaceAll(r'$', r'\$')
-    .replaceAll(quote, '\\$quote');
+    .replaceAll(quote[0], '\\${quote[0]}');

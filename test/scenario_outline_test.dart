@@ -543,4 +543,40 @@ void main() {
     );
     expect(feature.dartContent, expectedFeatureDart);
   });
+
+  test('Scenario Outline Value Not Read for Placeholders', () {
+    const featureFile = '''
+Feature: Testing feature
+  Scenario Outline: Nested placeholder
+    Then I see {'<value>'} text
+    Examples:
+      | value   | other |
+      | <other> | hello |
+''';
+
+    const expectedFeatureDart = """
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import './step/i_see_text.dart';
+
+void main() {
+  group('''Testing feature''', () {
+    testWidgets('''Nested placeholder (<other>, hello)''', (tester) async {
+      await iSeeText(tester, '<other>');
+    });
+  });
+}
+""";
+
+    final feature = FeatureFile(
+      featureDir: 'test.feature',
+      package: 'test',
+      input: featureFile,
+    );
+    expect(feature.dartContent, expectedFeatureDart);
+  });
 }
