@@ -14,7 +14,7 @@ void main() {
     expect(feature.getStepFiles().length, 0);
   });
 
-  test('A brace or quote inside a string in {} is text', () {
+  test('A brace or quote inside a string or comment in {} is text', () {
     const featureFile = r"""
 Feature: Testing feature
   Scenario: Testing scenario
@@ -26,6 +26,8 @@ Feature: Testing feature
     And I see {'''it's'''} and {'''ok's'''} text
     And I see {r'C:\'} and {'don\'t'} text
     And I see {'a ${'}'} b'} and {1} text
+    And I see {1 /* " */} and {2 /* a /* } */ ' */} text
+    And I see {'/*'} and {'*/'} text
 """;
 
     const expectedFeatureDart = r"""
@@ -49,6 +51,8 @@ void main() {
       await iSeeAndText(tester, '''it's''', '''ok's''');
       await iSeeAndText(tester, r'C:\', 'don\'t');
       await iSeeAndText(tester, 'a ${'}'} b', 1);
+      await iSeeAndText(tester, 1 /* " */, 2 /* a /* } */ ' */);
+      await iSeeAndText(tester, '/*', '*/');
     });
   });
 }

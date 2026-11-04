@@ -219,7 +219,16 @@ FeatureFileModel parseFeatureFile(
         _rejectUnnamedSteps(feature, uri, stepText);
       }
       tagLines.addAll(_tagLines(parsed.tags, source));
-      features.add(_toFeature(parsed, after, source, raw, stepText));
+      features.add(
+        _toFeature(
+          parsed,
+          after,
+          source,
+          raw,
+          stepText,
+          literalParameters: literalParameters,
+        ),
+      );
     }
   }
   return FeatureFileModel(
@@ -712,8 +721,9 @@ Feature _toFeature(
   messages.Feature? after,
   List<String> source,
   List<String> raw,
-  _StepText stepText,
-) {
+  _StepText stepText, {
+  required bool literalParameters,
+}) {
   final children = feature.children;
   final rules = children.map((child) => child.rule).nonNulls.toList();
   return Feature(
@@ -722,6 +732,7 @@ Feature _toFeature(
       children.map((child) => child.background),
       raw,
       stepText,
+      literalParameters: literalParameters,
     ),
     // `After:` applies to the whole feature wherever it was written, so a
     // block inside a rule is hoisted out of it — which the separate parse does
@@ -730,7 +741,14 @@ Feature _toFeature(
       for (final scenario in (after?.children ?? const []).map(
         (child) => child.scenario,
       ))
-        ...?scenario?.steps.map((step) => _toStep(step, raw, stepText)),
+        ...?scenario?.steps.map(
+          (step) => _toStep(
+            step,
+            raw,
+            stepText,
+            literalParameters: literalParameters,
+          ),
+        ),
     ],
     scenarios: _scenarios(
       children.map((child) => child.scenario),
@@ -738,6 +756,7 @@ Feature _toFeature(
       source,
       raw,
       stepText,
+      literalParameters: literalParameters,
     ),
     rules: [
       for (final rule in rules)
@@ -747,6 +766,7 @@ Feature _toFeature(
             rule.children.map((child) => child.background),
             raw,
             stepText,
+            literalParameters: literalParameters,
           ),
           // Gherkin hands a rule's tags down to the scenarios inside it.
           scenarios: _scenarios(
@@ -755,6 +775,7 @@ Feature _toFeature(
             source,
             raw,
             stepText,
+            literalParameters: literalParameters,
           ),
         ),
     ],
@@ -764,10 +785,14 @@ Feature _toFeature(
 List<Step> _backgroundSteps(
   Iterable<messages.Background?> backgrounds,
   List<String> raw,
-  _StepText stepText,
-) => [
+  _StepText stepText, {
+  required bool literalParameters,
+}) => [
   for (final background in backgrounds.nonNulls)
-    ...background.steps.map((step) => _toStep(step, raw, stepText)),
+    ...background.steps.map(
+      (step) =>
+          _toStep(step, raw, stepText, literalParameters: literalParameters),
+    ),
 ];
 
 List<Scenario> _scenarios(
@@ -775,8 +800,9 @@ List<Scenario> _scenarios(
   List<String> inheritedTags,
   List<String> source,
   List<String> raw,
-  _StepText stepText,
-) => [
+  _StepText stepText, {
+  required bool literalParameters,
+}) => [
   for (final scenario in scenarios.nonNulls)
     Scenario(
       // A tag written on both the rule and the scenario reaches this point
@@ -787,13 +813,25 @@ List<Scenario> _scenarios(
       ]),
       title: scenario.name,
       steps: scenario.steps
-          .map((step) => _toStep(step, raw, stepText))
+          .map(
+            (step) => _toStep(
+              step,
+              raw,
+              stepText,
+              literalParameters: literalParameters,
+            ),
+          )
           .toList(),
       examples: _examples(scenario.examples, raw),
     ),
 ];
 
-Step _toStep(messages.Step step, List<String> raw, _StepText stepText) {
+Step _toStep(
+  messages.Step step,
+  List<String> raw,
+  _StepText stepText, {
+  required bool literalParameters,
+}) {
   final text = stepText(step);
   final table = step.dataTable?.rows
       .map((row) => row.cells.map((cell) => _cellText(cell, raw)).toList())
@@ -802,10 +840,10 @@ Step _toStep(messages.Step step, List<String> raw, _StepText stepText) {
     text,
     table: table,
     // A table whose headers cover every `<placeholder>` in the step repeats the
-    // step once per row; any other table is a Dart `DataTable` argument. The
-    // placeholders are read as written: a rewritten `"<user's name>"` spells
-    // its name `user\'s name`, which no header does.
-    isDataTable: table != null && !isExamplesTable(step.text, table),
+    // step once per row; any other table is a Dart `DataTable` argument.
+    isDataTable:
+        table != null &&
+        !isExamplesTable(text, table, literalParameters: literalParameters),
   );
 }
 

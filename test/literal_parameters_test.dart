@@ -388,15 +388,16 @@ Future<void> iGreetTwice(WidgetTester tester, String param1) async {
   });
 
   test('An inline table fills quoted placeholders once per row', () {
-    // The header's apostrophe is escaped in the rewritten step, and the table
-    // still repeats it rather than becoming a data table.
-    const featureFile = '''
+    // A header is written escaped in the quotes (`\"`, `\\`) or comes out
+    // escaped in the rewritten step (`'`), and the table still repeats the
+    // step rather than becoming a data table.
+    const featureFile = r'''
 Feature: Testing feature
   Scenario: Testing scenario
-    Given user "<user's name>" exists
-      | user's name |
-      | alice       |
-      | O'Brien     |
+    Given user "<user's name>" has "<\"tag\">" in "<C:\\dir>"
+      | user's name | "tag" | C:\dir |
+      | alice       | vip   | C:\a   |
+      | O'Brien     | "x"   | D:     |
 ''';
 
     const expectedFeatureDart = r"""
@@ -406,13 +407,13 @@ Feature: Testing feature
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import './step/user_exists.dart';
+import './step/user_has_in.dart';
 
 void main() {
   group('''Testing feature''', () {
     testWidgets('''Testing scenario''', (tester) async {
-      await userExists(tester, 'alice');
-      await userExists(tester, 'O\'Brien');
+      await userHasIn(tester, 'alice', 'vip', 'C:\\a');
+      await userHasIn(tester, 'O\'Brien', '"x"', 'D:');
     });
   });
 }

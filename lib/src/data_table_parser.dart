@@ -1,6 +1,7 @@
 import 'package:bdd_widget_test/src/feature_model.dart';
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/scenario_generator.dart';
+import 'package:bdd_widget_test/src/util/common.dart';
 
 /// Whether the table attached to a step is meant as Examples (repeating the
 /// step once per row) rather than as a cucumber data table argument.
@@ -8,7 +9,16 @@ import 'package:bdd_widget_test/src/scenario_generator.dart';
 /// Heuristic: if the step contains placeholders like `<name>` and the header
 /// row names ALL of them, treat the table as Examples; otherwise treat it as a
 /// cucumber data table.
-bool isExamplesTable(String stepText, List<List<String>> table) {
+///
+/// With [literalParameters], a header may be named as [replacePlaceholders]
+/// finds it in a string: escaped for that string. `"<user's name>"` and
+/// `"<C:\\dir>"` are rewritten to `'<user\'s name>'` and `'<C:\\dir>'`, which
+/// the headers `user's name` and `C:\dir` name.
+bool isExamplesTable(
+  String stepText,
+  List<List<String>> table, {
+  required bool literalParameters,
+}) {
   final placeholders = examplesRegExp
       .allMatches(stepText)
       .map((match) => match.group(1)!.trim())
@@ -17,7 +27,15 @@ bool isExamplesTable(String stepText, List<List<String>> table) {
   if (placeholders.isEmpty) {
     return false;
   }
-  final headers = table.isEmpty ? const <String>{} : table.first.toSet();
+  final headers = {
+    for (final header in table.firstOrNull ?? const <String>[]) ...[
+      header,
+      if (literalParameters) ...[
+        escapeDartString(header, "'"),
+        escapeDartString(header, '"'),
+      ],
+    ],
+  };
   if (headers.isEmpty) {
     return false;
   }

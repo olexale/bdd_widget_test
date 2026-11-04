@@ -8,8 +8,8 @@
   because it renames steps: `Then I see "Hello" text` was `iSeeHelloText`. See the README FAQ for
   migrating (thanks @Fried-man).
 * Fix a `{` or `}` inside a string in a `{}` parameter: `Then I see {'a{b'} text` dropped its
-  argument and generated `iSee(tester)`, which compiled. A brace inside a string is now text, also
-  when it comes from an outline cell.
+  argument and generated `iSee(tester)`, which compiled. A brace inside a string or a `/* */`
+  comment is now text, also when it comes from an outline cell.
 * Fix generated step stubs for outline steps with a placeholder inside `{}`: `Then I greet {<name>}`
   declared an extra `dynamic name` parameter that the generated call never passed.
 * Fix generated step stubs for outline steps with a placeholder before a `{}` parameter:

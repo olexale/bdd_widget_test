@@ -8,10 +8,12 @@
 /// raw, a `${…}` interpolation is Dart again: it is not part of the string's
 /// text, and a string inside it is a string of its own. A string's text is
 /// therefore listed as one [DartString] per run between interpolations.
+/// A `/* … */` comment, which nests, is neither: a quote or a brace in it is
+/// text.
 ///
-/// When a string in the block never closes (`{it's}`), its quotes cannot be
-/// trusted, so the block is read by counting braces alone, with no `strings`.
-/// Null when no `}` closes the block.
+/// When a string or comment in the block never closes (`{it's}`), its quotes
+/// cannot be trusted, so the block is read by counting braces alone, with no
+/// `strings`. Null when no `}` closes the block.
 DartBlock? readDartBlock(String text, int open) {
   assert(text[open] == '{', 'no block opens at $open');
   final strings = <DartString>[];
@@ -31,8 +33,9 @@ typedef DartBlock = ({int end, List<DartString> strings});
 typedef DartString = ({int start, int end, String quote, int? prefix});
 
 /// The index just past the `}` closing the block at [open], or null. With
-/// [strings], quotes are read and each string's text is added to it; a string
-/// that never closes returns null. Without, braces are only counted.
+/// [strings], strings and comments are read and each string's text is added
+/// to it; a string or comment that never closes returns null. Without, braces
+/// are only counted.
 int? _blockEnd(String text, int open, List<DartString>? strings) {
   var depth = 0;
   var i = open;
@@ -52,8 +55,37 @@ int? _blockEnd(String text, int open, List<DartString>? strings) {
       }
       i = end;
       continue;
+    } else if (strings != null && text.startsWith('/*', i)) {
+      final end = _commentEnd(text, i);
+      if (end == null) {
+        return null;
+      }
+      i = end;
+      continue;
     }
     i++;
+  }
+  return null;
+}
+
+/// The index just past the `*/` closing the comment opening at [open], or
+/// null. Comments nest: `/* a /* b */ c */` is one comment.
+int? _commentEnd(String text, int open) {
+  var depth = 0;
+  var i = open;
+  while (i < text.length) {
+    if (text.startsWith('/*', i)) {
+      depth++;
+      i += 2;
+    } else if (text.startsWith('*/', i)) {
+      depth--;
+      i += 2;
+      if (depth == 0) {
+        return i;
+      }
+    } else {
+      i++;
+    }
   }
   return null;
 }
