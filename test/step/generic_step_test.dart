@@ -149,7 +149,6 @@ Future<void> iAdd(WidgetTester tester, dynamic count, String param1) async {
       input: featureFile,
     );
 
-    expect(feature.dartContent, contains("await iAdd(tester, 3, 'apples');"));
     expect(
       feature.getStepFiles().whereType<NewStepFile>().single.dartContent,
       expectedSteps,

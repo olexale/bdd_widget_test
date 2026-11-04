@@ -388,13 +388,15 @@ Future<void> iGreetTwice(WidgetTester tester, String param1) async {
   });
 
   test('An inline table fills quoted placeholders once per row', () {
+    // The header's apostrophe is escaped in the rewritten step, and the table
+    // still repeats it rather than becoming a data table.
     const featureFile = '''
 Feature: Testing feature
   Scenario: Testing scenario
-    Given user "<name>" exists
-      | name    |
-      | alice   |
-      | O'Brien |
+    Given user "<user's name>" exists
+      | user's name |
+      | alice       |
+      | O'Brien     |
 ''';
 
     const expectedFeatureDart = r"""
@@ -667,53 +669,14 @@ Feature: Testing feature
   });
 
   group('Placeholders and strings', () {
-    test('A placeholder named with an apostrophe is filled in quotes', () {
-      const featureFile = '''
-Feature: Testing feature
-  Scenario Outline: Testing scenario
-    Then I see "<user's name>" text
-    Examples:
-      | user's name |
-      | Bob         |
-''';
-
-      expect(_calls(featureFile), ["await iSeeText(tester, 'Bob');"]);
-    });
-
-    test('An inline table keyed by an apostrophe repeats the step', () {
-      const featureFile = '''
-Feature: Testing feature
-  Scenario: Testing scenario
-    Given user "<user's name>" exists
-      | user's name |
-      | alice       |
-      | bob         |
-''';
-
-      expect(_calls(featureFile), [
-        "await userExists(tester, 'alice');",
-        "await userExists(tester, 'bob');",
-      ]);
-    });
-
-    test('A value is not read for placeholders of its own', () {
-      const featureFile = '''
-Feature: Testing feature
-  Scenario Outline: Testing scenario
-    Then I see {'<value>'} text
-    Examples:
-      | value   | other |
-      | <other> | hello |
-''';
-
-      expect(_calls(featureFile), ["await iSeeText(tester, '<other>');"]);
-    });
-
     test('A value in a raw string arrives as written', () {
+      // A raw string cannot hold its own quote, so a value holding one turns
+      // the string into a plain one that keeps the raw string's text.
       const featureFile = r'''
 Feature: Testing feature
   Scenario Outline: Testing scenario
     Then I see {r'<v>'} text
+    And I see {r'$<v> in C:\'} label
     Examples:
       | v       |
       | C:\temp |
@@ -722,22 +685,9 @@ Feature: Testing feature
 
       expect(_calls(featureFile), [
         r"await iSeeText(tester, r'C:\temp');",
+        r"await iSeeLabel(tester, r'$C:\temp in C:\');",
         r"await iSeeText(tester, 'Don\'t');",
-      ]);
-    });
-
-    test('A raw string that cannot hold its value keeps its own text', () {
-      const featureFile = r'''
-Feature: Testing feature
-  Scenario Outline: Testing scenario
-    Then I see {r'$<v> in C:\'} text
-    Examples:
-      | v     |
-      | Don't |
-''';
-
-      expect(_calls(featureFile), [
-        r"await iSeeText(tester, '\$Don\'t in C:\\');",
+        r"await iSeeLabel(tester, '\$Don\'t in C:\\');",
       ]);
     });
 

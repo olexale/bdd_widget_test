@@ -189,27 +189,45 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
 /// Return an array of Strings where first element is the step name and the rest
 /// are parameters.
 List<String> parseRawStepLine(String stepLine) {
-  final name = StringBuffer();
-  final parameters = <String>[];
+  final parts = stepParts(stepLine);
+  return [
+    parts.where((part) => !part.isParameter).map((part) => part.text).join(),
+    for (final part in parts)
+      if (part.isParameter) part.text,
+  ];
+}
+
+/// A run of a step's text: a `{}` parameter, without its braces, or the text
+/// between parameters.
+typedef StepPart = ({String text, bool isParameter});
+
+/// [stepLine] split into its parts, in the order they are written: the order
+/// the generated call passes its parameters in, and so the order its step
+/// declares them in.
+List<StepPart> stepParts(String stepLine) {
+  final parts = <StepPart>[];
+  var text = 0;
   var i = 0;
   while (i < stepLine.length) {
-    if (stepLine[i] == '{') {
-      // A block nests, as in `{func foo(){} func bar() {print('hey');}}`,
-      // and a brace inside a string in it is text: `{'a{b'}` is one block.
-      final end = readDartBlock(stepLine, i)?.end;
-      if (end == null) {
-        // Nothing closes the block: the rest of the line is not a parameter
-        // the generated call could pass.
-        break;
-      }
-      parameters.add(stepLine.substring(i + 1, end - 1));
-      i = end;
-    } else {
-      name.write(stepLine[i]);
+    if (stepLine[i] != '{') {
       i++;
+      continue;
     }
+    // A block nests, as in `{func foo(){} func bar() {print('hey');}}`,
+    // and a brace inside a string in it is text: `{'a{b'}` is one block.
+    final end = readDartBlock(stepLine, i)?.end;
+    if (end == null) {
+      // Nothing closes the block: the rest of the line is not a parameter
+      // the generated call could pass, nor part of the name.
+      break;
+    }
+    parts
+      ..add((text: stepLine.substring(text, i), isParameter: false))
+      ..add((text: stepLine.substring(i + 1, end - 1), isParameter: true));
+    i = text = end;
   }
-  return [name.toString(), ...parameters];
+  final rest = stepLine.substring(text, i);
+  return [...parts, (text: rest, isParameter: false)];
 }
 
 String _camelizedString(String input) {

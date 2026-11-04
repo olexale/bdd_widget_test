@@ -122,13 +122,13 @@ String _inline(String cell, Map<String, String> example) {
   final result = StringBuffer();
   var i = 0;
   while (i < cell.length) {
-    final key = _placeholderAt(cell, i, example);
-    if (key == null) {
+    final placeholder = _placeholderAt(cell, i, example);
+    if (placeholder == null) {
       result.write(cell[i]);
       i++;
     } else {
-      result.write(example[key]);
-      i += key.length + 2;
+      result.write(example[placeholder.key]);
+      i += placeholder.length;
     }
   }
   return result.toString();
@@ -163,13 +163,13 @@ String replacePlaceholders(
       i = block.end;
       continue;
     }
-    final key = _placeholderAt(line, i, example);
-    if (key == null) {
+    final placeholder = _placeholderAt(line, i, example);
+    if (placeholder == null) {
       result.write(line[i]);
       i++;
     } else {
-      result.write('{${example[key]}}');
-      i += key.length + 2;
+      result.write('{${example[placeholder.key]}}');
+      i += placeholder.length;
     }
   }
   return result.toString();
@@ -207,20 +207,18 @@ String _inlineAsText(
     final string = block.strings
         .where((string) => string.start <= i && i < string.end)
         .firstOrNull;
-    final escaped =
-        string != null && (string.prefix == null || unraw.contains(string));
-    final placeholder = _placeholderIn(line, i, example, string);
+    // Text written into [string] the way it reads: as is, or, in a string
+    // that is not raw (or no longer is), escaped for it.
+    String text(String value) =>
+        string != null && (string.prefix == null || unraw.contains(string))
+        ? escapeDartString(value, string.quote)
+        : value;
+    final placeholder = _placeholderAt(line, i, example, string);
     if (placeholder == null) {
-      final c = line[i];
-      result.write(
-        string != null && unraw.contains(string)
-            ? _escapeFor(c, string.quote)
-            : c,
-      );
+      result.write(unraw.contains(string) ? text(line[i]) : line[i]);
       i++;
     } else {
-      final value = example[placeholder.key]!;
-      result.write(escaped ? _escapeFor(value, string.quote) : value);
+      result.write(text(example[placeholder.key]!));
       i += placeholder.length;
     }
   }
@@ -230,15 +228,18 @@ String _inlineAsText(
 /// The `<placeholder>` starting at [i] in [line]: its name, and how many
 /// characters it is written in. Inside [string], when that is not raw, the
 /// name may be written escaped for it.
-({String key, int length})? _placeholderIn(
+({String key, int length})? _placeholderAt(
   String line,
   int i,
-  Map<String, String> example,
+  Map<String, String> example, [
   DartString? string,
-) {
+]) {
   final escaped = string != null && string.prefix == null;
   for (final key in example.keys) {
-    for (final name in [key, if (escaped) _escapeFor(key, string.quote)]) {
+    for (final name in [
+      key,
+      if (escaped) escapeDartString(key, string.quote),
+    ]) {
       if (line.startsWith('<$name>', i)) {
         return (key: key, length: name.length + 2);
       }
@@ -254,20 +255,9 @@ Iterable<String> _placeholdersIn(
   Map<String, String> example,
 ) sync* {
   for (var i = string.start; i < string.end; i++) {
-    final placeholder = _placeholderIn(line, i, example, string);
+    final placeholder = _placeholderAt(line, i, example, string);
     if (placeholder != null) {
       yield placeholder.key;
     }
   }
 }
-
-/// The name of the `<placeholder>` starting at [i] in [line], if any.
-String? _placeholderAt(String line, int i, Map<String, String> example) =>
-    example.keys.where((key) => line.startsWith('<$key>', i)).firstOrNull;
-
-/// [value] as the text of a string delimited by [quote], one of `'`, `"`,
-/// `'''` and `"""`.
-String _escapeFor(String value, String quote) => value
-    .replaceAll(r'\', r'\\')
-    .replaceAll(r'$', r'\$')
-    .replaceAll(quote[0], '\\${quote[0]}');

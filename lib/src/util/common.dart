@@ -15,20 +15,22 @@ import 'package:collection/collection.dart';
 /// builds out of its `Examples:` cells - stays readable in generated code.
 ///
 /// Use [escapeDartSingleQuoted] for `'...'` literals, such as the tag lists.
-String escapeDartLiteral(String input) => _escape(input, always: false);
+String escapeDartLiteral(String input) => _strayQuote.hasMatch(input)
+    ? escapeDartSingleQuoted(input)
+    : input.replaceAll(r'\', r'\\').replaceAll(r'$', r'\$');
 
 /// [escapeDartSingleQuoted] is [escapeDartLiteral] for a `'...'` literal, where
 /// *any* apostrophe ends the literal instead of merely one that could merge
 /// into a delimiter.
-String escapeDartSingleQuoted(String input) => _escape(input, always: true);
+String escapeDartSingleQuoted(String input) => escapeDartString(input, "'");
 
-String _escape(String input, {required bool always}) {
-  var result = input.replaceAll(r'\', r'\\').replaceAll(r'$', r'\$');
-  if (always || _strayQuote.hasMatch(result)) {
-    result = result.replaceAll("'", r"\'");
-  }
-  return result;
-}
+/// [input] as the text of a Dart string delimited by [quote] — `'`, `"`,
+/// `'''` or `"""` — with every character that string would read as Dart
+/// (`\`, `$` and the quote) escaped.
+String escapeDartString(String input, String quote) => input
+    .replaceAll(r'\', r'\\')
+    .replaceAll(r'$', r'\$')
+    .replaceAll(quote[0], '\\${quote[0]}');
 
 /// A quote threatens a `'''` literal only when it can merge into a delimiter:
 /// in a run of two or more, or as the last character, where it runs into the

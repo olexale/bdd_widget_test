@@ -1,7 +1,7 @@
 import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
-import 'package:bdd_widget_test/src/util/dart_block.dart';
+import 'package:bdd_widget_test/src/step_generator.dart';
 
 class GenericStep implements BddStep {
   GenericStep(
@@ -45,32 +45,21 @@ Future<void> $methodName($testerType $customTesterName${_getMethodParameters(raw
     ].join();
   }
 
-  /// The step's parameters in the order they are written, which is the order
-  /// the generated call passes them in: each `{}` block is a `paramN`, each
-  /// `<placeholder>` outside one a parameter named after it. A placeholder
-  /// inside a block (`{<name>}`, `{'<name>'}`) is part of that parameter.
+  /// The step's parameters in the order [stepParts] gives them: each `{}`
+  /// parameter is a `paramN`, each `<placeholder>` outside one a parameter
+  /// named after it. A placeholder inside a `{}` parameter (`{<name>}`,
+  /// `{'<name>'}`) is part of that parameter.
   Iterable<String> _parametersInOrder(String stepLine) sync* {
-    var blocks = 0;
-    var i = 0;
-    while (i < stepLine.length) {
-      if (stepLine[i] == '{') {
-        final end = readDartBlock(stepLine, i)?.end;
-        if (end == null) {
-          // As in parseRawStepLine: an unclosed block is no parameter.
-          return;
+    var parameters = 0;
+    for (final part in stepParts(stepLine)) {
+      if (part.isParameter) {
+        final type = _getGenericParameterType(part.text);
+        yield ', $type param${++parameters}';
+      } else {
+        for (final placeholder in examplesRegExp.allMatches(part.text)) {
+          yield ', dynamic ${placeholder.group(1)}';
         }
-        final parameter = stepLine.substring(i + 1, end - 1);
-        yield ', ${_getGenericParameterType(parameter)} param${++blocks}';
-        i = end;
-        continue;
       }
-      final placeholder = examplesRegExp.matchAsPrefix(stepLine, i);
-      if (placeholder != null) {
-        yield ', dynamic ${placeholder.group(1)}';
-        i = placeholder.end;
-        continue;
-      }
-      i++;
     }
   }
 
