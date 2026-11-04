@@ -1,5 +1,6 @@
 import 'package:bdd_widget_test/src/data_table_parser.dart';
 import 'package:bdd_widget_test/src/feature_model.dart';
+import 'package:bdd_widget_test/src/literal_parameters.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
 import 'package:bdd_widget_test/src/util/constants.dart';
 import 'package:collection/collection.dart';
@@ -84,7 +85,17 @@ const _afterScenarioName = '__bdd_after__';
 /// accepts no other. The pre-pass only ever replaces a line with another line
 /// of its own, and leaves indentation alone, so reported error positions match
 /// the original file.
-FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
+///
+/// With [literalParameters] on, every step's text is rewritten by
+/// [rewriteLiteralParameters] before anything reads it, so `"Hello"` and `42`
+/// arrive in the model as `{'Hello'}` and `{42}`.
+FeatureFileModel parseFeatureFile(
+  String input, {
+  String uri = 'feature',
+  bool literalParameters = false,
+}) {
+  String stepText(messages.Step step) =>
+      literalParameters ? _literalStepText(step, uri) : step.text;
   final raw = input.split('\n');
   // Keyword detection, header lines and tag lines all work off the trimmed
   // text; only the lines handed to the parser keep their original indentation.
@@ -205,10 +216,10 @@ FeatureFileModel parseFeatureFile(String input, [String uri = 'feature']) {
           stepMarkers,
           afterHasSteps: afterHasSteps,
         );
-        _rejectUnnamedSteps(feature, uri);
+        _rejectUnnamedSteps(feature, uri, stepText);
       }
       tagLines.addAll(_tagLines(parsed.tags, source));
-      features.add(_toFeature(parsed, after, source, raw));
+      features.add(_toFeature(parsed, after, source, raw, stepText));
     }
   }
   return FeatureFileModel(
@@ -472,18 +483,56 @@ String? _colonKeyword(String step, List<String> stepMarkers) =>
 ///
 /// Renaming the step is the advice, and the position comes free: unlike a
 /// description, the parser reports a location for every step.
-void _rejectUnnamedSteps(messages.Feature feature, String uri) {
+void _rejectUnnamedSteps(
+  messages.Feature feature,
+  String uri,
+  _StepText stepText,
+) {
   for (final step in _allSteps(feature)) {
-    if (stepIdentifier(step.text) != null) {
+    final read = stepText(step);
+    if (stepIdentifier(read) != null) {
       continue;
     }
+    // The text as written names something, so its literals took the name.
+    final literalsTookTheName = stepIdentifier(step.text) != null;
     throw FormatException(
       'Failed to parse $uri:\n'
-      '  (${step.location.line}:${step.location.column}): '
-      '${unnamedStepError(step.text)}',
+      '  ${_position(step)}: '
+      '${literalsTookTheName ? _literalOnlyError(step.text) : unnamedStepError(step.text)}',
     );
   }
 }
+
+/// How a step's text is read: as written, or through
+/// [rewriteLiteralParameters].
+typedef _StepText = String Function(messages.Step step);
+
+String _position(messages.Step step) =>
+    '(${step.location.line}:${step.location.column})';
+
+/// [step]'s text with its literal parameters written in `{}`.
+///
+/// A `"` with nothing to close it fails the build: read as prose it would
+/// rename the step, and a dropped quote is easy to miss in a sentence.
+String _literalStepText(messages.Step step, String uri) {
+  final rewritten = rewriteLiteralParameters(step.text);
+  if (rewritten == null) {
+    throw FormatException(
+      'Failed to parse $uri:\n'
+      '  ${_position(step)}: '
+      "step '${step.text.trim()}' has a \" with no closing \" — close the "
+      "string, or write the quote inside a {'...'} parameter",
+    );
+  }
+  return rewritten;
+}
+
+/// The step named something until its literals became parameters, and
+/// nothing is left: `Then "Hello"`, `Then 42`.
+String _literalOnlyError(String stepText) =>
+    "step '${stepText.trim()}' produces no valid Dart identifier: its text is "
+    'parameters and nothing else, so the step has no name. Put a word of '
+    'ASCII around the parameter, as in \'I see "Hello" text\'';
 
 /// Every step of the feature, wherever it was written: backgrounds, scenarios,
 /// the `After:` block (a scenario under its reserved name), and everything
@@ -663,6 +712,7 @@ Feature _toFeature(
   messages.Feature? after,
   List<String> source,
   List<String> raw,
+  _StepText stepText,
 ) {
   final children = feature.children;
   final rules = children.map((child) => child.rule).nonNulls.toList();
@@ -671,6 +721,7 @@ Feature _toFeature(
     background: _backgroundSteps(
       children.map((child) => child.background),
       raw,
+      stepText,
     ),
     // `After:` applies to the whole feature wherever it was written, so a
     // block inside a rule is hoisted out of it — which the separate parse does
@@ -679,13 +730,14 @@ Feature _toFeature(
       for (final scenario in (after?.children ?? const []).map(
         (child) => child.scenario,
       ))
-        ...?scenario?.steps.map((step) => _toStep(step, raw)),
+        ...?scenario?.steps.map((step) => _toStep(step, raw, stepText)),
     ],
     scenarios: _scenarios(
       children.map((child) => child.scenario),
       const [],
       source,
       raw,
+      stepText,
     ),
     rules: [
       for (final rule in rules)
@@ -694,6 +746,7 @@ Feature _toFeature(
           background: _backgroundSteps(
             rule.children.map((child) => child.background),
             raw,
+            stepText,
           ),
           // Gherkin hands a rule's tags down to the scenarios inside it.
           scenarios: _scenarios(
@@ -701,6 +754,7 @@ Feature _toFeature(
             _tagLines(rule.tags, source),
             source,
             raw,
+            stepText,
           ),
         ),
     ],
@@ -710,9 +764,10 @@ Feature _toFeature(
 List<Step> _backgroundSteps(
   Iterable<messages.Background?> backgrounds,
   List<String> raw,
+  _StepText stepText,
 ) => [
   for (final background in backgrounds.nonNulls)
-    ...background.steps.map((step) => _toStep(step, raw)),
+    ...background.steps.map((step) => _toStep(step, raw, stepText)),
 ];
 
 List<Scenario> _scenarios(
@@ -720,6 +775,7 @@ List<Scenario> _scenarios(
   List<String> inheritedTags,
   List<String> source,
   List<String> raw,
+  _StepText stepText,
 ) => [
   for (final scenario in scenarios.nonNulls)
     Scenario(
@@ -730,21 +786,24 @@ List<Scenario> _scenarios(
         ..._tagLines(scenario.tags, source),
       ]),
       title: scenario.name,
-      steps: scenario.steps.map((step) => _toStep(step, raw)).toList(),
+      steps: scenario.steps
+          .map((step) => _toStep(step, raw, stepText))
+          .toList(),
       examples: _examples(scenario.examples, raw),
     ),
 ];
 
-Step _toStep(messages.Step step, List<String> raw) {
+Step _toStep(messages.Step step, List<String> raw, _StepText stepText) {
+  final text = stepText(step);
   final table = step.dataTable?.rows
       .map((row) => row.cells.map((cell) => _cellText(cell, raw)).toList())
       .toList();
   return Step(
-    step.text,
+    text,
     table: table,
     // A table whose headers cover every `<placeholder>` in the step repeats the
     // step once per row; any other table is a Dart `DataTable` argument.
-    isDataTable: table != null && !isExamplesTable(step.text, table),
+    isDataTable: table != null && !isExamplesTable(text, table),
   );
 }
 

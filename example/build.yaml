@@ -13,6 +13,7 @@ targets:
           # relativeToTestFolder: false # if false, steps will be generated in the root of the package; default is true
           # testMethodName: customTestMethodName
           # addHooks: true # if true, hooks will be added to the test; default is false
+          # literalParameters: true # if true, "strings" and whole-word numbers in steps are parameters, like {}; default is false
           # hookFolderName: bdd_hooks
           # include: package:<package1>/bdd_options.yaml # you may add defaul external steps with this line
           # customHeaders:                                 # add custom header lines to all generated step files

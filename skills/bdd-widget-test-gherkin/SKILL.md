@@ -53,6 +53,8 @@ description: Write `.feature` files and implement step definitions for the bdd_w
   don't cover, add the Dart `import` above `Feature:`, or configure `customHeaders`.
 - Prefer domain-level parameters (`{'alice@example.com'}`) over implementation details such as keys
   or private widget types. Steps describe what a user does and sees.
+- With the `literalParameters` option on, `"Login"` and `42` are parameters too. Check the project's
+  options before relying on it, and read [literal-parameters.md](references/literal-parameters.md).
 
 ### Structure
 

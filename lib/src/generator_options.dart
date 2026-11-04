@@ -22,6 +22,7 @@ class GeneratorOptions {
     this.include,
     bool? includeIntegrationTestBinding,
     List<String>? customHeaders,
+    bool? literalParameters,
   }) : stepFolder = stepFolderName ?? _stepFolderName,
        relativeToTestFolder = relativeToTestFolder ?? true,
        testMethodName = testMethodName ?? _defaultTestMethodName,
@@ -31,7 +32,8 @@ class GeneratorOptions {
        hookFolderName = hookFolderName ?? _hookFolderName,
        externalSteps = externalSteps ?? const [],
        includeIntegrationTestBinding = includeIntegrationTestBinding ?? true,
-       customHeaders = customHeaders ?? const [];
+       customHeaders = customHeaders ?? const [],
+       literalParameters = literalParameters ?? false;
 
   factory GeneratorOptions.fromMap(Map<String, dynamic> json) =>
       GeneratorOptions(
@@ -49,6 +51,7 @@ class GeneratorOptions {
         includeIntegrationTestBinding:
             json['includeIntegrationTestBinding'] as bool?,
         customHeaders: (json['customHeaders'] as List?)?.cast<String>() ?? [],
+        literalParameters: json['literalParameters'] as bool?,
       );
 
   final String stepFolder;
@@ -62,6 +65,15 @@ class GeneratorOptions {
   final List<String> externalSteps;
   final bool includeIntegrationTestBinding;
   final List<String> customHeaders;
+
+  /// Whether a `"quoted string"` and a whole-word number in step text are
+  /// parameters too, next to `{}`.
+  ///
+  /// On, the parser rewrites them into the `{}` form before anything else
+  /// reads the step (see `rewriteLiteralParameters`), so
+  /// `Then I see "Hello" text` is `Then I see {'Hello'} text`: `iSeeText`
+  /// rather than `iSeeHelloText`. That renames steps, hence off by default.
+  final bool literalParameters;
 }
 
 Future<GeneratorOptions> flattenOptions(
@@ -124,4 +136,5 @@ GeneratorOptions merge(
   includeIntegrationTestBinding:
       a.includeIntegrationTestBinding && b.includeIntegrationTestBinding,
   customHeaders: [...a.customHeaders, ...b.customHeaders],
+  literalParameters: a.literalParameters || b.literalParameters,
 );

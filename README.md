@@ -310,6 +310,36 @@ Notice, that the value inside brackets is copied to the Dart test file without c
 
 You may call methods in step parameters, but most probably it's not what you want.
 
+### Can I write `"Hello"` and `42` without the curly brackets?
+
+Yes, with the `literalParameters` option:
+
+```yaml
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          literalParameters: true
+```
+
+A `"double-quoted string"` and a number written as its own word then become parameters too, exactly as if they were in `{}`:
+
+| Feature file | Same as | Generated call |
+| --- | --- | --- |
+| `Then I see "Hello" text` | `Then I see {'Hello'} text` | `iSeeText(tester, 'Hello')` |
+| `Given the counter is 42` | `Given the counter is {42}` | `theCounterIs(tester, 42)` |
+| `Then I see "a" and 1.5` | `Then I see {'a'} and {1.5}` | `iSeeAnd(tester, 'a', 1.5)` |
+
+* Quoted text is **text**, not Dart: `"cost $0"`, `"C:\temp"` and `"use {braces}"` arrive as written. The only escapes are `\"` for a quote and `\\` for a backslash.
+* Only double quotes open a string, so `I don't see "Hello" text` is still `iDontSeeText`. `'Hello'` without brackets stays part of the step name.
+* A number counts only as a whole word: `-3`, `1.5` and the `1`, `2`, `3` of `1, 2 and 3` are parameters; `2FA`, `v1`, `1.0.1`, `19-20`, `1,000`, `1:30`, `1/2`, `1'000`, `+7` and `3.` are not.
+* `{}` works as before and stays the way to pass anything else (`{Icons.add}`, `{true}`). Nothing inside `{}` is rewritten.
+* A `"` with no closing `"` fails the build with its line and column.
+* In a `Scenario Outline`, `Then I see "<greeting>" text` passes each row's cell as a string, written as plain text: `Don't panic` arrives as written. The same goes for a placeholder inside a string in `{}`, such as `{'<greeting>'}`. For anything other than a string, use `{<greeting>}` and write the cell as Dart.
+
+**Turning the option on renames steps.** `Then I see "Hello" text` was `iSeeHelloText` and is now `iSeeText`, and `Given the counter is 42` was `theCounterIs42`. The generator never overwrites a step file, so after enabling it delete the step files that no longer match a step, and re-implement any renamed step that has no predefined implementation (its new stub throws `UnimplementedError`). Steps written with `{}` are not affected.
+
 ### How to add additional imports to test files?
 
 Most of the time you shouldn't do that, as the BDD tests simulate user's behavior and it's just not possible for users to know the implementation details. Nevertheless, sometimes it might be in hand, i.e. when you have custom domain models or components. For example, if you need to check Cupertino icons in the test, you may have:

@@ -22,6 +22,7 @@ import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:bdd_widget_test/src/step/the_screen_matches_golden.dart';
+import 'package:bdd_widget_test/src/util/dart_block.dart';
 import 'package:bdd_widget_test/src/util/string_utils.dart';
 import 'package:diacritic/diacritic.dart';
 
@@ -190,34 +191,22 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
 List<String> parseRawStepLine(String stepLine) {
   final name = StringBuffer();
   final parameters = <String>[];
-  final parameter = StringBuffer();
-
-  var bracketsNesting = 0;
-  for (var i = 0; i < stepLine.length; ++i) {
-    final c = stepLine[i];
-    if (c == '{') {
-      // this is needed for cases when there is { inside parameter, like
-      // When I run {func foo(){} func bar() {print('hey');}} code
-      bracketsNesting++;
-      if (bracketsNesting == 1) {
-        // Found a parameter, skipping adding {
-        continue;
+  var i = 0;
+  while (i < stepLine.length) {
+    if (stepLine[i] == '{') {
+      // A block nests, as in `{func foo(){} func bar() {print('hey');}}`,
+      // and a brace inside a string in it is text: `{'a{b'}` is one block.
+      final end = readDartBlock(stepLine, i)?.end;
+      if (end == null) {
+        // Nothing closes the block: the rest of the line is not a parameter
+        // the generated call could pass.
+        break;
       }
-    }
-    if (c == '}') {
-      bracketsNesting--;
-      if (bracketsNesting == 0) {
-        // The end of the parameter, flushing the value, skiping }
-        parameters.add(parameter.toString());
-        parameter.clear();
-        continue;
-      }
-    }
-
-    if (bracketsNesting == 0) {
-      name.write(c);
+      parameters.add(stepLine.substring(i + 1, end - 1));
+      i = end;
     } else {
-      parameter.write(c);
+      name.write(stepLine[i]);
+      i++;
     }
   }
   return [name.toString(), ...parameters];

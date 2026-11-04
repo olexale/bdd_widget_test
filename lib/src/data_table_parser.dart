@@ -25,12 +25,20 @@ bool isExamplesTable(String stepText, List<List<String>> table) {
 }
 
 /// Resolves every step into the text of the call to generate for it, folding
-/// in whatever table was written underneath.
-List<String> resolveSteps(Iterable<Step> steps) => [
-  for (final step in steps) ..._resolve(step),
+/// in whatever table was written underneath. [literalParameters] is passed
+/// on to [replacePlaceholders].
+List<String> resolveSteps(
+  Iterable<Step> steps, {
+  required bool literalParameters,
+}) => [
+  for (final step in steps)
+    ..._resolve(step, literalParameters: literalParameters),
 ];
 
-Iterable<String> _resolve(Step step) sync* {
+Iterable<String> _resolve(
+  Step step, {
+  required bool literalParameters,
+}) sync* {
   final table = step.table;
   if (table == null) {
     yield step.text;
@@ -39,7 +47,11 @@ Iterable<String> _resolve(Step step) sync* {
   } else {
     final names = table.first;
     for (final row in table.skip(1)) {
-      yield replacePlaceholders(step.text, Map.fromIterables(names, row));
+      yield replacePlaceholders(
+        step.text,
+        Map.fromIterables(names, row),
+        literalParameters: literalParameters,
+      );
     }
   }
 }

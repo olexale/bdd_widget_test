@@ -40,8 +40,11 @@ Future<void> $methodName($testerType $customTesterName${_getMethodParameters(raw
   }
 
   String _getMethodParameters(String stepLine, bool hadDataTable) {
-    final params = parseRawStepLine(stepLine).skip(1);
-    final examples = examplesRegExp.allMatches(stepLine);
+    final [name, ...params] = parseRawStepLine(stepLine);
+    // Only a placeholder outside `{}` is a parameter of its own: one inside a
+    // `{}` block is part of that parameter (`{<name>}`, `{'<name>'}`), which
+    // the generated call passes as one argument.
+    final examples = examplesRegExp.allMatches(name);
 
     return [
       ...params.mapIndexed(

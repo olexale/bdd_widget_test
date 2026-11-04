@@ -1,3 +1,18 @@
+## [3.0.5] - Literal step parameters
+
+* Add the `literalParameters` option. With it on, a `"double-quoted string"` and a whole-word number
+  in step text are parameters, as if written in `{}`: `Then I see "Hello" text` calls
+  `iSeeText(tester, 'Hello')` and `Given the counter is 42` calls `theCounterIs(tester, 42)`. Quoted
+  text is text, not Dart, so `$` and `\` arrive as written, and so does an outline cell placed in it:
+  `"<message>"` with `Don't panic` passes `'Don\'t panic'`. `{}` is unchanged. Off by default,
+  because it renames steps: `Then I see "Hello" text` was `iSeeHelloText`. See the README FAQ for
+  migrating (thanks @Fried-man).
+* Fix a `{` or `}` inside a string in a `{}` parameter: `Then I see {'a{b'} text` dropped its
+  argument and generated `iSee(tester)`, which compiled. A brace inside a string is now text, also
+  when it comes from an outline cell.
+* Fix generated step stubs for outline steps with a placeholder inside `{}`: `Then I greet {<name>}`
+  declared an extra `dynamic name` parameter that the generated call never passed.
+
 ## [3.0.4] - `material_ui` imports
 
 * Generated tests and predefined steps now import `package:material_ui/material_ui.dart` instead of

@@ -29,6 +29,7 @@ import 'package:yaml/yaml.dart';
 ///         options:
 ///           testMethodName: patrolTest
 ///           stepFolderName: ./custom_steps
+///           literalParameters: true # "Hello" and 42 in steps are parameters
 /// ```
 ///
 /// Returns a [FeatureBuilder] instance configured with the specified options.

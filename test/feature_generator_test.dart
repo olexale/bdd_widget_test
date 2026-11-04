@@ -448,6 +448,7 @@ This line belongs nowhere
       expect(merged.addHooks, isFalse);
       expect(merged.relativeToTestFolder, isTrue);
       expect(merged.includeIntegrationTestBinding, isTrue);
+      expect(merged.literalParameters, isFalse);
     });
 
     test('a non-default boolean from either side wins', () {
@@ -455,14 +456,24 @@ This line belongs nowhere
         addHooks: true,
         relativeToTestFolder: false,
         includeIntegrationTestBinding: false,
+        literalParameters: true,
       );
       for (final (a, b) in [(changed, defaults), (defaults, changed)]) {
         final merged = merge(a, b);
         expect(merged.addHooks, isTrue);
         expect(merged.relativeToTestFolder, isFalse);
         expect(merged.includeIntegrationTestBinding, isFalse);
+        expect(merged.literalParameters, isTrue);
       }
     });
+  });
+
+  test('literalParameters is read from the options map', () {
+    expect(GeneratorOptions.fromMap({}).literalParameters, isFalse);
+    expect(
+      GeneratorOptions.fromMap({'literalParameters': true}).literalParameters,
+      isTrue,
+    );
   });
 }
 
