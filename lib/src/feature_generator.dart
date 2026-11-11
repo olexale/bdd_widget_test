@@ -107,6 +107,7 @@ String generateFeatureDart(
       setUpMethodName,
       testerTypeOverride,
       testerNameOverride,
+      literalParameters: generatorOptions.literalParameters,
     );
     final hasAfter = _writeSetup(
       sb,
@@ -114,6 +115,7 @@ String generateFeatureDart(
       tearDownMethodName,
       testerTypeOverride,
       testerNameOverride,
+      literalParameters: generatorOptions.literalParameters,
     );
     final featureSetUps = [if (hasBackground) setUpMethodName];
 
@@ -131,6 +133,7 @@ String generateFeatureDart(
         hookFile != null,
         featureTestMethodNameOverride,
         testerNameOverride,
+        literalParameters: generatorOptions.literalParameters,
       );
     }
 
@@ -142,6 +145,7 @@ String generateFeatureDart(
         ruleSetUpMethodName,
         testerTypeOverride,
         testerNameOverride,
+        literalParameters: generatorOptions.literalParameters,
         indent: '      ',
       );
       for (final scenario in rule.scenarios) {
@@ -153,6 +157,7 @@ String generateFeatureDart(
           hookFile != null,
           featureTestMethodNameOverride,
           testerNameOverride,
+          literalParameters: generatorOptions.literalParameters,
           indent: '      ',
         );
       }
@@ -207,13 +212,17 @@ bool _writeSetup(
   String title,
   String testerType,
   String testerName, {
+  required bool literalParameters,
   String indent = '    ',
 }) {
   if (steps.isEmpty) {
     return false;
   }
   sb.writeln('${indent}Future<void> $title($testerType $testerName) async {');
-  for (final step in resolveSteps(steps)) {
+  for (final step in resolveSteps(
+    steps,
+    literalParameters: literalParameters,
+  )) {
     sb.writeln('$indent  await ${getStepMethodCall(step, testerName)};');
   }
   sb.writeln('$indent}');
@@ -228,6 +237,7 @@ void _writeScenario(
   bool hasHooks,
   String testMethodName,
   String testerName, {
+  required bool literalParameters,
   String indent = '    ',
 }) {
   final scenarioTestMethodName = parseCustomTagValue(
@@ -252,14 +262,14 @@ void _writeScenario(
       .toList();
 
   final runs = scenario.isOutline
-      ? expandOutline(scenario)
+      ? expandOutline(scenario, literalParameters: literalParameters)
       : [(title: scenario.title, steps: scenario.steps)];
 
   for (final run in runs) {
     parseScenario(
       sb,
       run.title,
-      resolveSteps(run.steps),
+      resolveSteps(run.steps, literalParameters: literalParameters),
       setUps,
       hasTearDown,
       hasHooks,

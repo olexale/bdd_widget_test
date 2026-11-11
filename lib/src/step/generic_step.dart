@@ -2,7 +2,6 @@ import 'package:bdd_widget_test/src/generator_options.dart';
 import 'package:bdd_widget_test/src/regex.dart';
 import 'package:bdd_widget_test/src/step/bdd_step.dart';
 import 'package:bdd_widget_test/src/step_generator.dart';
-import 'package:collection/collection.dart';
 
 class GenericStep implements BddStep {
   GenericStep(
@@ -40,16 +39,28 @@ Future<void> $methodName($testerType $customTesterName${_getMethodParameters(raw
   }
 
   String _getMethodParameters(String stepLine, bool hadDataTable) {
-    final params = parseRawStepLine(stepLine).skip(1);
-    final examples = examplesRegExp.allMatches(stepLine);
-
     return [
-      ...params.mapIndexed(
-        (index, p) => ', ${_getGenericParameterType(p)} param${index + 1}',
-      ),
-      ...examples.map((p) => ', dynamic ${p.group(1)}'),
+      ..._parametersInOrder(stepLine),
       if (hasDataTable) ', bdd.DataTable dataTable',
     ].join();
+  }
+
+  /// The step's parameters in the order [stepParts] gives them: each `{}`
+  /// parameter is a `paramN`, each `<placeholder>` outside one a parameter
+  /// named after it. A placeholder inside a `{}` parameter (`{<name>}`,
+  /// `{'<name>'}`) is part of that parameter.
+  Iterable<String> _parametersInOrder(String stepLine) sync* {
+    var parameters = 0;
+    for (final part in stepParts(stepLine)) {
+      if (part.isParameter) {
+        final type = _getGenericParameterType(part.text);
+        yield ', $type param${++parameters}';
+      } else {
+        for (final placeholder in examplesRegExp.allMatches(part.text)) {
+          yield ', dynamic ${placeholder.group(1)}';
+        }
+      }
+    }
   }
 
   String _getGenericParameterType(String parameter) {

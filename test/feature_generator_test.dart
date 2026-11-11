@@ -448,6 +448,7 @@ This line belongs nowhere
       expect(merged.addHooks, isFalse);
       expect(merged.relativeToTestFolder, isTrue);
       expect(merged.includeIntegrationTestBinding, isTrue);
+      expect(merged.literalParameters, isFalse);
     });
 
     test('a non-default boolean from either side wins', () {
@@ -455,14 +456,53 @@ This line belongs nowhere
         addHooks: true,
         relativeToTestFolder: false,
         includeIntegrationTestBinding: false,
+        literalParameters: true,
       );
       for (final (a, b) in [(changed, defaults), (defaults, changed)]) {
         final merged = merge(a, b);
         expect(merged.addHooks, isTrue);
         expect(merged.relativeToTestFolder, isFalse);
         expect(merged.includeIntegrationTestBinding, isFalse);
+        expect(merged.literalParameters, isTrue);
       }
     });
+  });
+
+  test('literalParameters from bdd_options.yaml', () async {
+    fs.file('bdd_options.yaml')
+      ..createSync()
+      ..writeAsStringSync('literalParameters: true');
+
+    const featureFile = '''
+Feature: Testing feature
+  Scenario: Testing scenario
+    Then I see "Hello" text
+''';
+
+    const expected =
+        '// GENERATED CODE - DO NOT MODIFY BY HAND\n'
+        '// ignore_for_file: type=lint, type=warning\n'
+        '\n'
+        "import 'package:material_ui/material_ui.dart';\n"
+        "import 'package:flutter_test/flutter_test.dart';\n"
+        '\n'
+        "import './step/i_see_text.dart';\n"
+        '\n'
+        'void main() {\n'
+        "  group('''Testing feature''', () {\n"
+        "    testWidgets('''Testing scenario''', (tester) async {\n"
+        "      await iSeeText(tester, 'Hello');\n"
+        '    });\n'
+        '  });\n'
+        '}\n';
+
+    const path = 'test/builder_scenarios/literals';
+    await testBuilder(
+      featureBuilder(BuilderOptions.empty),
+      {'$pkgName|$path/sample.feature': featureFile},
+      rootPackage: pkgName,
+      outputs: {'$pkgName|$path/sample_test.dart': decodedMatches(expected)},
+    );
   });
 }
 

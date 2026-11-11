@@ -22,6 +22,7 @@ import 'package:bdd_widget_test/src/step/i_tap_text.dart';
 import 'package:bdd_widget_test/src/step/i_wait.dart';
 import 'package:bdd_widget_test/src/step/the_app_is_running_step.dart';
 import 'package:bdd_widget_test/src/step/the_screen_matches_golden.dart';
+import 'package:bdd_widget_test/src/util/dart_block.dart';
 import 'package:bdd_widget_test/src/util/string_utils.dart';
 import 'package:diacritic/diacritic.dart';
 
@@ -188,39 +189,45 @@ final predefinedSteps = <String, BddStep Function(String, String)>{
 /// Return an array of Strings where first element is the step name and the rest
 /// are parameters.
 List<String> parseRawStepLine(String stepLine) {
-  final name = StringBuffer();
-  final parameters = <String>[];
-  final parameter = StringBuffer();
+  final parts = stepParts(stepLine);
+  return [
+    parts.where((part) => !part.isParameter).map((part) => part.text).join(),
+    for (final part in parts)
+      if (part.isParameter) part.text,
+  ];
+}
 
-  var bracketsNesting = 0;
-  for (var i = 0; i < stepLine.length; ++i) {
-    final c = stepLine[i];
-    if (c == '{') {
-      // this is needed for cases when there is { inside parameter, like
-      // When I run {func foo(){} func bar() {print('hey');}} code
-      bracketsNesting++;
-      if (bracketsNesting == 1) {
-        // Found a parameter, skipping adding {
-        continue;
-      }
-    }
-    if (c == '}') {
-      bracketsNesting--;
-      if (bracketsNesting == 0) {
-        // The end of the parameter, flushing the value, skiping }
-        parameters.add(parameter.toString());
-        parameter.clear();
-        continue;
-      }
-    }
+/// A run of a step's text: a `{}` parameter, without its braces, or the text
+/// between parameters.
+typedef StepPart = ({String text, bool isParameter});
 
-    if (bracketsNesting == 0) {
-      name.write(c);
-    } else {
-      parameter.write(c);
+/// [stepLine] split into its parts, in the order they are written: the order
+/// the generated call passes its parameters in, and so the order its step
+/// declares them in.
+List<StepPart> stepParts(String stepLine) {
+  final parts = <StepPart>[];
+  var text = 0;
+  var i = 0;
+  while (i < stepLine.length) {
+    if (stepLine[i] != '{') {
+      i++;
+      continue;
     }
+    // A block nests, as in `{func foo(){} func bar() {print('hey');}}`,
+    // and a brace inside a string in it is text: `{'a{b'}` is one block.
+    final end = readDartBlock(stepLine, i)?.end;
+    if (end == null) {
+      // Nothing closes the block: the rest of the line is not a parameter
+      // the generated call could pass, nor part of the name.
+      break;
+    }
+    parts
+      ..add((text: stepLine.substring(text, i), isParameter: false))
+      ..add((text: stepLine.substring(i + 1, end - 1), isParameter: true));
+    i = text = end;
   }
-  return [name.toString(), ...parameters];
+  final rest = stepLine.substring(text, i);
+  return [...parts, (text: rest, isParameter: false)];
 }
 
 String _camelizedString(String input) {

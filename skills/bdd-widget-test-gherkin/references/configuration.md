@@ -23,9 +23,13 @@ If both exist, they are merged:
 
 - String options: a non-default value in `build.yaml` wins over `bdd_options.yaml`, which wins over
   the files it includes.
-- Boolean options: `addHooks: true` from any source wins, and `relativeToTestFolder: false` and
-  `includeIntegrationTestBinding: false` from any source win. A shared options file can therefore
-  turn these off, and `build.yaml` cannot turn them back on.
+- Boolean options: `addHooks: true` and `literalParameters: true` from any source win, and
+  `relativeToTestFolder: false` and `includeIntegrationTestBinding: false` from any source win. A
+  shared options file can therefore set any of these, and `build.yaml` cannot undo it.
+- In particular, a shared `bdd_options.yaml` (or any file it includes) that sets
+  `literalParameters: true` turns the option on for every project using it, with no local way to
+  turn it off. The option renames steps, so set it only in a shared file every consumer agrees on,
+  or in each project's own `build.yaml`.
 - List options (`externalSteps`, `customHeaders`) are concatenated. Rebuild with
 `dart run build_runner build --delete-conflicting-outputs` after any change.
 
@@ -41,6 +45,7 @@ If both exist, they are merged:
 | `testerType` | `WidgetTester` | The tester parameter's type in new step stubs and `Background:`/`After:` functions (the test callback is untyped). Overridden by `@testerType:`. |
 | `testerName` | `tester` | The tester parameter's name. Overridden by `@testerName:`. |
 | `includeIntegrationTestBinding` | `true` | For features under `integration_test/` (when `integration_test` is a dev dependency), call `IntegrationTestWidgetsFlutterBinding.ensureInitialized()`. Set it to `false` for Patrol 3+. A `false` from any source wins. |
+| `literalParameters` | `false` | Treat a `"double-quoted string"` and a whole-word number in step text as parameters, as if written in `{}`. Renames the steps it applies to, see [literal-parameters.md](literal-parameters.md). A `true` from any source wins. |
 | `customHeaders` | `[]` | Lines that replace the default imports at the top of generated tests and new generic step stubs (after the DataTable import). Include `flutter_test` yourself when you set this. Predefined step files ignore it and always import `flutter_test`. |
 
 ## Step lookup order

@@ -21,7 +21,11 @@ class FeatureFile {
     this.existingSteps = const <String, String>{},
     this.generatorOptions = const GeneratorOptions(),
     this.packageRoot,
-  }) : _model = parseFeatureFile(input, inputPath ?? featureDir),
+  }) : _model = parseFeatureFile(
+         input,
+         uri: inputPath ?? featureDir,
+         literalParameters: generatorOptions.literalParameters,
+       ),
        hookFile = generatorOptions.addHooks
            ? HookFile.create(
                featureDir: featureDir,
