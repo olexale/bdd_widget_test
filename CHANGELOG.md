@@ -1,3 +1,10 @@
+## [3.1.0] - `build` 5
+
+* Require `build` ^5.0.0 (dropping `build` 4), `cucumber_gherkin` ^43.0.0 and `cucumber_messages`
+  ^35.0.0. `build` 5 needs `build_runner` 2.17.1 or newer, which in a Flutter app resolves on
+  Flutter 3.50 and newer; on older Flutter versions stay on 3.0.x. Generated tests are unchanged.
+* Raise the minimum Dart SDK to 3.11, the version `build` 5 already requires.
+
 ## [3.0.5] - Literal step parameters
 
 * Add the `literalParameters` option. With it on, a `"double-quoted string"` and a whole-word number
